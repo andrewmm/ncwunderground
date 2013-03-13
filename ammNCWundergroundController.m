@@ -122,7 +122,7 @@
 	_view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	_view.contentSize = CGSizeMake(1280.f,[self viewHeight]);
 	_view.pagingEnabled = YES;
-	_view.contentOffset = CGPointMake(642.f,0.f);
+	_view.contentOffset = CGPointMake(640.f,0.f);
 	_view.showsHorizontalScrollIndicator = NO;
 
 	UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
