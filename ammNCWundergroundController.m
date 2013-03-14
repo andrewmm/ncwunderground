@@ -232,13 +232,13 @@
 		iterView.showCurrentValue = NO;
 	}
 
-
-	[self updateBackgroundLeftSubviewValues];
+	if([_savedData objectForKey:@"last request"]) {
+		[self updateBackgroundLeftSubviewValues];
+	}
 
 
 	// add and release all the views
 	for (UILabel *iterView in backgroundLeftLabelArray) {
-		NSLog(@"NCWunderground: adding %@",iterView);
 		[_backgroundLeftView addSubview:iterView];
 		[iterView release];
 	}
@@ -282,7 +282,9 @@
 	[self clearLabelSmallWhiteText:_windLabel];
 	_windLabel.textAlignment = NSTextAlignmentRight;
 
-	[self updateBackgroundSubviewValues];
+	if([_savedData objectForKey:@"last request"]) {
+		[self updateBackgroundSubviewValues];
+	}
 
 	[_backgroundView addSubview:_temperatureLabel];
 	[_backgroundView addSubview:_feelsLikeLabel];
@@ -375,12 +377,7 @@
 	}
 	
 	if ([_savedData objectForKey:@"last request"] == nil) {
-		NSLog(@"NCWunderground: No save file found, initializing.");
-
-		// initialize some data
-		[_savedData setObject:[NSNumber numberWithInteger:0] forKey:@"last request"];
-		[_savedData setObject:@"41.7921" forKey:@"latitude"];
-		[_savedData setObject:@"-87.599506" forKey:@"longitude"];
+		NSLog(@"NCWunderground: No save file found.");
 	}
 
 	if ([[NSDate date] timeIntervalSince1970] - [[_savedData objectForKey:@"last request"] integerValue] >= 60) {
@@ -411,7 +408,14 @@
 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	NSString *apiKey = [defaults objectForKey:@"APIKey"];
+	NSLog(@"NCWunderground: requesting APIKey");
+	NSString *apiKey = @"8e4db8cccf9828e3";//[defaults objectForKey:@"APIKey"];
+	NSLog(@"NCWunderground: got APIKey: %@",apiKey);
+	if (apiKey == nil) {
+		NSLog(@"NCWunderground: got null APIKey, not updating data.");
+		[request release];
+		return;
+	}
 	NSMutableString *urlString = [NSMutableString stringWithString:@"http://api.wunderground.com/api/"];
 	[urlString appendString:apiKey];
 	[urlString appendString:@"/conditions/hourly/forecast10day/q/"];
@@ -419,6 +423,7 @@
 	[urlString appendString:@","];
 	[urlString appendString:[_savedData objectForKey:@"longitude"]];
 	[urlString appendString:@".json"];
+	NSLog(@"NCWunderground: Making request with url %@",urlString);
 	[request setURL:[NSURL URLWithString:urlString]];
 	[request setHTTPMethod:@"GET"];
 
@@ -472,6 +477,8 @@
 		NSLog(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
 		return;
 	}
+	[self updateBackgroundLeftSubviewValues];
+	[self updateBackgroundSubviewValues];
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
