@@ -47,7 +47,7 @@
 - (void)updateBackgroundLeftSubviewValues {
 	NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
 	NSNumber *hourlyLength = [defaultsDom objectForKey:@"hourlyLength"];
-	static const int intervalLength;
+	int intervalLength;
 	if (hourlyLength) {
 		intervalLength = [hourlyLength integerValue];
 	}
@@ -248,7 +248,6 @@
 	float moreInfoWidth = 316.f - 8.f - [self viewHeight] - temperatureWidth;
 
 	_temperatureLabel.frame = CGRectMake(2.f,2.f,temperatureWidth,30.f);
-	_temperatureLabel.font = [UIFont systemFontOfSize:30.f];
 	_feelsLikeLabel.frame = CGRectMake(2.f,34.f,temperatureWidth,14.f);
 	_weatherTypeLabel.frame = CGRectMake(2.f,50.f,temperatureWidth,14.f);
 	_locationLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],5.f,moreInfoWidth,15.f);
@@ -262,14 +261,15 @@
 		[self updateBackgroundSubviewValues];
 	}
 
-	for (UIView *iterView in backgroundLabelArrayRightCol) {
+	for (UILabel *iterView in backgroundLabelArrayRightCol) {
 		[iterView setTextAlignment:NSTextAlignmentRight];
 	}
-	for (UIView *iterView in [backgroundLabelArrayLeftCol arrayByAddingObjectsFromArray:backgroundLabelArrayRightCol]) {
+	for (UILabel *iterView in [backgroundLabelArrayLeftCol arrayByAddingObjectsFromArray:backgroundLabelArrayRightCol]) {
 		[self clearLabelSmallWhiteText:iterView];
 		[_backgroundView addSubview:iterView];
-		[iterView relesae];
+		[iterView release];
 	}
+	_temperatureLabel.font = [UIFont systemFontOfSize:30.f];
 	
 	[_backgroundView addSubview:_iconView];
 	[_iconView release];
@@ -350,7 +350,7 @@
 
 	NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
 	NSNumber *updateSeconds = [defaultsDom objectForKey:@"updateSeconds"];
-	static const int updateLength;
+	int updateLength;
 	if (updateSeconds) {
 		updateLength = [updateSeconds integerValue];
 	}
