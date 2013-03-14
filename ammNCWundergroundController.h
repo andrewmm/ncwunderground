@@ -50,6 +50,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 	NSDictionary *_iconMap;
 
+	NSDictionary *i_defaultsDom;
+
 	//ammNCWundergroundTableViewSource *_temperatureViewContents;
 	//ammNCWundergroundTableViewSource *_moreInfoViewContents;
 }

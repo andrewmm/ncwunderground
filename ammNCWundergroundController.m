@@ -45,7 +45,16 @@
 }
 
 - (void)updateBackgroundLeftSubviewValues {
-	static const int intervalLength = 18; // TODO make this come from preferences
+	NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+	NSNumber *hourlyLength = [defaultsDom objectForKey:@"hourlyLength"];
+	static const int intervalLength;
+	if (hourlyLength) {
+		intervalLength = [hourlyLength integerValue];
+	}
+	else {
+		intervalLength = 12;
+	}
+
 	// convenience pointers
 	NSArray *hourly_forecast = [_savedData objectForKey:@"hourly_forecast"];
 	NSDictionary *first_forecast = [hourly_forecast objectAtIndex:0];
@@ -407,9 +416,10 @@
 	NSError * error;
 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+	NSLog(@"NCWunderground: com.amm.ncwunderground user defaults: %@",defaultsDom);
 	NSLog(@"NCWunderground: requesting APIKey");
-	NSString *apiKey = [defaults objectForKey:@"APIKey"];
+	NSString *apiKey = [defaultsDom objectForKey:@"APIKey"];
 	NSLog(@"NCWunderground: got APIKey: %@",apiKey);
 	if (apiKey == nil) {
 		NSLog(@"NCWunderground: got null APIKey, not updating data.");
