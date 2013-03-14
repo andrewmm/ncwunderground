@@ -297,25 +297,21 @@
 	UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
 	UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2.f) topCapHeight:floorf(bgImg.size.height / 2.f)];
 
-	_backgroundLeftView2 = [[UIImageView alloc] initWithImage:stretchableBgImg];
+	NSArray *backgroundViews = [NSArray arrayWithObjects:
+		(_backgroundLeftView2 = [[UIImageView alloc] initWithImage:stretchableBgImg]),
+		(_backgroundLeftView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
+		(_backgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
+		(_backgroundRightView = [[UIImageView alloc] initWithImage:stretchableBgImg]),nil];
+
 	_backgroundLeftView2.frame = CGRectMake(2,0,312.f,[self viewHeight]);
-	_backgroundLeftView2.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	[_view addSubview:_backgroundLeftView2];
-
-	_backgroundLeftView = [[UIImageView alloc] initWithImage:stretchableBgImg];
 	_backgroundLeftView.frame = CGRectMake(322.f,0,312.f,[self viewHeight]);
-	_backgroundLeftView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	[_view addSubview:_backgroundLeftView];
-
-	_backgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg];
 	_backgroundView.frame = CGRectMake(642.f,0, 312.f,[self viewHeight]);
-	_backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	[_view addSubview:_backgroundView];
-
-	_backgroundRightView = [[UIImageView alloc] initWithImage:stretchableBgImg];
 	_backgroundRightView.frame = CGRectMake(962.f,0,312.f,[self viewHeight]);
-	_backgroundRightView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	[_view addSubview:_backgroundRightView];
+
+	for (UIImageView *iterView in backgroundViews) {
+		iterView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		[_view addSubview:iterView];
+	}
 }
 
 - (void)unloadView {
