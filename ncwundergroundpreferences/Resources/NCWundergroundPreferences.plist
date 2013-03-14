@@ -19,8 +19,6 @@
 			<string>com.amm.ncwunderground</string>
 			<key>key</key>
 			<string>updateMinutes</string>
-			<key>label</key>
-			<string>Update Interval (min)</string>
 		</dict>
 		<dict>
 			<key>cell</key>
