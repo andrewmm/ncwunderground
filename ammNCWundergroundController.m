@@ -148,40 +148,16 @@
 
 - (void)loadBackgroundLeftSubviews {
 
-	static const float r1off = 5.f;
-	static const float r1height = 15.f;
-	static const float r1y = r1off;
-
-	static const float r2off = 8.f;
-	static const float r2height = 15.f;
-	static const float r2y = r1y+r1height+r2off;
-
-	static const float r3off = 8.f;
-	static const float r3height = 15.f;
-	static const float r3y = r2y+r2height+r3off;
-
-	static const float c0off = 2.f;
-	static const float c0width = 45.f;
-	static const float c0x = c0off;
-
-	static const float c1off = 2.f;
-	static const float c1width = 45.f;
-	static const float c1x = c0x+c0width+c1off;
-
-	static const float c2off = 2.f;
-	static const float c2x = c1x+c1width+c2off;
-
-	static const float c3off = 2.f;
-	static const float c3width = 45.f;
-
-	static const float c4off = 2.f;
-	static const float c4width = 45.f;
-
-	static const float c5off = 2.f;
-	static const float c5width = 45.f;
-
+	static const float r1off = 5.f; static const float r1height = 15.f; static const float r1y = r1off;
+	static const float r2off = 8.f; static const float r2height = 15.f; static const float r2y = r1y+r1height+r2off;
+	static const float r3off = 8.f; static const float r3height = 15.f; static const float r3y = r2y+r2height+r3off;
+	static const float c0off = 2.f; static const float c0width = 45.f; static const float c0x = c0off;
+	static const float c1off = 2.f; static const float c1width = 45.f; static const float c1x = c0x+c0width+c1off;
+	static const float c2off = 2.f; static const float c2x = c1x+c1width+c2off;
+	static const float c3off = 2.f; static const float c3width = 45.f;
+	static const float c4off = 2.f; static const float c4width = 45.f;
+	static const float c5off = 2.f; static const float c5width = 45.f;
 	static const float rightbuff = 2.f;
-
 	static const float c2width = 316 - c0off - c0width - c1off - c1width - c2off - c3off - c3width - c4off - c4width - c5off - c5width - rightbuff;
 	static const float c3x = c2x+c2width+c3off;
 	static const float c4x = c3x+c3width+c4off;
@@ -259,58 +235,44 @@
 }
 
 - (void)loadBackgroundSubviews {
+	NSArray *backgroundLabelArrayLeftCol = [NSArray arrayWithObjects:
+		(_temperatureLabel = [[UILabel alloc] init]),
+		(_feelsLikeLabel = [[UILabel alloc] init]),
+		(_weatherTypeLabel = [[UILabel alloc] init]),nil];
+	NSArray *backgroundLabelArrayRightCol = [NSArray arrayWithObjects:
+		(_locationLabel = [[UILabel alloc] init]),
+		(_humidityLabel = [[UILabel alloc] init]),
+		(_windLabel = [[UILabel alloc] init])]
+
 	float temperatureWidth = (316.f - 8 - [self viewHeight] - 1) / 2;
-	_temperatureLabel = [[UILabel alloc] init];
+	float moreInfoWidth = 316.f - 8.f - [self viewHeight] - temperatureWidth;
+
 	_temperatureLabel.frame = CGRectMake(2.f,2.f,temperatureWidth,30.f);
-	[self clearLabelSmallWhiteText:_temperatureLabel];
 	_temperatureLabel.font = [UIFont systemFontOfSize:30.f];
-
-	_feelsLikeLabel = [[UILabel alloc] init];
 	_feelsLikeLabel.frame = CGRectMake(2.f,34.f,temperatureWidth,14.f);
-	[self clearLabelSmallWhiteText:_feelsLikeLabel];
-
-	_weatherTypeLabel = [[UILabel alloc] init];
 	_weatherTypeLabel.frame = CGRectMake(2.f,50.f,temperatureWidth,14.f);
-	[self clearLabelSmallWhiteText:_weatherTypeLabel];
+	_locationLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],5.f,moreInfoWidth,15.f);
+	_humidityLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],28.f,moreInfoWidth,15.f);
+	_windLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],51.f,moreInfoWidth,15.f);
 
 	_iconView = [[UIImageView alloc] init];
 	_iconView.frame = CGRectMake(4.f + temperatureWidth,0.f,[self viewHeight],[self viewHeight]);
-
-	float moreInfoWidth = 316.f - 8.f - [self viewHeight] - temperatureWidth;
-	_locationLabel = [[UILabel alloc] init];
-	_locationLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],5.f,moreInfoWidth,15.f);
-	[self clearLabelSmallWhiteText:_locationLabel];
-	_locationLabel.textAlignment = NSTextAlignmentRight;
-
-	_humidityLabel = [[UILabel alloc] init];
-	_humidityLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],28.f,moreInfoWidth,15.f);
-	[self clearLabelSmallWhiteText:_humidityLabel];
-	_humidityLabel.textAlignment = NSTextAlignmentRight;
-
-	_windLabel = [[UILabel alloc] init];
-	_windLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],51.f,moreInfoWidth,15.f);
-	[self clearLabelSmallWhiteText:_windLabel];
-	_windLabel.textAlignment = NSTextAlignmentRight;
 
 	if([_savedData objectForKey:@"last request"]) {
 		[self updateBackgroundSubviewValues];
 	}
 
-	[_backgroundView addSubview:_temperatureLabel];
-	[_backgroundView addSubview:_feelsLikeLabel];
-	[_backgroundView addSubview:_weatherTypeLabel];
+	for (UIView *iterView in backgroundLabelArrayRightCol) {
+		[iterView setTextAlignment:NSTextAlignmentRight];
+	}
+	for (UIView *iterView in [backgroundLabelArrayLeftCol arrayByAddingObjectsFromArray:backgroundLabelArrayRightCol]) {
+		[self clearLabelSmallWhiteText:iterView];
+		[_backgroundView addSubview:iterView];
+		[iterView relesae];
+	}
+	
 	[_backgroundView addSubview:_iconView];
-	[_backgroundView addSubview:_locationLabel];
-	[_backgroundView addSubview:_humidityLabel];
-	[_backgroundView addSubview:_windLabel];
-
-	[_temperatureLabel release];
-	[_feelsLikeLabel release];
-	[_weatherTypeLabel release];
 	[_iconView release];
-	[_locationLabel release];
-	[_humidityLabel release];
-	[_windLabel release];
 }
 
 - (void)loadFullView {
@@ -420,21 +382,21 @@
 }
 
 - (void) useUpdatedLoc {
-	NSLog(@"NCWunderground: location has been updated, proceeding");
-
 	// get data from website by HTTP GET request
 	NSHTTPURLResponse * response;
 	NSError * error;
 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
-	NSLog(@"NCWunderground: com.amm.ncwunderground user defaults: %@",defaultsDom);
-	NSLog(@"NCWunderground: requesting APIKey");
 	NSString *apiKey = [defaultsDom objectForKey:@"APIKey"];
-	NSLog(@"NCWunderground: got APIKey: %@",apiKey);
 	if (apiKey == nil) {
 		NSLog(@"NCWunderground: got null APIKey, not updating data.");
 		[request release];
+
+		// TODO
+		// We shouldn't silently fail here. We should overwrite the
+		// views with something instructing the user to enter the API key.
+
 		return;
 	}
 	NSMutableString *urlString = [NSMutableString stringWithString:@"http://api.wunderground.com/api/"];
