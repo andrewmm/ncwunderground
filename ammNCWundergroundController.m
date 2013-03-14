@@ -242,7 +242,7 @@
 	NSArray *backgroundLabelArrayRightCol = [NSArray arrayWithObjects:
 		(_locationLabel = [[UILabel alloc] init]),
 		(_humidityLabel = [[UILabel alloc] init]),
-		(_windLabel = [[UILabel alloc] init])]
+		(_windLabel = [[UILabel alloc] init]),nil];
 
 	float temperatureWidth = (316.f - 8 - [self viewHeight] - 1) / 2;
 	float moreInfoWidth = 316.f - 8.f - [self viewHeight] - temperatureWidth;
