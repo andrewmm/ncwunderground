@@ -1,4 +1,4 @@
-/obj/
+obj/
 *.deb
 /theos
 /altresources/
