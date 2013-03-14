@@ -2,4 +2,7 @@
 *.deb
 /theos
 /altresources/
-/.DS_Store
+.DS_Store
+/.gitignore~
+/.theos/
+/_/
