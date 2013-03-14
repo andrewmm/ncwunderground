@@ -1,0 +1,5 @@
+/obj/
+*.deb
+/theos
+/altresources/
+/.DS_Store
