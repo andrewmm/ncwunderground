@@ -409,7 +409,7 @@
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	NSLog(@"NCWunderground: requesting APIKey");
-	NSString *apiKey = @"8e4db8cccf9828e3";//[defaults objectForKey:@"APIKey"];
+	NSString *apiKey = [defaults objectForKey:@"APIKey"];
 	NSLog(@"NCWunderground: got APIKey: %@",apiKey);
 	if (apiKey == nil) {
 		NSLog(@"NCWunderground: got null APIKey, not updating data.");
