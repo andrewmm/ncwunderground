@@ -52,6 +52,7 @@
 		intervalLength = [hourlyLength integerValue];
 	}
 	else {
+		NSLog(@"NCWunderground: user defaults contain no hourly forecast length field. Defaulting to 12 hours.");
 		intervalLength = 12;
 	}
 
@@ -396,6 +397,7 @@
 		updateLength = [updateSeconds integerValue];
 	}
 	else {
+		NSLog(@"NCWunderground: User's defaults contain no update delay. Defaulting to 5 minutes.");
 		updateLength = 300; // default to 5 minutes
 	}
 
