@@ -18,13 +18,11 @@
 		_locationUpdated = NO;
 		
 		_iconMap = [[NSDictionary alloc] initWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"amm-wunderground-icon-map" ofType:@"plist"]];
-		
-		//_temperatureViewContents = [[ammNCWundergroundTableViewSource alloc] init];
-		//_moreInfoViewContents = [[ammNCWundergroundTableViewSource alloc] init];
+
 	} return self;
 }
 
-- (void)dealloc {
+- (void)dealloc { 
 	[_view release];
 	[_backgroundLeftView2 release];
 	[_backgroundLeftView release];
@@ -37,9 +35,6 @@
 
 	[_iconMap release];
 
-	//[_temperatureViewContents release];
-	//[_moreInfoViewContents release];
-
 	[super dealloc];
 }
 
@@ -49,51 +44,249 @@
 	label.font = [UIFont systemFontOfSize:14.f];
 }
 
-- (void)loadBackgroundSubviews {
+- (void)updateBackgroundLeftSubviewValues {
+	static const int intervalLength = 18; // TODO make this come from preferences
+	// convenience pointers
+	NSArray *hourly_forecast = [_savedData objectForKey:@"hourly_forecast"];
+	NSDictionary *first_forecast = [hourly_forecast objectAtIndex:0];
+	NSDictionary *last_forecast = [hourly_forecast objectAtIndex:(intervalLength-1)];
+
+	int nowTime = [[[first_forecast objectForKey:@"FCTTIME"] objectForKey:@"hour"] intValue];
+	NSString *nowAMPM = [[first_forecast objectForKey:@"FCTTIME"] objectForKey:@"ampm"];
+	if ([nowAMPM isEqualToString:@"PM"]) {
+		nowTime -= 12;
+	}
+	i_titleNow.text = [[[NSString stringWithFormat:@"%d",nowTime] stringByAppendingString:@" "] stringByAppendingString:nowAMPM];
+	
+	int endTime = [[[last_forecast objectForKey:@"FCTTIME"] objectForKey:@"hour"] intValue];
+	NSString *endAMPM = [[last_forecast objectForKey:@"FCTTIME"] objectForKey:@"ampm"];
+	if ([endAMPM isEqualToString:@"PM"]) {
+		endTime -= 12;
+	}
+	i_titleEnd.text = [[[NSString stringWithFormat:@"%d",endTime] stringByAppendingString:@" "] stringByAppendingString:endAMPM];
+
+	i_titleLength.text = [[NSString stringWithFormat:@"%d",intervalLength] stringByAppendingString:@" hr"]; 
+	i_titleHigh.text = @"High";
+	i_titleLow.text = @"Low";
+
+	i_realTempName.text = @"Temp:";
+	i_realTempNow.text = [[[first_forecast objectForKey:@"temp"] objectForKey:@"english"] stringByAppendingString:@"° F"];
+	NSMutableArray *realTempSparkData = [NSMutableArray array];
+	for(int i = 0; i <= 17; ++i) {
+		// numer formatter code from http://stackoverflow.com/questions/1448804/how-to-convert-an-nsstring-into-an-nsnumber
+		NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+		[f setNumberStyle:NSNumberFormatterDecimalStyle];
+		NSString *numberString = [[[hourly_forecast objectAtIndex:i] objectForKey:@"temp"] objectForKey:@"english"];
+		NSNumber *myNumber = [f numberFromString:numberString];
+		[f release];
+		if (myNumber) {
+			[realTempSparkData addObject:myNumber];
+		}
+		else {
+			NSLog(@"NCWunderground: Got bad number string at position %d in hourly forecast. Bad.",i);
+		}
+	}
+	[i_realTempSparkView setDataValues:realTempSparkData];
+	i_realTempEnd.text = [[[last_forecast objectForKey:@"temp"] objectForKey:@"english"] stringByAppendingString:@"° F"];
+	i_realTempHigh.text = [[[i_realTempSparkView dataMaximum] stringValue] stringByAppendingString:@"° F"];
+	i_realTempLow.text = [[[i_realTempSparkView dataMinimum] stringValue] stringByAppendingString:@"° F"];
+
+	i_feelsLikeName.text = @"Feels:";
+	i_feelsLikeNow.text = [[[first_forecast objectForKey:@"feelslike"] objectForKey:@"english"] stringByAppendingString:@"° F"];
+	NSMutableArray *feelsLikeSparkData = [NSMutableArray array];
+	for(int i = 0; i <= intervalLength; ++i) {
+		// numer formatter code from http://stackoverflow.com/questions/1448804/how-to-convert-an-nsstring-into-an-nsnumber
+		NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+		[f setNumberStyle:NSNumberFormatterDecimalStyle];
+		NSString *numberString = [[[hourly_forecast objectAtIndex:i] objectForKey:@"feelslike"] objectForKey:@"english"];
+		NSNumber *myNumber = [f numberFromString:numberString];
+		[f release];
+		if (myNumber) {
+			[feelsLikeSparkData addObject:myNumber];
+		}
+		else {
+			NSLog(@"NCWunderground: Got bad number string at position %d in hourly forecast. Bad.",i);
+		}
+	}
+	[_feelsLikeSparkView setDataValues:feelsLikeSparkData];
+	i_feelsLikeEnd.text = [[[last_forecast objectForKey:@"feelslike"] objectForKey:@"english"] stringByAppendingString:@"° F"];
+	i_feelsLikeHigh.text = [[[_feelsLikeSparkView dataMaximum] stringValue] stringByAppendingString:@"° F"];
+	i_feelsLikeLow.text = [[[_feelsLikeSparkView dataMinimum] stringValue] stringByAppendingString:@"° F"];
+}
+
+- (void)updateBackgroundSubviewValues {
 	// convenience pointer
 	NSDictionary *current_observation = [_savedData objectForKey:@"current_observation"];
 
+	_temperatureLabel.text = [[[current_observation objectForKey:@"temp_f"] stringValue] stringByAppendingString:@"° F"];
+	_feelsLikeLabel.text = [@"Feels Like: " stringByAppendingString:[[current_observation objectForKey:@"feelslike_f"] stringByAppendingString:@"° F"]];
+	_locationLabel.text = [[current_observation objectForKey:@"display_location"] objectForKey:@"full"];
+	_humidityLabel.text = [@"Humidity: " stringByAppendingString:[current_observation objectForKey:@"relative_humidity"]];
+	_windLabel.text = [[@"Wind: " stringByAppendingString:[[current_observation objectForKey:@"wind_mph"] stringValue]]  stringByAppendingString:@" mph"];
+	
+	NSString *wundergroundIconName = [[[[_savedData objectForKey:@"current_observation"] objectForKey:@"icon_url"] lastPathComponent] stringByDeletingPathExtension];
+	NSString *localIconName;
+	localIconName = [[_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
+	_weatherTypeLabel.text = [[_iconMap objectForKey:wundergroundIconName] objectForKey:@"word"];
+	if (localIconName == nil) {
+		wundergroundIconName = [[_savedData objectForKey:@"current_observation"] objectForKey:@"icon"];
+		localIconName = [[_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
+	}
+	_weatherIcon = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:localIconName ofType:@"png"]];
+	_iconView.image=_weatherIcon;
+}
+
+- (void)loadBackgroundLeftSubviews {
+
+	static const float r1off = 5.f;
+	static const float r1height = 15.f;
+	static const float r1y = r1off;
+
+	static const float r2off = 8.f;
+	static const float r2height = 15.f;
+	static const float r2y = r1y+r1height+r2off;
+
+	static const float r3off = 8.f;
+	static const float r3height = 15.f;
+	static const float r3y = r2y+r2height+r3off;
+
+	static const float c0off = 2.f;
+	static const float c0width = 45.f;
+	static const float c0x = c0off;
+
+	static const float c1off = 2.f;
+	static const float c1width = 45.f;
+	static const float c1x = c0x+c0width+c1off;
+
+	static const float c2off = 2.f;
+	static const float c2x = c1x+c1width+c2off;
+
+	static const float c3off = 2.f;
+	static const float c3width = 45.f;
+
+	static const float c4off = 2.f;
+	static const float c4width = 45.f;
+
+	static const float c5off = 2.f;
+	static const float c5width = 45.f;
+
+	static const float rightbuff = 2.f;
+
+	static const float c2width = 316 - c0off - c0width - c1off - c1width - c2off - c3off - c3width - c4off - c4width - c5off - c5width - rightbuff;
+	static const float c3x = c2x+c2width+c3off;
+	static const float c4x = c3x+c3width+c4off;
+	static const float c5x = c4x+c4width+c5off;
+
+	NSArray *backgroundLeftLabelArray = [NSArray arrayWithObjects:
+		(i_titleNow = [[UILabel alloc] init]),
+		(i_titleLength = [[UILabel alloc] init]),
+		(i_titleEnd = [[UILabel alloc] init]),
+		(i_titleHigh = [[UILabel alloc] init]),
+		(i_titleLow = [[UILabel alloc] init]),
+		(i_realTempName = [[UILabel alloc] init]),
+		(i_realTempNow = [[UILabel alloc] init]),
+		(i_realTempEnd = [[UILabel alloc] init]),
+		(i_realTempHigh = [[UILabel alloc] init]),
+		(i_realTempLow = [[UILabel alloc] init]),
+		(i_feelsLikeName = [[UILabel alloc] init]),
+		(i_feelsLikeNow = [[UILabel alloc] init]),
+		(i_feelsLikeEnd = [[UILabel alloc] init]),
+		(i_feelsLikeHigh = [[UILabel alloc] init]),
+		(i_feelsLikeLow = [[UILabel alloc] init]),nil];
+
+	// Initialize all the labels
+	for (UILabel *iterView in backgroundLeftLabelArray) {
+		[self clearLabelSmallWhiteText:iterView];
+		iterView.textAlignment = NSTextAlignmentCenter;
+	}
+
+	// row 1
+	i_titleNow.frame = CGRectMake(c1x,r1y,c1width,r1height);
+	i_titleLength.frame = CGRectMake(c2x,r1y,c2width,r1height);
+	i_titleEnd.frame = CGRectMake(c3x,r1y,c3width,r1height);
+	i_titleHigh.frame = CGRectMake(c4x,r1y,c4width,r1height);
+	i_titleLow.frame = CGRectMake(c5x,r1y,c5width,r1height);
+
+	// row 2
+	i_realTempName.frame = CGRectMake(c0x,r2y,c0width,r2height);
+	i_realTempNow.frame = CGRectMake(c1x,r2y,c1width,r2height);
+	i_realTempSparkView = [[ASBSparkLineView alloc] initWithFrame:CGRectMake(c2x,r2y,c2width,r2height)];
+	i_realTempEnd.frame = CGRectMake(c3x,r2y,c3width,r2height);
+	i_realTempHigh.frame = CGRectMake(c4x,r2y,c4width,r2height);
+	i_realTempLow.frame = CGRectMake(c5x,r2y,c5width,r2height);
+
+	// row 3
+	i_feelsLikeName.frame = CGRectMake(c0x,r3y,c0width,r3height);
+	i_feelsLikeNow.frame = CGRectMake(c1x,r3y,c1width,r3height);
+	_feelsLikeSparkView = [[ASBSparkLineView alloc] initWithFrame:CGRectMake(c2x,r3y,c2width,r3height)];
+	i_feelsLikeEnd.frame = CGRectMake(c3x,r3y,c3width,r3height);
+	i_feelsLikeHigh.frame = CGRectMake(c4x,r3y,c4width,r3height);
+	i_feelsLikeLow.frame = CGRectMake(c5x,r3y,c5width,r3height);
+
+	NSArray *backgroundLeftSparkArray = [NSArray arrayWithObjects: 
+		i_realTempSparkView,_feelsLikeSparkView,nil];
+	// Color all of the spark views
+	for (ASBSparkLineView *iterView in backgroundLeftSparkArray) {
+		iterView.penColor = [UIColor whiteColor];
+		iterView.backgroundColor = [UIColor clearColor];
+		iterView.showCurrentValue = NO;
+	}
+
+
+	[self updateBackgroundLeftSubviewValues];
+
+
+	// add and release all the views
+	for (UILabel *iterView in backgroundLeftLabelArray) {
+		NSLog(@"NCWunderground: adding %@",iterView);
+		[_backgroundLeftView addSubview:iterView];
+		[iterView release];
+	}
+	for (ASBSparkLineView *iterView in backgroundLeftSparkArray) {
+		[_backgroundLeftView addSubview:iterView];
+		[iterView release];
+	}
+}
+
+- (void)loadBackgroundSubviews {
 	float temperatureWidth = (316.f - 8 - [self viewHeight] - 1) / 2;
 	_temperatureLabel = [[UILabel alloc] init];
-	_temperatureLabel.text = [[[current_observation objectForKey:@"temp_f"] stringValue] stringByAppendingString:@"° F"];
-	_temperatureLabel.frame = CGRectMake(2.f,0,temperatureWidth,46.f);
+	_temperatureLabel.frame = CGRectMake(2.f,2.f,temperatureWidth,30.f);
 	[self clearLabelSmallWhiteText:_temperatureLabel];
 	_temperatureLabel.font = [UIFont systemFontOfSize:30.f];
 
 	_feelsLikeLabel = [[UILabel alloc] init];
-	_feelsLikeLabel.text = [@"Feels Like: " stringByAppendingString:[[current_observation objectForKey:@"feelslike_f"] stringByAppendingString:@"° F"]];
-	_feelsLikeLabel.frame = CGRectMake(2.f,48.f,temperatureWidth,23.f);
+	_feelsLikeLabel.frame = CGRectMake(2.f,34.f,temperatureWidth,14.f);
 	[self clearLabelSmallWhiteText:_feelsLikeLabel];
 
-	NSString *wundergroundIconName = [[[[_savedData objectForKey:@"current_observation"] objectForKey:@"icon_url"] lastPathComponent] stringByDeletingPathExtension];
-	NSString *localIconName = [_iconMap objectForKey:wundergroundIconName];
-	NSLog(@"NCWundergroud: iconMap: %@",_iconMap);
-	NSLog(@"NCWunderground: Getting local icon %@ for wunderground icon %@",localIconName,wundergroundIconName);
-	_weatherIcon = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:localIconName ofType:@"png"]];
-	_iconView = [[UIImageView alloc] initWithImage:_weatherIcon];
+	_weatherTypeLabel = [[UILabel alloc] init];
+	_weatherTypeLabel.frame = CGRectMake(2.f,50.f,temperatureWidth,14.f);
+	[self clearLabelSmallWhiteText:_weatherTypeLabel];
+
+	_iconView = [[UIImageView alloc] init];
 	_iconView.frame = CGRectMake(4.f + temperatureWidth,0.f,[self viewHeight],[self viewHeight]);
 
 	float moreInfoWidth = 316.f - 8.f - [self viewHeight] - temperatureWidth;
 	_locationLabel = [[UILabel alloc] init];
-	_locationLabel.text = [[current_observation objectForKey:@"display_location"] objectForKey:@"full"];
-	_locationLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],0,moreInfoWidth,22.f);
+	_locationLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],5.f,moreInfoWidth,15.f);
 	[self clearLabelSmallWhiteText:_locationLabel];
 	_locationLabel.textAlignment = NSTextAlignmentRight;
 
 	_humidityLabel = [[UILabel alloc] init];
-	_humidityLabel.text = [@"Humidity: " stringByAppendingString:[current_observation objectForKey:@"relative_humidity"]];
-	_humidityLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],24.f,moreInfoWidth,23.f);
+	_humidityLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],28.f,moreInfoWidth,15.f);
 	[self clearLabelSmallWhiteText:_humidityLabel];
 	_humidityLabel.textAlignment = NSTextAlignmentRight;
 
 	_windLabel = [[UILabel alloc] init];
-	_windLabel.text = [[@"Wind: " stringByAppendingString:[[current_observation objectForKey:@"wind_mph"] stringValue]]  stringByAppendingString:@" mph"];
-	_windLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],49.f,moreInfoWidth,22.f);
+	_windLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],51.f,moreInfoWidth,15.f);
 	[self clearLabelSmallWhiteText:_windLabel];
 	_windLabel.textAlignment = NSTextAlignmentRight;
 
+	[self updateBackgroundSubviewValues];
+
 	[_backgroundView addSubview:_temperatureLabel];
 	[_backgroundView addSubview:_feelsLikeLabel];
+	[_backgroundView addSubview:_weatherTypeLabel];
 	[_backgroundView addSubview:_iconView];
 	[_backgroundView addSubview:_locationLabel];
 	[_backgroundView addSubview:_humidityLabel];
@@ -101,6 +294,7 @@
 
 	[_temperatureLabel release];
 	[_feelsLikeLabel release];
+	[_weatherTypeLabel release];
 	[_iconView release];
 	[_locationLabel release];
 	[_humidityLabel release];
@@ -111,6 +305,7 @@
 	// Add subviews to _backgroundView (or _view) here.
 	[self loadData];
 	[self loadBackgroundSubviews];
+	[self loadBackgroundLeftSubviews];
 }
 
 - (void)loadPlaceholderView {
@@ -188,7 +383,7 @@
 		[_savedData setObject:@"-87.599506" forKey:@"longitude"];
 	}
 
-	if ([[NSDate date] timeIntervalSince1970] - [[_savedData objectForKey:@"last request"] integerValue] >= 1200) {
+	if ([[NSDate date] timeIntervalSince1970] - [[_savedData objectForKey:@"last request"] integerValue] >= 60) {
 
 		// It's been too long since we last queried the database. Let's do it again.
 		[self downloadData];
@@ -224,6 +419,11 @@
 	[request setHTTPMethod:@"GET"];
 
 	NSData *resultJSON = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+	if (!resultJSON) {
+		NSLog(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
+		[request release];
+		return;
+	}
 	[request release];
 	
 	if(NSClassFromString(@"NSJSONSerialization")) {

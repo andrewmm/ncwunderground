@@ -1,7 +1,7 @@
 #import "BBWeeAppController-Protocol.h"
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UITableView.h>
-//#import "ammNCWundergroundTableViewSource.h"
+#import "ASBSparkLineView.h"
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
@@ -12,9 +12,31 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 	UIImageView *_backgroundView;
 	UIImageView *_backgroundRightView;
 
-	//UITableView *_temperatureView;
+	// background left subviews and related
+	UILabel *i_titleNow;
+	UILabel *i_titleLength;
+	UILabel *i_titleEnd;
+	UILabel *i_titleHigh;
+	UILabel *i_titleLow;
+
+	UILabel *i_realTempName;
+	UILabel *i_realTempNow;
+	ASBSparkLineView *i_realTempSparkView;
+	UILabel *i_realTempEnd;
+	UILabel *i_realTempHigh;
+	UILabel *i_realTempLow;
+
+	UILabel *i_feelsLikeName;
+	UILabel *i_feelsLikeNow;
+	ASBSparkLineView *_feelsLikeSparkView;
+	UILabel *i_feelsLikeEnd;
+	UILabel *i_feelsLikeHigh;
+	UILabel *i_feelsLikeLow;
+
+	// background subviews
 	UILabel *_temperatureLabel;
 	UILabel *_feelsLikeLabel;
+	UILabel *_weatherTypeLabel;
 	UIImage *_weatherIcon;
 	UIImageView *_iconView;
 	UILabel *_locationLabel;
@@ -39,6 +61,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)downloadData;
 - (void)useUpdatedLoc;
 - (void)clearLabelSmallWhiteText:(UILabel *)label;
+- (void)updateBackgroundLeftSubviewValues;
+- (void)updateBackgroundSubviewValues;
+- (void)loadBackgroundLeftSubviews;
 - (void)loadBackgroundSubviews;
 
 @end
