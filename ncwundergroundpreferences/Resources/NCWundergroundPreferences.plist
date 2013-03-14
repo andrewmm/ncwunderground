@@ -32,7 +32,7 @@
 			<key>defaults</key>
 			<string>com.amm.ncwunderground</string>
 			<key>key</key>
-			<string>updateMinutes</string>
+			<string>updateSeconds</string>
 			<key>alignment</key>
 			<string>3</string>
 		</dict>
