@@ -6,24 +6,54 @@
 	<array>
 		<dict>
 			<key>cell</key>
-			<string>PSGroupCell</string>
+			<string>PSSliderCell</string>
+			<key>default</key>
+			<integer>5</integer>
+			<key>min</key>
+			<integer>0</integer>
+			<key>max</key>
+			<integer>20</integer>
+			<key>showValue</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.amm.ncwunderground</string>
+			<key>key</key>
+			<string>updateMinutes</string>
 			<key>label</key>
-			<string>NCWundergroundPreferences First Page</string>
+			<string>Update Interval (min)</string>
 		</dict>
 		<dict>
 			<key>cell</key>
-			<string>PSSwitchCell</string>
+			<string>PSSliderCell</string>
 			<key>default</key>
+			<integer>12</integer>
+			<key>min</key>
+			<integer>1</integer>
+			<key>max</key>
+			<integer>36</integer>
+			<key>showValue</key>
 			<true/>
 			<key>defaults</key>
-			<string>com.amm.ncwundergroundpreferences</string>
+			<string>com.amm.ncwunderground</string>
 			<key>key</key>
-			<string>AwesomeSwitch1</string>
+			<string>hourlyLength</string>
 			<key>label</key>
-			<string>Awesome Switch 1</string>
+			<string>Hourly Forecast Length</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.amm.ncwunderground</string>
+			<key>key</key>
+			<string>APIKey</string>
+			<key>label</key>
+			<string>API Key</string>
 		</dict>
 	</array>
 	<key>title</key>
-	<string>NCWundergroundPreferences</string>
+	<string>NC Weather Underground</string>
 </dict>
 </plist>
