@@ -1,0 +1,10 @@
+{
+    entry = {
+	bundle = NCWundergroundPreferences;
+	cell = PSLinkCell;
+	detail = NCWundergroundPreferencesListController;
+	icon = NCWundergroundPreferences.png;
+	isController = 1;
+	label = NCWundergroundPreferences;
+    };
+}
