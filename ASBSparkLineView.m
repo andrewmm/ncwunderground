@@ -311,7 +311,6 @@ static inline float yPlotValue(float maxHeight, float yInc, float val, float min
 
 // draws all the elements of this view
 - (void)drawRect:(CGRect)rect {
-    NSLog(@"ASBSparkLineView: starting draw");
 
     CGContextRef context = UIGraphicsGetCurrentContext();
 
@@ -378,7 +377,6 @@ static inline float yPlotValue(float maxHeight, float yInc, float val, float min
     const CGFloat fullHeight = CGRectGetHeight(self.bounds);
     const CGFloat sparkWidth  = (fullWidth  - (2 * GRAPH_X_BORDER)) * graphFrac;
     const CGFloat sparkHeight = fullHeight - (2 * GRAPH_Y_BORDER);
-    NSLog(@"ASBSparkLineView: full height: %f, spark height: %f",fullHeight,sparkHeight);
 
     // defaults: upper and lower graph bounds are data maximum and minimum, respectively
     float graphMax = dataMax;
