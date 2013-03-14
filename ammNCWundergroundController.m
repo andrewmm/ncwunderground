@@ -410,7 +410,11 @@
 	NSError * error;
 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	NSMutableString *urlString = [NSMutableString stringWithString:@"http://api.wunderground.com/api/8e4db8cccf9828e3/conditions/hourly/forecast10day/q/"];
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	NSString *apiKey = [defaults objectForKey:@"APIKey"];
+	NSMutableString *urlString = [NSMutableString stringWithString:@"http://api.wunderground.com/api/"];
+	[urlString appendString:apiKey];
+	[urlString appendString:@"/conditions/hourly/forecast10day/q/"];
 	[urlString appendString:[_savedData objectForKey:@"latitude"]];
 	[urlString appendString:@","];
 	[urlString appendString:[_savedData objectForKey:@"longitude"]];
