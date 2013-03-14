@@ -389,8 +389,17 @@
 		NSLog(@"NCWunderground: No save file found.");
 	}
 
-	if ([[NSDate date] timeIntervalSince1970] - [[_savedData objectForKey:@"last request"] integerValue] >= 60) {
+	NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+	NSNumber *updateSeconds = [defaultsDom objectForKey:@"updateSeconds"];
+	static const int updateLength;
+	if (updateSeconds) {
+		updateLength = [updateSeconds integerValue];
+	}
+	else {
+		updateLength = 300; // default to 5 minutes
+	}
 
+	if ([[NSDate date] timeIntervalSince1970] - [[_savedData objectForKey:@"last request"] integerValue] >= updateLength) {
 		// It's been too long since we last queried the database. Let's do it again.
 		[self downloadData];
 	}
