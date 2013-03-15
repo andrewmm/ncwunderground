@@ -65,15 +65,32 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 // new functions
-- (void)loadData;
-- (void)downloadData;
-- (void)startURLRequest;
 - (void)clearLabelSmallWhiteText:(UILabel *)label;
+
 - (void)updateBackgroundLeft2SubviewValues;
 - (void)updateBackgroundLeftSubviewValues;
 - (void)updateBackgroundSubviewValues;
+
 - (void)loadBackgroundLeft2Subviews;
 - (void)loadBackgroundLeftSubviews;
 - (void)loadBackgroundSubviews;
+
+- (void)updateSubviewValues; // calls all the update*Values methods above
+- (void)loadSubviews; // calls all the load*Subviews methods above
+
+- (void)loadFullView;
+- (void)loadPlaceholderView;
+- (void)unloadView;
+
+- (float)viewHeight;
+
+- (void)loadData;
+- (void)downloadData;
+- (void)startURLRequest; // should only run inside backgroundQueue
+
+- (void)locationManager:(CLLocationManager *)manage didUpdateLocations:(NSArray *)locations;
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *) error;
+
+
 
 @end
