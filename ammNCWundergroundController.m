@@ -2,40 +2,37 @@
 
 @implementation ammNCWundergroundController
 
-@synthesize view = _view;
-@synthesize saveFile = _saveFile;
-
 + (void)initialize {
     _ammNCWundergroundWeeAppBundle = [[NSBundle bundleForClass:[self class]] retain];
 }
 
 - (id)init {
     if((self = [super init]) != nil) {
-        _savedData = [[NSMutableDictionary alloc] init];
+        i_savedData = [[NSMutableDictionary alloc] init];
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        _saveFile = [[NSString alloc] initWithString:[[paths objectAtIndex:0] stringByAppendingString:@"/amm-wunderground-save.plist"]];
+        i_saveFile = [[NSString alloc] initWithString:[[paths objectAtIndex:0] stringByAppendingString:@"/amm-wunderground-save.plist"]];
         
-        _locationManager = [[CLLocationManager alloc] init];
-        _locationUpdated = NO;
+        i_locationManager = [[CLLocationManager alloc] init];
+        i_locationUpdated = NO;
         
-        _iconMap = [[NSDictionary alloc] initWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"amm-wunderground-icon-map" ofType:@"plist"]];
+        i_iconMap = [[NSDictionary alloc] initWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"amm-wunderground-icon-map" ofType:@"plist"]];
 
         backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.urlqueue", NULL);
     } return self;
 }
 
 - (void)dealloc { 
-    [_view release];
-    [_backgroundLeftView2 release];
-    [_backgroundLeftView release];
-    [_backgroundView release];
-    [_backgroundRightView release];
+    [i_view release];
+    [i_backgroundLeftView2 release];
+    [i_backgroundLeftView release];
+    [i_backgroundView release];
+    [i_backgroundRightView release];
 
-    [_savedData release];
-    [_saveFile release];
-    [_locationManager release];
+    [i_savedData release];
+    [i_saveFile release];
+    [i_locationManager release];
 
-    [_iconMap release];
+    [i_iconMap release];
 
     dispatch_release(backgroundQueue);
 
@@ -49,7 +46,7 @@
 }
 
 - (void)updateBackgroundLeft2SubviewValues {
-    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[[_savedData objectForKey:@"last request"] doubleValue]];
+    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[[i_savedData objectForKey:@"last request"] doubleValue]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"hh:mm:ss a"];
     //NSString *lastRefreshedString = [lastRefreshedDate descriptionWithCalendarFormat:@"%H:%M" timeZone:nil
@@ -57,9 +54,9 @@
     [i_lastRefreshed setText:[@"Last Refreshed: " stringByAppendingString:[dateFormatter stringFromDate:lastRefreshedDate]]];
     [dateFormatter release];
 
-    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[[_savedData objectForKey:@"latitude"] doubleValue]
-        longitude:[[_savedData objectForKey:@"longitude"] doubleValue]];
-    NSDictionary *stationInfo = [[_savedData objectForKey:@"current_observation"]
+    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[[i_savedData objectForKey:@"latitude"] doubleValue]
+        longitude:[[i_savedData objectForKey:@"longitude"] doubleValue]];
+    NSDictionary *stationInfo = [[i_savedData objectForKey:@"current_observation"]
         objectForKey:@"observation_location"];
     CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[[stationInfo objectForKey:@"latitude"] doubleValue]
         longitude:[[stationInfo objectForKey:@"longitude"] doubleValue]];
@@ -81,7 +78,7 @@
     }
 
     // convenience pointers
-    NSArray *hourly_forecast = [_savedData objectForKey:@"hourly_forecast"];
+    NSArray *hourly_forecast = [i_savedData objectForKey:@"hourly_forecast"];
     NSDictionary *first_forecast = [hourly_forecast objectAtIndex:0];
     NSDictionary *last_forecast = [hourly_forecast objectAtIndex:(intervalLength-1)];
 
@@ -142,32 +139,32 @@
             NSLog(@"NCWunderground: Got bad number string at position %d in hourly forecast. Bad.",i);
         }
     }
-    [_feelsLikeSparkView setDataValues:feelsLikeSparkData];
+    [i_feelsLikeSparkView setDataValues:feelsLikeSparkData];
     i_feelsLikeEnd.text = [[[last_forecast objectForKey:@"feelslike"] objectForKey:@"english"] stringByAppendingString:@"° F"];
-    i_feelsLikeHigh.text = [[[_feelsLikeSparkView dataMaximum] stringValue] stringByAppendingString:@"° F"];
-    i_feelsLikeLow.text = [[[_feelsLikeSparkView dataMinimum] stringValue] stringByAppendingString:@"° F"];
+    i_feelsLikeHigh.text = [[[i_feelsLikeSparkView dataMaximum] stringValue] stringByAppendingString:@"° F"];
+    i_feelsLikeLow.text = [[[i_feelsLikeSparkView dataMinimum] stringValue] stringByAppendingString:@"° F"];
 }
 
 - (void)updateBackgroundSubviewValues {
     // convenience pointer
-    NSDictionary *current_observation = [_savedData objectForKey:@"current_observation"];
+    NSDictionary *current_observation = [i_savedData objectForKey:@"current_observation"];
 
-    _temperatureLabel.text = [[[current_observation objectForKey:@"temp_f"] stringValue] stringByAppendingString:@"° F"];
-    _feelsLikeLabel.text = [@"Feels Like: " stringByAppendingString:[[current_observation objectForKey:@"feelslike_f"] stringByAppendingString:@"° F"]];
-    _locationLabel.text = [[current_observation objectForKey:@"display_location"] objectForKey:@"full"];
-    _humidityLabel.text = [@"Humidity: " stringByAppendingString:[current_observation objectForKey:@"relative_humidity"]];
-    _windLabel.text = [[@"Wind: " stringByAppendingString:[[current_observation objectForKey:@"wind_mph"] stringValue]]  stringByAppendingString:@" mph"];
+    i_temperatureLabel.text = [[[current_observation objectForKey:@"temp_f"] stringValue] stringByAppendingString:@"° F"];
+    i_feelsLikeLabel.text = [@"Feels Like: " stringByAppendingString:[[current_observation objectForKey:@"feelslike_f"] stringByAppendingString:@"° F"]];
+    i_locationLabel.text = [[current_observation objectForKey:@"display_location"] objectForKey:@"full"];
+    i_humidityLabel.text = [@"Humidity: " stringByAppendingString:[current_observation objectForKey:@"relative_humidity"]];
+    i_windLabel.text = [[@"Wind: " stringByAppendingString:[[current_observation objectForKey:@"wind_mph"] stringValue]]  stringByAppendingString:@" mph"];
     
-    NSString *wundergroundIconName = [[[[_savedData objectForKey:@"current_observation"] objectForKey:@"icon_url"] lastPathComponent] stringByDeletingPathExtension];
+    NSString *wundergroundIconName = [[[[i_savedData objectForKey:@"current_observation"] objectForKey:@"icon_url"] lastPathComponent] stringByDeletingPathExtension];
     NSString *localIconName;
-    localIconName = [[_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
-    _weatherTypeLabel.text = [[_iconMap objectForKey:wundergroundIconName] objectForKey:@"word"];
+    localIconName = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
+    i_weatherTypeLabel.text = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"word"];
     if (localIconName == nil) {
-        wundergroundIconName = [[_savedData objectForKey:@"current_observation"] objectForKey:@"icon"];
-        localIconName = [[_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
+        wundergroundIconName = [[i_savedData objectForKey:@"current_observation"] objectForKey:@"icon"];
+        localIconName = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
     }
-    _weatherIcon = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:localIconName ofType:@"png"]];
-    _iconView.image=_weatherIcon;
+    i_weatherIcon = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:localIconName ofType:@"png"]];
+    i_iconView.image=i_weatherIcon;
 }
 
 - (void)loadBackgroundLeft2Subviews {
@@ -191,7 +188,7 @@
     [i_configureInSettings setFrame:CGRectMake(2,r3y,312,r3height)];
 
     for (UILabel *iterView in backgroundLeft2LabelArray) {
-        [_backgroundLeftView2 addSubview:iterView];
+        [i_backgroundLeftView2 addSubview:iterView];
         [iterView release];
     }
 }
@@ -253,13 +250,13 @@
     // row 3
     i_feelsLikeName.frame = CGRectMake(c0x,r3y,c0width,r3height);
     i_feelsLikeNow.frame = CGRectMake(c1x,r3y,c1width,r3height);
-    _feelsLikeSparkView = [[ASBSparkLineView alloc] initWithFrame:CGRectMake(c2x,r3y,c2width,r3height)];
+    i_feelsLikeSparkView = [[ASBSparkLineView alloc] initWithFrame:CGRectMake(c2x,r3y,c2width,r3height)];
     i_feelsLikeEnd.frame = CGRectMake(c3x,r3y,c3width,r3height);
     i_feelsLikeHigh.frame = CGRectMake(c4x,r3y,c4width,r3height);
     i_feelsLikeLow.frame = CGRectMake(c5x,r3y,c5width,r3height);
 
     NSArray *backgroundLeftSparkArray = [NSArray arrayWithObjects: 
-        i_realTempSparkView,_feelsLikeSparkView,nil];
+        i_realTempSparkView,i_feelsLikeSparkView,nil];
     // Color all of the spark views
     for (ASBSparkLineView *iterView in backgroundLeftSparkArray) {
         iterView.penColor = [UIColor whiteColor];
@@ -270,50 +267,50 @@
 
     // add and release all the views
     for (UILabel *iterView in backgroundLeftLabelArray) {
-        [_backgroundLeftView addSubview:iterView];
+        [i_backgroundLeftView addSubview:iterView];
         [iterView release];
     }
     for (ASBSparkLineView *iterView in backgroundLeftSparkArray) {
-        [_backgroundLeftView addSubview:iterView];
+        [i_backgroundLeftView addSubview:iterView];
         [iterView release];
     }
 }
 
 - (void)loadBackgroundSubviews {
     NSArray *backgroundLabelArrayLeftCol = [NSArray arrayWithObjects:
-        (_temperatureLabel = [[UILabel alloc] init]),
-        (_feelsLikeLabel = [[UILabel alloc] init]),
-        (_weatherTypeLabel = [[UILabel alloc] init]),nil];
+        (i_temperatureLabel = [[UILabel alloc] init]),
+        (i_feelsLikeLabel = [[UILabel alloc] init]),
+        (i_weatherTypeLabel = [[UILabel alloc] init]),nil];
     NSArray *backgroundLabelArrayRightCol = [NSArray arrayWithObjects:
-        (_locationLabel = [[UILabel alloc] init]),
-        (_humidityLabel = [[UILabel alloc] init]),
-        (_windLabel = [[UILabel alloc] init]),nil];
+        (i_locationLabel = [[UILabel alloc] init]),
+        (i_humidityLabel = [[UILabel alloc] init]),
+        (i_windLabel = [[UILabel alloc] init]),nil];
 
     float temperatureWidth = (316.f - 8 - [self viewHeight] - 1) / 2;
     float moreInfoWidth = 316.f - 8.f - [self viewHeight] - temperatureWidth;
 
-    _temperatureLabel.frame = CGRectMake(2.f,2.f,temperatureWidth,30.f);
-    _feelsLikeLabel.frame = CGRectMake(2.f,34.f,temperatureWidth,14.f);
-    _weatherTypeLabel.frame = CGRectMake(2.f,50.f,temperatureWidth,14.f);
-    _locationLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],5.f,moreInfoWidth,15.f);
-    _humidityLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],28.f,moreInfoWidth,15.f);
-    _windLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],51.f,moreInfoWidth,15.f);
+    i_temperatureLabel.frame = CGRectMake(2.f,2.f,temperatureWidth,30.f);
+    i_feelsLikeLabel.frame = CGRectMake(2.f,34.f,temperatureWidth,14.f);
+    i_weatherTypeLabel.frame = CGRectMake(2.f,50.f,temperatureWidth,14.f);
+    i_locationLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],5.f,moreInfoWidth,15.f);
+    i_humidityLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],28.f,moreInfoWidth,15.f);
+    i_windLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],51.f,moreInfoWidth,15.f);
 
-    _iconView = [[UIImageView alloc] init];
-    _iconView.frame = CGRectMake(4.f + temperatureWidth,0.f,[self viewHeight],[self viewHeight]);
+    i_iconView = [[UIImageView alloc] init];
+    i_iconView.frame = CGRectMake(4.f + temperatureWidth,0.f,[self viewHeight],[self viewHeight]);
 
     for (UILabel *iterView in backgroundLabelArrayRightCol) {
         [iterView setTextAlignment:NSTextAlignmentRight];
     }
     for (UILabel *iterView in [backgroundLabelArrayLeftCol arrayByAddingObjectsFromArray:backgroundLabelArrayRightCol]) {
         [self clearLabelSmallWhiteText:iterView];
-        [_backgroundView addSubview:iterView];
+        [i_backgroundView addSubview:iterView];
         [iterView release];
     }
-    _temperatureLabel.font = [UIFont systemFontOfSize:30.f];
+    i_temperatureLabel.font = [UIFont systemFontOfSize:30.f];
     
-    [_backgroundView addSubview:_iconView];
-    [_iconView release];
+    [i_backgroundView addSubview:i_iconView];
+    [i_iconView release];
 }
 
 - (void)updateSubviewValues {
@@ -329,7 +326,7 @@
 }
 
 - (void)loadFullView {
-    // Add subviews to _backgroundView (or _view) here.
+    // Add subviews to i_backgroundView (or i_view) here.
     [self loadSubviews];
     [self loadData];
 }
@@ -339,44 +336,44 @@
     // data loading operations.
     //
     // All widgets are 316 points wide. Image size calculations match those of the Stocks widget.
-    _view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {316.f, [self viewHeight]}}];
-    _view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    _view.contentSize = CGSizeMake(1280.f,[self viewHeight]);
-    _view.pagingEnabled = YES;
-    _view.contentOffset = CGPointMake(640.f,0.f);
-    _view.showsHorizontalScrollIndicator = NO;
+    i_view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {316.f, [self viewHeight]}}];
+    i_view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    i_view.contentSize = CGSizeMake(1280.f,[self viewHeight]);
+    i_view.pagingEnabled = YES;
+    i_view.contentOffset = CGPointMake(640.f,0.f);
+    i_view.showsHorizontalScrollIndicator = NO;
 
     UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
     UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2.f) topCapHeight:floorf(bgImg.size.height / 2.f)];
 
     NSArray *backgroundViews = [NSArray arrayWithObjects:
-        (_backgroundLeftView2 = [[UIImageView alloc] initWithImage:stretchableBgImg]),
-        (_backgroundLeftView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
-        (_backgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
-        (_backgroundRightView = [[UIImageView alloc] initWithImage:stretchableBgImg]),nil];
+        (i_backgroundLeftView2 = [[UIImageView alloc] initWithImage:stretchableBgImg]),
+        (i_backgroundLeftView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
+        (i_backgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
+        (i_backgroundRightView = [[UIImageView alloc] initWithImage:stretchableBgImg]),nil];
 
-    _backgroundLeftView2.frame = CGRectMake(2,0,312.f,[self viewHeight]);
-    _backgroundLeftView.frame = CGRectMake(322.f,0,312.f,[self viewHeight]);
-    _backgroundView.frame = CGRectMake(642.f,0, 312.f,[self viewHeight]);
-    _backgroundRightView.frame = CGRectMake(962.f,0,312.f,[self viewHeight]);
+    i_backgroundLeftView2.frame = CGRectMake(2,0,312.f,[self viewHeight]);
+    i_backgroundLeftView.frame = CGRectMake(322.f,0,312.f,[self viewHeight]);
+    i_backgroundView.frame = CGRectMake(642.f,0, 312.f,[self viewHeight]);
+    i_backgroundRightView.frame = CGRectMake(962.f,0,312.f,[self viewHeight]);
 
     for (UIImageView *iterView in backgroundViews) {
         iterView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [_view addSubview:iterView];
+        [i_view addSubview:iterView];
     }
 }
 
 - (void)unloadView {
-    [_view release];
-    _view = nil;
-    [_backgroundLeftView2 release];
-    _backgroundLeftView2 = nil;
-    [_backgroundLeftView release];
-    _backgroundLeftView = nil;
-    [_backgroundView release];
-    _backgroundView = nil;
-    [_backgroundRightView release];
-    _backgroundRightView = nil;
+    [i_view release];
+    i_view = nil;
+    [i_backgroundLeftView2 release];
+    i_backgroundLeftView2 = nil;
+    [i_backgroundLeftView release];
+    i_backgroundLeftView = nil;
+    [i_backgroundView release];
+    i_backgroundView = nil;
+    [i_backgroundRightView release];
+    i_backgroundRightView = nil;
     // Destroy any additional subviews you added here. Don't waste memory :(.
 }
 
@@ -390,13 +387,13 @@
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
-    if ([fileManager fileExistsAtPath:_saveFile]) {
+    if ([fileManager fileExistsAtPath:i_saveFile]) {
         NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] initWithContentsOfFile:[self saveFile]];
-        [_savedData addEntriesFromDictionary:tempDict];
+        [i_savedData addEntriesFromDictionary:tempDict];
         [tempDict release];
     }
     
-    if ([_savedData objectForKey:@"last request"] == nil) {
+    if ([i_savedData objectForKey:@"last request"] == nil) {
         NSLog(@"NCWunderground: No save file found.");
     }
     else {
@@ -414,7 +411,7 @@
         updateLength = 300; // default to 5 minutes
     }
 
-    if ([_savedData objectForKey:@"last request"] == nil || [[NSDate date] timeIntervalSince1970] - [[_savedData objectForKey:@"last request"] integerValue] >= updateLength) {
+    if ([i_savedData objectForKey:@"last request"] == nil || [[NSDate date] timeIntervalSince1970] - [[i_savedData objectForKey:@"last request"] integerValue] >= updateLength) {
         // It's been too long since we last queried the database. Let's do it again.
         [self downloadData];
     }
@@ -425,10 +422,10 @@
 
 - (void) downloadData {
     // Here we tell it to start looking for the location. Once we have the location, the locationManager:didUpdateToLocation method handles the rest of the download work
-    _locationManager.delegate = self;
-    _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-    _locationUpdated = NO;
-    [_locationManager startUpdatingLocation];
+    i_locationManager.delegate = self;
+    i_locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    i_locationUpdated = NO;
+    [i_locationManager startUpdatingLocation];
 }
 
 // This should only ever run inside the backgroundQueue
@@ -453,9 +450,9 @@
     NSMutableString *urlString = [NSMutableString stringWithString:@"http://api.wunderground.com/api/"];
     [urlString appendString:apiKey];
     [urlString appendString:@"/conditions/hourly/forecast10day/q/"];
-    [urlString appendString:[_savedData objectForKey:@"latitude"]];
+    [urlString appendString:[i_savedData objectForKey:@"latitude"]];
     [urlString appendString:@","];
-    [urlString appendString:[_savedData objectForKey:@"longitude"]];
+    [urlString appendString:[i_savedData objectForKey:@"longitude"]];
     [urlString appendString:@".json"];
     NSLog(@"NCWunderground: Making request with url %@",urlString);
     [request setURL:[NSURL URLWithString:urlString]];
@@ -483,7 +480,7 @@
         if ([jsonDict isKindOfClass:[NSDictionary class]]) {
             NSLog(@"NCWunderground: parsing data.");
             // update last-request time
-            [_savedData setObject:[NSNumber numberWithInteger:[[NSDate date] timeIntervalSince1970]] forKey:@"last request"];
+            [i_savedData setObject:[NSNumber numberWithInteger:[[NSDate date] timeIntervalSince1970]] forKey:@"last request"];
 
             // convenience pointers
             NSDictionary *currentObservation = [jsonDict objectForKey:@"current_observation"];
@@ -491,21 +488,21 @@
             NSDictionary *displayLocation = [currentObservation objectForKey:@"display_location"];
 
             // Use Wunderground's parsing of lat/long into city/state/country
-            [_savedData setObject:[displayLocation objectForKey:@"city"] forKey:@"city"];
-            [_savedData setObject:[displayLocation objectForKey:@"state"] forKey:@"state"];
-            [_savedData setObject:[displayLocation objectForKey:@"country"] forKey:@"country"];
+            [i_savedData setObject:[displayLocation objectForKey:@"city"] forKey:@"city"];
+            [i_savedData setObject:[displayLocation objectForKey:@"state"] forKey:@"state"];
+            [i_savedData setObject:[displayLocation objectForKey:@"country"] forKey:@"country"];
 
             // import current observations, daily forecast, and hourly forecast
-            [_savedData setObject:currentObservation forKey:@"current_observation"];
-            [_savedData setObject:[dailyForecast objectForKey:@"forecastday"] forKey:@"forecastday"];
-            [_savedData setObject:[jsonDict objectForKey:@"hourly_forecast"] forKey:@"hourly_forecast"];
+            [i_savedData setObject:currentObservation forKey:@"current_observation"];
+            [i_savedData setObject:[dailyForecast objectForKey:@"forecastday"] forKey:@"forecastday"];
+            [i_savedData setObject:[jsonDict objectForKey:@"hourly_forecast"] forKey:@"hourly_forecast"];
 
             // save data to disk for later use
-            [_savedData writeToFile:[self saveFile] atomically:YES];
+            [i_savedData writeToFile:[self saveFile] atomically:YES];
             NSLog(@"NCWunderground: data saved to disk at %@",[self saveFile]);
 
             // update the views now that we have new data. has to be done on main queue
-            // this should be the last thing done on the background queue, because the main queue needs to use _savedData
+            // this should be the last thing done on the background queue, because the main queue needs to use i_savedData
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 [self updateSubviewValues];
             });
@@ -525,11 +522,11 @@
 
     NSLog(@"NCWunderground: didUpdateToLocation: %@", [locations lastObject]);
     if (locations != nil) {
-        [_savedData setObject:[NSString stringWithFormat:@"%.8f", [[locations lastObject] coordinate].latitude] forKey:@"latitude"];
-        [_savedData setObject:[NSString stringWithFormat:@"%.8f", [[locations lastObject] coordinate].longitude] forKey:@"longitude"];
-        if (_locationUpdated == NO) {
-            _locationUpdated = YES;
-            [_locationManager stopUpdatingLocation];
+        [i_savedData setObject:[NSString stringWithFormat:@"%.8f", [[locations lastObject] coordinate].latitude] forKey:@"latitude"];
+        [i_savedData setObject:[NSString stringWithFormat:@"%.8f", [[locations lastObject] coordinate].longitude] forKey:@"longitude"];
+        if (i_locationUpdated == NO) {
+            i_locationUpdated = YES;
+            [i_locationManager stopUpdatingLocation];
 
             // start a URL request in the backgroundQueue
             dispatch_async(backgroundQueue, ^(void) {
