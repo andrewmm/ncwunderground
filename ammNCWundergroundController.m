@@ -379,7 +379,14 @@
     // data loading operations.
     //
     // All widgets are 316 points wide. Image size calculations match those of the Stocks widget.
-    float screenWidth = [UIScreen mainScreen].bounds.size.width;
+
+    UIDevice *device = [UIDevice currentDevice];
+    [device beginGeneratingDeviceOrientationNotifications];
+    float screenWidth;
+    if (UIDeviceOrientationIsPortrait(device.orientation))
+        screenWidth = [UIScreen mainScreen].bounds.size.width;
+    else
+        screenWidth = [UIScreen mainScreen].bounds.size.height;
     NSLog(@"NCWunderground: screen width is %f",screenWidth);
 
     i_view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {316.f, [self viewHeight]}}];
