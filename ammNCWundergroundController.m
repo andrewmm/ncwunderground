@@ -76,7 +76,7 @@
         [[stationInfo objectForKey:@"longitude"] doubleValue]];
     NSLog(@"Calculating distance between %@ and %@.",userLocation,stationLocation);
     [i_distanceToStation setText:[NSString stringWithFormat:
-        @"Distance From Station: %f mi",([stationLocation distanceFromLocation:
+        @"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:
             userLocation] / 1609.344)]];
 
     // "Configure" label
