@@ -2,6 +2,8 @@
 
 @implementation ammNCWundergroundController
 
+@synthesize view=i_view;
+
 + (void)initialize {
     _ammNCWundergroundWeeAppBundle = [[NSBundle bundleForClass:[self class]] retain];
 }
@@ -90,8 +92,7 @@
         intervalLength = [hourlyLength integerValue];
     }
     else {
-        NSLog(@"NCWunderground: user defaults contain no hourly forecast
-            length field. Defaulting to 12 hours.");
+        NSLog(@"NCWunderground: user defaults contain no hourly forecast length field. Defaulting to 12 hours.");
         intervalLength = 12;
     }
 
@@ -432,7 +433,7 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
     if ([fileManager fileExistsAtPath:i_saveFile]) {
-        NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] initWithContentsOfFile:[self saveFile]];
+        NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] initWithContentsOfFile:i_saveFile];
         [i_savedData addEntriesFromDictionary:tempDict];
         [tempDict release];
     }
@@ -542,8 +543,8 @@
             [i_savedData setObject:[jsonDict objectForKey:@"hourly_forecast"] forKey:@"hourly_forecast"];
 
             // save data to disk for later use
-            [i_savedData writeToFile:[self saveFile] atomically:YES];
-            NSLog(@"NCWunderground: data saved to disk at %@",[self saveFile]);
+            [i_savedData writeToFile:i_saveFile atomically:YES];
+            NSLog(@"NCWunderground: data saved to disk at %@",i_saveFile);
 
             // update the views now that we have new data. has to be done on main queue
             // this should be the last thing done on the background queue, because the main queue needs to use i_savedData
