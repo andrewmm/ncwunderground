@@ -1,5 +1,21 @@
 #import "ammNCWundergroundController.h"
 
+// Grid specifically designed for backgroundLeft (hourly forecast) views. useful elsewhere
+static const float r1off = 5.f; static const float r1height = 15.f; static const float r1y = r1off;
+static const float r2off = 8.f; static const float r2height = 15.f; static const float r2y = r1y+r1height+r2off;
+static const float r3off = 8.f; static const float r3height = 15.f; static const float r3y = r2y+r2height+r3off;
+static const float c0off = 2.f; static const float c0width = 45.f; static const float c0x = c0off;
+static const float c1off = 2.f; static const float c1width = 45.f; static const float c1x = c0x+c0width+c1off;
+static const float c2off = 2.f; static const float c2x = c1x+c1width+c2off;
+static const float c3off = 2.f; static const float c3width = 45.f;
+static const float c4off = 2.f; static const float c4width = 45.f;
+static const float c5off = 2.f; static const float c5width = 45.f;
+static const float rightbuff = 2.f;
+static const float c2width = 316 - c0off - c0width - c1off - c1width - c2off - c3off - c3width - c4off - c4width - c5off - c5width - rightbuff;
+static const float c3x = c2x+c2width+c3off;
+static const float c4x = c3x+c3width+c4off;
+static const float c5x = c4x+c4width+c5off;
+
 @implementation ammNCWundergroundController
 @synthesize view = _view;
 @synthesize saveFile = _saveFile;
@@ -42,6 +58,23 @@
     label.backgroundColor = [UIColor clearColor];
     label.textColor = [UIColor whiteColor];
     label.font = [UIFont systemFontOfSize:14.f];
+}
+
+- (void)updateBackgroundLeft2SubviewValues {
+    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[_savedData objectForKey:@"last request"]];
+    NSString *lastRefreshedString = [lastRefreshedDate descriptionWithCalendarFormat:@"%H:%M" timeZone:nil
+        locale:[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]];
+    [i_lastRefreshed setText:[@"Last Refreshed: " stringByAppendingString:lastRefreshedString]];
+
+    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[_savedData objectForKey:@"latitude"]
+        longitude:[_savedData objectForKey:@"longitude"]];
+    NSDictionary *stationInfo = [[_savedData objectForKey:@"current_observation"]
+        objectForKey:@"observation_location"];
+    CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[stationInfo objectForKey:@"latitude"]
+        longitude:[stationInfo objectForKey:@"longitude"]];
+    [i_distanceToStation setText:[NSString stringWithFormat:@"Distance From Station: %d mi",([stationLocation distanceFromLocation:userLocation] / 1609.344)]];
+
+    [i_configureInSettings setText:@"Configure hourly forecast length, refresh delay, and API Key in Settings."];
 }
 
 - (void)updateBackgroundLeftSubviewValues {
@@ -146,22 +179,29 @@
     _iconView.image=_weatherIcon;
 }
 
-- (void)loadBackgroundLeftSubviews {
+- (void)loadBackgroundLeft2Subviews {
+    // build a convenience array while alloc'ing and init'ing
+    NSArray *backgroundLeft2LabelArray = [NSArray arrayWithObjects:
+        (i_lastRefreshed = [[UILabel alloc] init]),
+        (i_distanceToStation = [[UILabel alloc] init]),
+        (i_configureInSettings = [[UILabel alloc] init]),nil];
+    
+    // basic tasks on all the labels
+    for (UILabel *iterView in backgroundLeft2LabelArray) {
+        [self clearLabelSmallWhiteText:iterView];
+    }
 
-    static const float r1off = 5.f; static const float r1height = 15.f; static const float r1y = r1off;
-    static const float r2off = 8.f; static const float r2height = 15.f; static const float r2y = r1y+r1height+r2off;
-    static const float r3off = 8.f; static const float r3height = 15.f; static const float r3y = r2y+r2height+r3off;
-    static const float c0off = 2.f; static const float c0width = 45.f; static const float c0x = c0off;
-    static const float c1off = 2.f; static const float c1width = 45.f; static const float c1x = c0x+c0width+c1off;
-    static const float c2off = 2.f; static const float c2x = c1x+c1width+c2off;
-    static const float c3off = 2.f; static const float c3width = 45.f;
-    static const float c4off = 2.f; static const float c4width = 45.f;
-    static const float c5off = 2.f; static const float c5width = 45.f;
-    static const float rightbuff = 2.f;
-    static const float c2width = 316 - c0off - c0width - c1off - c1width - c2off - c3off - c3width - c4off - c4width - c5off - c5width - rightbuff;
-    static const float c3x = c2x+c2width+c3off;
-    static const float c4x = c3x+c3width+c4off;
-    static const float c5x = c4x+c4width+c5off;
+    [i_lastRefreshed setFrame:CGRectMake(2,r1y,155,r1height)];
+    [i_distanceToStation setFrame:CGRectMake(2,r2y,155,r2height)];
+    [i_configureInSettings setFrame:CGRectMake(2,r3y,155,r3height)];
+
+    for (UILabel *iterView in backgroundLeft2LabelArray) {
+        [_backgroundLeftView2 addSubview:iterView];
+        [iterView release];
+    }
+}
+
+- (void)loadBackgroundLeftSubviews {
 
     NSArray *backgroundLeftLabelArray = [NSArray arrayWithObjects:
         (i_titleNow = [[UILabel alloc] init]),
@@ -180,7 +220,7 @@
         (i_feelsLikeHigh = [[UILabel alloc] init]),
         (i_feelsLikeLow = [[UILabel alloc] init]),nil];
 
-    // Initialize all the labels
+    // basic tasks on all the labels
     for (UILabel *iterView in backgroundLeftLabelArray) {
         [self clearLabelSmallWhiteText:iterView];
         iterView.textAlignment = NSTextAlignmentCenter;
@@ -218,10 +258,6 @@
         iterView.showCurrentValue = NO;
     }
 
-    if([_savedData objectForKey:@"last request"]) {
-        [self updateBackgroundLeftSubviewValues];
-    }
-
 
     // add and release all the views
     for (UILabel *iterView in backgroundLeftLabelArray) {
@@ -257,10 +293,6 @@
     _iconView = [[UIImageView alloc] init];
     _iconView.frame = CGRectMake(4.f + temperatureWidth,0.f,[self viewHeight],[self viewHeight]);
 
-    if([_savedData objectForKey:@"last request"]) {
-        [self updateBackgroundSubviewValues];
-    }
-
     for (UILabel *iterView in backgroundLabelArrayRightCol) {
         [iterView setTextAlignment:NSTextAlignmentRight];
     }
@@ -280,6 +312,13 @@
     [self loadData];
     [self loadBackgroundSubviews];
     [self loadBackgroundLeftSubviews];
+    [self loadBackgroundLeft2Subviews];
+
+    if([_savedData objectForKey:@"last request"]) {
+        [self updateBackgroundLeft2SubviewValues];
+        [self updateBackgroundLeftSubviewValues];
+        [self updateBackgroundSubviewValues];
+    }
 }
 
 - (void)loadPlaceholderView {
