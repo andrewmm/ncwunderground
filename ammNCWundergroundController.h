@@ -2,10 +2,15 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UITableView.h>
 #import "ASBSparkLineView.h"
+#import <dispatch/dispatch.h>
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
-@interface ammNCWundergroundController: NSObject <BBWeeAppController,CLLocationManagerDelegate> {
+@interface ammNCWundergroundController: NSObject <BBWeeAppController,CLLocationManagerDelegate,NSURLConnectionDelegate> {
+    // background
+    dispatch_queue_t backgroundQueue;
+
+    // base views
     UIScrollView *_view;
     UIImageView *_backgroundLeftView2;
     UIImageView *_backgroundLeftView;
@@ -64,7 +69,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 // new functions
 - (void)loadData;
 - (void)downloadData;
-- (void)useUpdatedLoc;
+- (void)startURLRequest;
 - (void)clearLabelSmallWhiteText:(UILabel *)label;
 - (void)updateBackgroundLeft2SubviewValues;
 - (void)updateBackgroundLeftSubviewValues;

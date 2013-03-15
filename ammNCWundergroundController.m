@@ -20,6 +20,7 @@
         
         _iconMap = [[NSDictionary alloc] initWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"amm-wunderground-icon-map" ofType:@"plist"]];
 
+        backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.urlqueue", NULL);
     } return self;
 }
 
@@ -35,6 +36,8 @@
     [_locationManager release];
 
     [_iconMap release];
+
+    dispatch_release(backgroundQueue);
 
     [super dealloc];
 }
@@ -313,18 +316,22 @@
     [_iconView release];
 }
 
-- (void)loadFullView {
-    // Add subviews to _backgroundView (or _view) here.
-    [self loadData];
+- (void)updateSubviewValues {
+    [self updateBackgroundLeft2SubviewValues];
+    [self updateBackgroundLeftSubviewValues];
+    [self updateBackgroundSubviewValues];
+}
+
+- (void)loadSubviews {
     [self loadBackgroundSubviews];
     [self loadBackgroundLeftSubviews];
     [self loadBackgroundLeft2Subviews];
+}
 
-    if([_savedData objectForKey:@"last request"]) {
-        [self updateBackgroundLeft2SubviewValues];
-        [self updateBackgroundLeftSubviewValues];
-        [self updateBackgroundSubviewValues];
-    }
+- (void)loadFullView {
+    // Add subviews to _backgroundView (or _view) here.
+    [self loadSubviews];
+    [self loadData];
 }
 
 - (void)loadPlaceholderView {
@@ -392,6 +399,9 @@
     if ([_savedData objectForKey:@"last request"] == nil) {
         NSLog(@"NCWunderground: No save file found.");
     }
+    else {
+        [self updateSubviewValues];
+    }
 
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     NSNumber *updateSeconds = [defaultsDom objectForKey:@"updateSeconds"];
@@ -404,7 +414,7 @@
         updateLength = 300; // default to 5 minutes
     }
 
-    if ([[NSDate date] timeIntervalSince1970] - [[_savedData objectForKey:@"last request"] integerValue] >= updateLength) {
+    if ([_savedData objectForKey:@"last request"] == nil || [[NSDate date] timeIntervalSince1970] - [[_savedData objectForKey:@"last request"] integerValue] >= updateLength) {
         // It's been too long since we last queried the database. Let's do it again.
         [self downloadData];
     }
@@ -421,7 +431,8 @@
     [_locationManager startUpdatingLocation];
 }
 
-- (void) useUpdatedLoc {
+// This should only ever run inside the backgroundQueue
+- (void) startURLRequest {
     // get data from website by HTTP GET request
     NSHTTPURLResponse * response;
     NSError * error;
@@ -454,10 +465,14 @@
     if (!resultJSON) {
         NSLog(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
         [request release];
+        // TOOD: Add a red dot somewhere to indicate last update failed?
         return;
     }
+    else {
+        // TODO: clear the red dot?
+    }
     [request release];
-    
+
     if(NSClassFromString(@"NSJSONSerialization")) {
         NSError *error = nil;
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:resultJSON options:0 error:&error];
@@ -485,11 +500,15 @@
             [_savedData setObject:[dailyForecast objectForKey:@"forecastday"] forKey:@"forecastday"];
             [_savedData setObject:[jsonDict objectForKey:@"hourly_forecast"] forKey:@"hourly_forecast"];
 
-
             // save data to disk for later use
             [_savedData writeToFile:[self saveFile] atomically:YES];
-
             NSLog(@"NCWunderground: data saved to disk at %@",[self saveFile]);
+
+            // update the views now that we have new data. has to be done on main queue
+            // this should be the last thing done on the background queue, because the main queue needs to use _savedData
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [self updateSubviewValues];
+            });
         }
         else {
             NSLog(@"NCWunderground: JSON was non-dict. Bad.");
@@ -500,8 +519,6 @@
         NSLog(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
         return;
     }
-    [self updateBackgroundLeftSubviewValues];
-    [self updateBackgroundSubviewValues];
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
@@ -513,7 +530,11 @@
         if (_locationUpdated == NO) {
             _locationUpdated = YES;
             [_locationManager stopUpdatingLocation];
-            [self useUpdatedLoc];
+
+            // start a URL request in the backgroundQueue
+            dispatch_async(backgroundQueue, ^(void) {
+                [self startURLRequest];
+            });
         }
     }
     else {
