@@ -379,11 +379,9 @@
     // data loading operations.
     //
     // All widgets are 316 points wide. Image size calculations match those of the Stocks widget.
-
-    UIDevice *device = [UIDevice currentDevice];
-    [device beginGeneratingDeviceOrientationNotifications];
+    
     float screenWidth;
-    if (UIDeviceOrientationIsPortrait(device.orientation))
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]))
         screenWidth = [UIScreen mainScreen].bounds.size.width;
     else
         screenWidth = [UIScreen mainScreen].bounds.size.height;
