@@ -60,7 +60,7 @@
     NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:
         [[i_savedData objectForKey:@"last request"] doubleValue]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"hh:mm:ss a"];
+    [dateFormatter setDateFormat:@"h:mm:ss a"];
     [i_lastRefreshed setText:[@"Last Refreshed: " stringByAppendingString:
         [dateFormatter stringFromDate:lastRefreshedDate]]];
     [dateFormatter release];
