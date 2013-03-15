@@ -59,10 +59,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     BOOL i_locationUpdated;
 
     NSDictionary *i_iconMap;
-
-    //ammNCWundergroundTableViewSource *_temperatureViewContents;
-    //ammNCWundergroundTableViewSource *_moreInfoViewContents;
 }
+
+@property (nonatomic, retain) UIView *view;
 
 - (void)clearLabelSmallWhiteText:(UILabel *)label;
 
