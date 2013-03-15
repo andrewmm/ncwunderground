@@ -210,6 +210,10 @@
     i_iconView.image=i_weatherIcon;
 }
 
+- (void)updateBackgroundRightSubviewValues {
+    
+}
+
 - (void)loadBackgroundLeft2Subviews {
     static const float r1off = 5.f; static const float r1height = 15.f; static const float r1y = r1off;
     static const float r2off = 8.f; static const float r2height = 15.f; static const float r2y = r1y+r1height+r2off;
@@ -356,16 +360,22 @@
     [i_iconView release];
 }
 
+- (void)loadBackgroundRightSubviews {
+
+}
+
 - (void)updateSubviewValues {
     [self updateBackgroundLeft2SubviewValues];
     [self updateBackgroundLeftSubviewValues];
     [self updateBackgroundSubviewValues];
+    [self updateBackgroundRightSubviewValues];
 }
 
 - (void)loadSubviews {
     [self loadBackgroundSubviews];
     [self loadBackgroundLeftSubviews];
     [self loadBackgroundLeft2Subviews];
+    [self loadBackgroundRightSubviews];
 }
 
 - (void)loadFullView {
