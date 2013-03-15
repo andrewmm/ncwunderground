@@ -11,11 +11,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     dispatch_queue_t backgroundQueue;
 
     // base views
-    UIScrollView *_view;
-    UIImageView *_backgroundLeftView2;
-    UIImageView *_backgroundLeftView;
-    UIImageView *_backgroundView;
-    UIImageView *_backgroundRightView;
+    UIScrollView *i_view;
+    UIImageView *i_backgroundLeftView2;
+    UIImageView *i_backgroundLeftView;
+    UIImageView *i_backgroundView;
+    UIImageView *i_backgroundRightView;
 
     // background left2 subviews
     UILabel *i_lastRefreshed;
@@ -38,33 +38,31 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
     UILabel *i_feelsLikeName;
     UILabel *i_feelsLikeNow;
-    ASBSparkLineView *_feelsLikeSparkView;
+    ASBSparkLineView *i_feelsLikeSparkView;
     UILabel *i_feelsLikeEnd;
     UILabel *i_feelsLikeHigh;
     UILabel *i_feelsLikeLow;
 
     // background subviews
-    UILabel *_temperatureLabel;
-    UILabel *_feelsLikeLabel;
-    UILabel *_weatherTypeLabel;
-    UIImage *_weatherIcon;
-    UIImageView *_iconView;
-    UILabel *_locationLabel;
-    UILabel *_humidityLabel;
-    UILabel *_windLabel;
+    UILabel *i_temperatureLabel;
+    UILabel *i_feelsLikeLabel;
+    UILabel *i_weatherTypeLabel;
+    UIImage *i_weatherIcon;
+    UIImageView *i_iconView;
+    UILabel *i_locationLabel;
+    UILabel *i_humidityLabel;
+    UILabel *i_windLabel;
 
-    NSString *_saveFile;
-    NSMutableDictionary *_savedData;
-    CLLocationManager *_locationManager;
-    BOOL _locationUpdated;
+    NSString *i_saveFile;
+    NSMutableDictionary *i_savedData;
+    CLLocationManager *i_locationManager;
+    BOOL i_locationUpdated;
 
-    NSDictionary *_iconMap;
+    NSDictionary *i_iconMap;
 
     //ammNCWundergroundTableViewSource *_temperatureViewContents;
     //ammNCWundergroundTableViewSource *_moreInfoViewContents;
 }
-@property (nonatomic, retain) UIView *view;
-@property (retain) NSString *saveFile;
 
 // new functions
 - (void)loadData;
