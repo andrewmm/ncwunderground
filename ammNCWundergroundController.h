@@ -64,7 +64,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     //ammNCWundergroundTableViewSource *_moreInfoViewContents;
 }
 
-// new functions
 - (void)clearLabelSmallWhiteText:(UILabel *)label;
 
 - (void)updateBackgroundLeft2SubviewValues;
