@@ -334,7 +334,7 @@
 
     i_temperatureLabel.frame = CGRectMake(2.f,2.f,temperatureWidth,30.f);
     i_feelsLikeLabel.frame = CGRectMake(2.f,34.f,temperatureWidth,14.f);
-    i_weatherTypeLabel.frame = CGRectMake(2.f,50.f,temperatureWidth,14.f);
+    i_weatherTypeLabel.frame = CGRectMake(2.f,50.f,temperatureWidth,15.f);
     i_locationLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],5.f,moreInfoWidth,15.f);
     i_humidityLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],28.f,moreInfoWidth,15.f);
     i_windLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],51.f,moreInfoWidth,15.f);
