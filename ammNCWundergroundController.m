@@ -82,7 +82,7 @@
 	i_realTempName.text = @"Temp:";
 	i_realTempNow.text = [[[first_forecast objectForKey:@"temp"] objectForKey:@"english"] stringByAppendingString:@"° F"];
 	NSMutableArray *realTempSparkData = [NSMutableArray array];
-	for(int i = 0; i <= 17; ++i) {
+	for(int i = 0; i <= intervalLength-1; ++i) {
 		// numer formatter code from http://stackoverflow.com/questions/1448804/how-to-convert-an-nsstring-into-an-nsnumber
 		NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
 		[f setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -104,7 +104,7 @@
 	i_feelsLikeName.text = @"Feels:";
 	i_feelsLikeNow.text = [[[first_forecast objectForKey:@"feelslike"] objectForKey:@"english"] stringByAppendingString:@"° F"];
 	NSMutableArray *feelsLikeSparkData = [NSMutableArray array];
-	for(int i = 0; i <= intervalLength; ++i) {
+	for(int i = 0; i <= intervalLength-1; ++i) {
 		// numer formatter code from http://stackoverflow.com/questions/1448804/how-to-convert-an-nsstring-into-an-nsnumber
 		NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
 		[f setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -369,7 +369,6 @@
 }
 
 - (void) downloadData {
-	NSLog(@"NCWunderground: downloadData");
 	// Here we tell it to start looking for the location. Once we have the location, the locationManager:didUpdateToLocation method handles the rest of the download work
 	_locationManager.delegate = self;
 	_locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
