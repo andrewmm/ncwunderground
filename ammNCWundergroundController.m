@@ -9,36 +9,44 @@
 - (id)init {
     if((self = [super init]) != nil) {
         i_savedData = [[NSMutableDictionary alloc] init];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        i_saveFile = [[NSString alloc] initWithString:[[paths objectAtIndex:0] stringByAppendingString:@"/amm-wunderground-save.plist"]];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                             NSUserDomainMask, YES);
+        i_saveFile = [[NSString alloc] initWithString:
+            [[paths objectAtIndex:0] stringByAppendingString:
+                @"/com.amm.ncwunderground.save.plist"]];
         
         i_locationManager = [[CLLocationManager alloc] init];
-        i_locationUpdated = NO;
+        i_locationUpdated = NO; // we use this later to ensure we only get one location update
         
-        i_iconMap = [[NSDictionary alloc] initWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"amm-wunderground-icon-map" ofType:@"plist"]];
+        i_iconMap = [[NSDictionary alloc] initWithContentsOfFile:
+            [_ammNCWundergroundWeeAppBundle pathForResource:
+                @"com.amm.ncwunderground.iconmap" ofType:@"plist"]];
 
         backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.urlqueue", NULL);
     } return self;
 }
 
 - (void)dealloc { 
+    // release all the views!
     [i_view release];
     [i_backgroundLeftView2 release];
     [i_backgroundLeftView release];
     [i_backgroundView release];
     [i_backgroundRightView release];
 
+    // release some other things!
     [i_savedData release];
     [i_saveFile release];
     [i_locationManager release];
-
     [i_iconMap release];
 
+    // get rid of the queue
     dispatch_release(backgroundQueue);
 
     [super dealloc];
 }
 
+// A few default label attributes
 - (void) clearLabelSmallWhiteText:(UILabel *)label {
     label.backgroundColor = [UIColor clearColor];
     label.textColor = [UIColor whiteColor];
@@ -46,34 +54,44 @@
 }
 
 - (void)updateBackgroundLeft2SubviewValues {
-    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[[i_savedData objectForKey:@"last request"] doubleValue]];
+    // "Last Refreshed" label
+    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:
+        [[i_savedData objectForKey:@"last request"] doubleValue]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"hh:mm:ss a"];
-    //NSString *lastRefreshedString = [lastRefreshedDate descriptionWithCalendarFormat:@"%H:%M" timeZone:nil
-        //locale:[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]];
-    [i_lastRefreshed setText:[@"Last Refreshed: " stringByAppendingString:[dateFormatter stringFromDate:lastRefreshedDate]]];
+    [i_lastRefreshed setText:[@"Last Refreshed: " stringByAppendingString:
+        [dateFormatter stringFromDate:lastRefreshedDate]]];
     [dateFormatter release];
 
-    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[[i_savedData objectForKey:@"latitude"] doubleValue]
-        longitude:[[i_savedData objectForKey:@"longitude"] doubleValue]];
+    // "Distance From Station" label
+    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:
+        [[i_savedData objectForKey:@"latitude"] doubleValue] longitude:
+        [[i_savedData objectForKey:@"longitude"] doubleValue]];
     NSDictionary *stationInfo = [[i_savedData objectForKey:@"current_observation"]
         objectForKey:@"observation_location"];
-    CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[[stationInfo objectForKey:@"latitude"] doubleValue]
-        longitude:[[stationInfo objectForKey:@"longitude"] doubleValue]];
-    [i_distanceToStation setText:[NSString stringWithFormat:@"Distance From Station: %d mi",([stationLocation distanceFromLocation:userLocation] / 1609.344)]];
+    CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:
+        [[stationInfo objectForKey:@"latitude"] doubleValue] longitude:
+        [[stationInfo objectForKey:@"longitude"] doubleValue]];
+    [i_distanceToStation setText:[NSString stringWithFormat:
+        @"Distance From Station: %d mi",([stationLocation distanceFromLocation:
+            userLocation] / 1609.344)]];
 
-    [i_configureInSettings setText:@"Configure hourly forecast length, refresh delay, and API Key in Settings."];
+    // "Configure" label
+    [i_configureInSettings setText:@"Configure options in Settings."];
 }
 
 - (void)updateBackgroundLeftSubviewValues {
-    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    // We'll need to access the tweak's user defaults to know how many hours to include
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] 
+        persistentDomainForName:@"com.amm.ncwunderground"];
     NSNumber *hourlyLength = [defaultsDom objectForKey:@"hourlyLength"];
     int intervalLength;
     if (hourlyLength) {
         intervalLength = [hourlyLength integerValue];
     }
     else {
-        NSLog(@"NCWunderground: user defaults contain no hourly forecast length field. Defaulting to 12 hours.");
+        NSLog(@"NCWunderground: user defaults contain no hourly forecast
+            length field. Defaulting to 12 hours.");
         intervalLength = 12;
     }
 
@@ -82,32 +100,49 @@
     NSDictionary *first_forecast = [hourly_forecast objectAtIndex:0];
     NSDictionary *last_forecast = [hourly_forecast objectAtIndex:(intervalLength-1)];
 
+    ////    Row 1   ////
+
+    // "Current Time" header label
     int nowTime = [[[first_forecast objectForKey:@"FCTTIME"] objectForKey:@"hour"] intValue];
     NSString *nowAMPM = [[first_forecast objectForKey:@"FCTTIME"] objectForKey:@"ampm"];
-    if ([nowAMPM isEqualToString:@"PM"]) {
+    if ([nowAMPM isEqualToString:@"PM"])
         nowTime -= 12;
-    }
-    i_titleNow.text = [[[NSString stringWithFormat:@"%d",nowTime] stringByAppendingString:@" "] stringByAppendingString:nowAMPM];
+    if (nowTime == 0)
+        nowTime = 12;
+    i_titleNow.text = [[[NSString stringWithFormat:@"%d",nowTime] stringByAppendingString:
+        @" "] stringByAppendingString:nowAMPM];
+
+    // "Interval length" header label
+    i_titleLength.text = [[NSString stringWithFormat:@"%d",intervalLength] stringByAppendingString:
+        @" hr"]; 
     
+    // "End Time" header label
     int endTime = [[[last_forecast objectForKey:@"FCTTIME"] objectForKey:@"hour"] intValue];
     NSString *endAMPM = [[last_forecast objectForKey:@"FCTTIME"] objectForKey:@"ampm"];
     if ([endAMPM isEqualToString:@"PM"]) {
         endTime -= 12;
     }
-    i_titleEnd.text = [[[NSString stringWithFormat:@"%d",endTime] stringByAppendingString:@" "] stringByAppendingString:endAMPM];
+    i_titleEnd.text = [[[NSString stringWithFormat:@"%d",endTime] stringByAppendingString:
+        @" "] stringByAppendingString:endAMPM];
 
-    i_titleLength.text = [[NSString stringWithFormat:@"%d",intervalLength] stringByAppendingString:@" hr"]; 
+    // "High" and "Low" header labels
     i_titleHigh.text = @"High";
     i_titleLow.text = @"Low";
 
+    ////    Row 2   ////
+
+    // "Real Temp" row label and current value
     i_realTempName.text = @"Temp:";
-    i_realTempNow.text = [[[first_forecast objectForKey:@"temp"] objectForKey:@"english"] stringByAppendingString:@"° F"];
+    i_realTempNow.text = [[[first_forecast objectForKey:@"temp"] objectForKey:
+        @"english"] stringByAppendingString:@"° F"];
+
+    // Generate real temp spark chart
     NSMutableArray *realTempSparkData = [NSMutableArray array];
     for(int i = 0; i <= intervalLength-1; ++i) {
-        // numer formatter code from http://stackoverflow.com/questions/1448804/how-to-convert-an-nsstring-into-an-nsnumber
         NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
         [f setNumberStyle:NSNumberFormatterDecimalStyle];
-        NSString *numberString = [[[hourly_forecast objectAtIndex:i] objectForKey:@"temp"] objectForKey:@"english"];
+        NSString *numberString = [[[hourly_forecast objectAtIndex:i] objectForKey:
+            @"temp"] objectForKey:@"english"];
         NSNumber *myNumber = [f numberFromString:numberString];
         [f release];
         if (myNumber) {
@@ -118,18 +153,27 @@
         }
     }
     [i_realTempSparkView setDataValues:realTempSparkData];
-    i_realTempEnd.text = [[[last_forecast objectForKey:@"temp"] objectForKey:@"english"] stringByAppendingString:@"° F"];
-    i_realTempHigh.text = [[[i_realTempSparkView dataMaximum] stringValue] stringByAppendingString:@"° F"];
-    i_realTempLow.text = [[[i_realTempSparkView dataMinimum] stringValue] stringByAppendingString:@"° F"];
 
-    i_feelsLikeName.text = @"Feels:";
-    i_feelsLikeNow.text = [[[first_forecast objectForKey:@"feelslike"] objectForKey:@"english"] stringByAppendingString:@"° F"];
+    // "Real Temp" end, high, low labels
+    i_realTempEnd.text = [[[last_forecast objectForKey:@"temp"] objectForKey:
+        @"english"] stringByAppendingString:@"° F"];
+    i_realTempHigh.text = [[[i_realTempSparkView dataMaximum] stringValue] 
+        stringByAppendingString:@"° F"];
+    i_realTempLow.text = [[[i_realTempSparkView dataMinimum] stringValue] 
+        stringByAppendingString:@"° F"];
+
+    ////    Row 3   ////
+
+    // "Feels Like" row label and current value
+    i_feelsLikeName.text = @"Like:";
+    i_feelsLikeNow.text = [[[first_forecast objectForKey:@"feelslike"] objectForKey:
+        @"english"] stringByAppendingString:@"° F"];
     NSMutableArray *feelsLikeSparkData = [NSMutableArray array];
     for(int i = 0; i <= intervalLength-1; ++i) {
-        // numer formatter code from http://stackoverflow.com/questions/1448804/how-to-convert-an-nsstring-into-an-nsnumber
         NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
         [f setNumberStyle:NSNumberFormatterDecimalStyle];
-        NSString *numberString = [[[hourly_forecast objectAtIndex:i] objectForKey:@"feelslike"] objectForKey:@"english"];
+        NSString *numberString = [[[hourly_forecast objectAtIndex:i] objectForKey:
+            @"feelslike"] objectForKey:@"english"];
         NSNumber *myNumber = [f numberFromString:numberString];
         [f release];
         if (myNumber) {
@@ -518,7 +562,7 @@
     }
 }
 
-- (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
 
     NSLog(@"NCWunderground: didUpdateToLocation: %@", [locations lastObject]);
     if (locations != nil) {
