@@ -14,10 +14,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
     // background left2 subviews
     UILabel *i_lastRefreshed;
-    UILabel *i_refreshDelay;
     UILabel *i_distanceToStation;
     UILabel *i_configureInSettings;
-    UILabel *i_credits;
 
     // background left subviews and related
     UILabel *i_titleNow;
@@ -68,8 +66,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)downloadData;
 - (void)useUpdatedLoc;
 - (void)clearLabelSmallWhiteText:(UILabel *)label;
+- (void)updateBackgroundLeft2SubviewValues;
 - (void)updateBackgroundLeftSubviewValues;
 - (void)updateBackgroundSubviewValues;
+- (void)loadBackgroundLeft2Subviews;
 - (void)loadBackgroundLeftSubviews;
 - (void)loadBackgroundSubviews;
 
