@@ -12,6 +12,13 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     UIImageView *_backgroundView;
     UIImageView *_backgroundRightView;
 
+    // background left2 subviews
+    UILabel *i_lastRefreshed;
+    UILabel *i_refreshDelay;
+    UILabel *i_distanceToStation;
+    UILabel *i_configureInSettings;
+    UILabel *i_credits;
+
     // background left subviews and related
     UILabel *i_titleNow;
     UILabel *i_titleLength;
