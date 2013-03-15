@@ -111,12 +111,10 @@
         nowTime -= 12;
     if (nowTime == 0)
         nowTime = 12;
-    i_titleNow.text = [[[NSString stringWithFormat:@"%d",nowTime] stringByAppendingString:
-        @" "] stringByAppendingString:nowAMPM];
+    i_titleNow.text = [NSString stringWithFormat:@"%d %@",nowTime,nowAMPM];
 
     // "Interval length" header label
-    i_titleLength.text = [[NSString stringWithFormat:@"%d",intervalLength] stringByAppendingString:
-        @" hr"]; 
+    i_titleLength.text = [NSString stringWithFormat:@"%d hr",intervalLength]; 
     
     // "End Time" header label
     int endTime = [[[last_forecast objectForKey:@"FCTTIME"] objectForKey:@"hour"] intValue];
@@ -124,8 +122,7 @@
     if ([endAMPM isEqualToString:@"PM"]) {
         endTime -= 12;
     }
-    i_titleEnd.text = [[[NSString stringWithFormat:@"%d",endTime] stringByAppendingString:
-        @" "] stringByAppendingString:endAMPM];
+    i_titleEnd.text = [NSString stringWithFormat:@"%d %@",endTime,endAMPM];
 
     // "High" and "Low" header labels
     i_titleHigh.text = @"High";
@@ -136,7 +133,7 @@
     // "Real Temp" row label and current value
     i_realTempName.text = @"Temp:";
     i_realTempNow.text = [[[first_forecast objectForKey:@"temp"] objectForKey:
-        @"english"] stringByAppendingString:@"° F"];
+        @"english"] stringByAppendingString:@" °F"];
 
     // Generate real temp spark chart
     NSMutableArray *realTempSparkData = [NSMutableArray array];
@@ -158,18 +155,18 @@
 
     // "Real Temp" end, high, low labels
     i_realTempEnd.text = [[[last_forecast objectForKey:@"temp"] objectForKey:
-        @"english"] stringByAppendingString:@"° F"];
+        @"english"] stringByAppendingString:@" °F"];
     i_realTempHigh.text = [[[i_realTempSparkView dataMaximum] stringValue] 
-        stringByAppendingString:@"° F"];
+        stringByAppendingString:@" °F"];
     i_realTempLow.text = [[[i_realTempSparkView dataMinimum] stringValue] 
-        stringByAppendingString:@"° F"];
+        stringByAppendingString:@" °F"];
 
     ////    Row 3   ////
 
     // "Feels Like" row label and current value
     i_feelsLikeName.text = @"Like:";
     i_feelsLikeNow.text = [[[first_forecast objectForKey:@"feelslike"] objectForKey:
-        @"english"] stringByAppendingString:@"° F"];
+        @"english"] stringByAppendingString:@" °F"];
     NSMutableArray *feelsLikeSparkData = [NSMutableArray array];
     for(int i = 0; i <= intervalLength-1; ++i) {
         NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
@@ -186,20 +183,20 @@
         }
     }
     [i_feelsLikeSparkView setDataValues:feelsLikeSparkData];
-    i_feelsLikeEnd.text = [[[last_forecast objectForKey:@"feelslike"] objectForKey:@"english"] stringByAppendingString:@"° F"];
-    i_feelsLikeHigh.text = [[[i_feelsLikeSparkView dataMaximum] stringValue] stringByAppendingString:@"° F"];
-    i_feelsLikeLow.text = [[[i_feelsLikeSparkView dataMinimum] stringValue] stringByAppendingString:@"° F"];
+    i_feelsLikeEnd.text = [[[last_forecast objectForKey:@"feelslike"] objectForKey:@"english"] stringByAppendingString:@" °F"];
+    i_feelsLikeHigh.text = [[[i_feelsLikeSparkView dataMaximum] stringValue] stringByAppendingString:@" °F"];
+    i_feelsLikeLow.text = [[[i_feelsLikeSparkView dataMinimum] stringValue] stringByAppendingString:@" °F"];
 }
 
 - (void)updateBackgroundSubviewValues {
     // convenience pointer
     NSDictionary *current_observation = [i_savedData objectForKey:@"current_observation"];
 
-    i_temperatureLabel.text = [[[current_observation objectForKey:@"temp_f"] stringValue] stringByAppendingString:@"° F"];
-    i_feelsLikeLabel.text = [@"Feels Like: " stringByAppendingString:[[current_observation objectForKey:@"feelslike_f"] stringByAppendingString:@"° F"]];
+    i_temperatureLabel.text = [[[current_observation objectForKey:@"temp_f"] stringValue] stringByAppendingString:@" °F"];
+    i_feelsLikeLabel.text = [NSString stringWithFormat:@"Feels Like: %@ °F",[current_observation objectForKey:@"feelslike_f"]];
     i_locationLabel.text = [[current_observation objectForKey:@"display_location"] objectForKey:@"full"];
     i_humidityLabel.text = [@"Humidity: " stringByAppendingString:[current_observation objectForKey:@"relative_humidity"]];
-    i_windLabel.text = [[@"Wind: " stringByAppendingString:[[current_observation objectForKey:@"wind_mph"] stringValue]]  stringByAppendingString:@" mph"];
+    i_windLabel.text = [NSString stringWithFormat:@"Wind: %@ mph",[[current_observation objectForKey:@"wind_mph"] stringValue]];
     
     NSString *wundergroundIconName = [[[[i_savedData objectForKey:@"current_observation"] objectForKey:@"icon_url"] lastPathComponent] stringByDeletingPathExtension];
     NSString *localIconName;
