@@ -13,6 +13,7 @@ Description: Notification Center widget for Weather Underground.
  * Incorrect API Keys no longer crash your phone into Safe Mode.
  * Some under-the-hood fixes.
  * 12 pm/am are no longer displayed as 0 pm/am in the 'End Time' field for the hourly forecast.
+ * Fixed a crash caused by opening the Notification Center and closing it very quickly thereafter.
 Maintainer: Andrew MacKie-Mason <drewmm@gmail.com>
 Author: Andrew MacKie-Mason <drewmm@gmail.com>
 Section: Addons (NotificationCenter)
