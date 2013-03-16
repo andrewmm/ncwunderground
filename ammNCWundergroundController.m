@@ -31,12 +31,10 @@
 }
 
 - (void)dealloc { 
+    NSLog(@"NCWunderground: dealloc");
     // release all the views!
     [i_view release];
-    [i_backgroundLeftView2 release];
-    [i_backgroundLeftView release];
-    [i_backgroundView release];
-    [i_backgroundRightView release];
+    [i_backgroundViews release];
 
     // release some other things!
     [i_savedData release];
@@ -327,7 +325,7 @@
     }
 
     for (UILabel *iterView in backgroundLeft2LabelArray) {
-        [i_backgroundLeftView2 addSubview:iterView];
+        [[i_backgroundViews objectAtIndex:0] addSubview:iterView];
         [iterView release];
     }
 }
@@ -369,11 +367,11 @@
 
     // add and release all the views
     for (UILabel *iterView in backgroundLeftLabelArray) {
-        [i_backgroundLeftView addSubview:iterView];
+        [[i_backgroundViews objectAtIndex:1] addSubview:iterView];
         [iterView release];
     }
     for (ASBSparkLineView *iterView in backgroundLeftSparkArray) {
-        [i_backgroundLeftView addSubview:iterView];
+        [[i_backgroundViews objectAtIndex:1] addSubview:iterView];
         [iterView release];
     }
 }
@@ -395,37 +393,42 @@
     }
     for (UILabel *iterView in [backgroundLabelArrayLeftCol arrayByAddingObjectsFromArray:backgroundLabelArrayRightCol]) {
         [self clearLabelSmallWhiteText:iterView];
-        [i_backgroundView addSubview:iterView];
+        [[i_backgroundViews objectAtIndex:2] addSubview:iterView];
         [iterView release];
     }
     i_temperatureLabel.font = [UIFont systemFontOfSize:30.f];
     
-    [i_backgroundView addSubview:i_iconView];
+    [[i_backgroundViews objectAtIndex:2] addSubview:i_iconView];
     [i_iconView release];
 }
 
 - (void)loadBackgroundRightSubviews {
-    NSArray *subviewLabelContainers = [NSArray arrayWithObjects:
-        (i_dayNames = [[NSMutableArray alloc] init]),
-        (i_dayTemps = [[NSMutableArray alloc] init]),nil];
-    i_dayIconViews = [[NSMutableArray alloc] init];
-
+    if (i_dayNames || i_dayTemps || i_dayIconViews) {
+        NSLog(@"NCWunderground: Trying to alloc new containers when they're non-nil, bad.")
+    }
+    else {
+        NSArray *subviewLabelContainers = [NSArray arrayWithObjects:
+            (i_dayNames = [[NSMutableArray alloc] init]),
+            (i_dayTemps = [[NSMutableArray alloc] init]),nil];
+        i_dayIconViews = [[NSMutableArray alloc] init];
+    }
+    
     for (int j = 0;j < i_numberOfDays;++j) {
         for (int i = 0; i < 2; i++) {
             NSMutableArray *container = [subviewLabelContainers objectAtIndex:i];
             UILabel *newLabel = [[UILabel alloc] init];
-            [container addObject:newLabel;
+            [container addObject:newLabel];
             [self clearLabelSmallWhiteText:newLabel];
             [newLabel setTextAlignment:NSTextAlignmentCenter];
             if (i == 1) {
                 [newLabel setFont:[UIFont systemFontOfSize:13]];
             }
-            [i_backgroundRightView addSubview:newLabel];
+            [[i_backgroundViews objectAtIndex:3] addSubview:newLabel];
             [newLabel release];
         }
         UIImageView *newImageView = [[UIImageView alloc] init];
         [i_dayIconViews addObject:newImageView];
-        [i_backgroundRightView addSubview:newImageView];
+        [[i_backgroundViews objectAtIndex:3] addSubview:newImageView];
         [newImageView release];
     }
 }
@@ -459,16 +462,16 @@
     i_view.contentOffset = CGPointMake(i_view.contentOffset.x / i_view.contentSize.width * screenWidth * 4,0);
     i_view.contentSize = CGSizeMake(screenWidth*4,[self viewHeight]);
 
-    NSArray *backgroundViews = [NSArray arrayWithObjects:i_backgroundLeftView2,
-        i_backgroundLeftView,i_backgroundView,i_backgroundRightView,nil];
-    for (int i = 0;i<=3;++i) {
-        [[backgroundViews objectAtIndex:i] setFrame:CGRectMake(screenWidth*i+2,0,screenWidth-4,[self viewHeight])];
+    for (int i = 0;i<4;++i) {
+        [[i_backgroundViews objectAtIndex:i] setFrame:CGRectMake(screenWidth*i+2,0,screenWidth-4,[self viewHeight])];
     }
     [self positionSubviewsForBackgroundViewWidth:screenWidth];
 }
 
 - (void)loadFullView {
     // Add subviews to i_backgroundView (or i_view) here.
+    // Actually, we do it in load placeholder view because it needs to happen before
+    // rotation method is called
     [self loadData];
 }
 
@@ -483,11 +486,11 @@
     i_view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {screenWidth, [self viewHeight]}}];
     UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
     UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2.f) topCapHeight:floorf(bgImg.size.height / 2.f)];
-    NSArray *backgroundViews = [NSArray arrayWithObjects:
+    /*NSArray *backgroundViews = [NSArray arrayWithObjects:
         (i_backgroundLeftView2 = [[UIImageView alloc] initWithImage:stretchableBgImg]),
         (i_backgroundLeftView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
         (i_backgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
-        (i_backgroundRightView = [[UIImageView alloc] initWithImage:stretchableBgImg]),nil];
+        (i_backgroundRightView = [[UIImageView alloc] initWithImage:stretchableBgImg]),nil];*/
 
     i_view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     i_view.contentSize = CGSizeMake(4 * screenWidth,[self viewHeight]);
@@ -495,11 +498,20 @@
     i_view.pagingEnabled = YES;
     i_view.showsHorizontalScrollIndicator = NO;
 
-    for (int i = 0;i<=3;++i) {
-        [[backgroundViews objectAtIndex:i] setFrame:CGRectMake(screenWidth*i+2,0,screenWidth-8,[self viewHeight])];
-        [[backgroundViews objectAtIndex:i] setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-        [i_view addSubview:[backgroundViews objectAtIndex:i]];
-        [[backgroundViews objectAtIndex:i] release];
+    if (i_backgroundViews) {
+        NSLog(@"NCWunderground: Trying to alloc new backgroundViews when non-nil; bad");
+    }
+    else {
+        i_backgroundViews = [[NSMutableArray alloc] init];
+    }
+    for (int i = 0;i<4;++i) {
+        UIImageView *newBackgroundView = [[UIImageView alloc] init];
+        [i_backgroundViews addObject:newBackgroundView];
+        [newBackgroundView setFrame:
+            CGRectMake(screenWidth*i+2,0,screenWidth-8,[self viewHeight])];
+        [newBackgroundView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
+        [i_view addSubview:newBackgroundView];
+        [newBackgroundView release];
     }
 
     // load subviews
@@ -507,12 +519,19 @@
 }
 
 - (void)unloadView {
-    i_backgroundLeftView2 = nil;
-    i_backgroundLeftView = nil;
-    i_backgroundView = nil;
-    i_backgroundRightView = nil;
+    NSLog(@"NCWunderground: unloadView");
+    NSLog(@"NCWunderground: about to release backgroundViews (%d), view (%d), dayNames (%d), dayTemps (%d), dayIconViews (%d)",[i_backgroundViews retainCount],[i_view retainCount],[i_dayNames retainCount],[i_dayTemps retainCount],[i_dayIconViews retainCount]);
+    [i_backgroundViews release];
+    i_backgroundViews = nil;
     [i_view release];
     i_view = nil;
+
+    [i_dayNames release];
+    i_dayNames = nil;
+    [i_dayTemps release];
+    i_dayTemps = nil;
+    [i_dayIconViews release];
+    i_dayIconViews = nil;
     // Destroy any additional subviews you added here. Don't waste memory :(.
 }
 
