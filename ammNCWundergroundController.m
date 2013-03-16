@@ -368,6 +368,25 @@
     [self loadBackgroundLeft2Subviews];
 }
 
+- (void)willAnimateRotationToInterfaceOrientation:(int)arg1
+{
+    float screenWidth;
+    if (UIInterfaceOrientationIsLandscape(arg1)) {
+        screenWidth = 4 * [UIScreen mainScreen].bounds.size.height;
+    }
+    else {
+        screenWidth = 4 * [UIScreen mainScreen].bounds.size.width;
+    }
+
+    i_view.frame.size.width = screenWidth;
+
+    NSArray *backgroundViews = [NSArray arrayWithObjects:i_backgroundLeftView2,
+        i_backgroundLeftView,i_backgroundView,i_backgroundRightView,nil];
+    for (int i = 0;i<=3;++i) {
+        [backgroundViews objectAtIndex:i].frame = CGRectMake(screenWidth*i+2,0,screenWidth-8,[self viewHeight]);
+    }
+}
+
 - (void)loadFullView {
     // Add subviews to i_backgroundView (or i_view) here.
     [self loadSubviews];
@@ -380,19 +399,7 @@
     //
     // All widgets are 316 points wide. Image size calculations match those of the Stocks widget.
 
-    CGSize appSize = [UIApplication sharedApplication].keyWindow.rootViewController.view.bounds.size;
-    float screenWidth = appSize.width;
-    /*if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
-        NSLog(@"NCWunderground: portrait");
-        screenWidth = [UIScreen mainScreen].bounds.size.width;
-    }
-    else {
-        NSLog(@"NCWunderground: landscape");
-        screenWidth = [UIScreen mainScreen].bounds.size.height;
-    }*/
-    NSLog(@"NCWunderground: screen width is %f",screenWidth);
-
-    i_view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {316.f, [self viewHeight]}}];
+    i_view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {[UIScreen mainScreen].bounds.size.width, [self viewHeight]}}];
     i_view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     i_view.contentSize = CGSizeMake(1280.f,[self viewHeight]);
     i_view.pagingEnabled = YES;
