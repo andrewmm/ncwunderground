@@ -74,7 +74,6 @@
     CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:
         [[stationInfo objectForKey:@"latitude"] doubleValue] longitude:
         [[stationInfo objectForKey:@"longitude"] doubleValue]];
-    NSLog(@"Calculating distance between %@ and %@.",userLocation,stationLocation);
     [i_distanceToStation setText:[NSString stringWithFormat:
         @"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:
             userLocation] / 1609.344)]];
@@ -443,7 +442,6 @@
 }
 
 - (void)loadSubviews {
-    NSLog(@"NCWunderground: loading subviews");
     [self loadBackgroundSubviews];
     [self loadBackgroundLeftSubviews];
     [self loadBackgroundLeft2Subviews];
@@ -521,8 +519,6 @@
 }
 
 - (void)unloadView {
-    NSLog(@"NCWunderground: unloadView");
-    NSLog(@"NCWunderground: about to release backgroundViews (%d), view (%d), dayNames (%d), dayTemps (%d), dayIconViews (%d)",[i_backgroundViews retainCount],[i_view retainCount],[i_dayNames retainCount],[i_dayTemps retainCount],[i_dayIconViews retainCount]);
     [i_backgroundViews release];
     i_backgroundViews = nil;
     [i_view release];
@@ -619,16 +615,15 @@
     [request setHTTPMethod:@"GET"];
 
     NSData *resultJSON = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    [request release];
     if (!resultJSON) {
         NSLog(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
-        [request release];
         // TOOD: Add a red dot somewhere to indicate last update failed?
         return;
     }
     else {
         // TODO: clear the red dot?
     }
-    [request release];
 
     if(NSClassFromString(@"NSJSONSerialization")) {
         NSError *error = nil;
@@ -637,6 +632,13 @@
             NSLog(@"NCWunderground: JSON was malformed. Bad.");
             return;
         }
+
+        if ([jsonDict objectForKey:@"error"]) {
+            NSLog(@"NCWunderground: We got a well-formed JSON, but it's an error: %@ / %@",
+                [[jsonDict objectForKey:@"error"] objectForKey:@"type"],
+                [[jsonDict objectForKey:@"error"] objectForKey:@"description"]);
+        }
+
         if ([jsonDict isKindOfClass:[NSDictionary class]]) {
             NSLog(@"NCWunderground: parsing data.");
             // update last-request time
