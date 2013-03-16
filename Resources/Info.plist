@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>ammNCWunderground</string>
+	<string>NCWeatherUnderground</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.amm.ncwunderground</string>
 	<key>CFBundleInfoDictionaryVersion</key>
