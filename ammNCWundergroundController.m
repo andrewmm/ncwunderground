@@ -210,11 +210,59 @@
     i_iconView.image=i_weatherIcon;
 }
 
-- (void)loadBackgroundLeft2Subviews {
-    static const float r1off = 5.f; static const float r1height = 15.f; static const float r1y = r1off;
-    static const float r2off = 8.f; static const float r2height = 15.f; static const float r2y = r1y+r1height+r2off;
-    static const float r3off = 8.f; static const float r3height = 15.f; static const float r3y = r2y+r2height+r3off;
+- (void)positionSubviewsForBackgroundViewWidth:(float)width {
+    float c0off = (width - 316)/2; float c1off = 2.f; float c2off = 2.f; float c3off = 2.f; float c4off = 2.f; float c5off = 2.f;
+    float c0width = 45.f; float c1width = 45.f; float c2width = 77.f; float c3width = 45.f; float c4width = 45.f; float c5width = 45.f;
+    float c0x = c0off; float c1x = c0x+c0width+c1off; float c2x = c1x+c1width+c2off;
+    float c3x = c2x+c2width+c3off; float c4x = c3x+c3width+c4off; float c5x = c4x+c4width+c5off;
+    float r1off = 5.f; float r1height = 15.f; float r1y = r1off;
+    float r2off = 8.f; float r2height = 15.f; float r2y = r1y+r1height+r2off;
+    float r3off = 8.f; float r3height = 15.f; float r3y = r2y+r2height+r3off;
 
+    // backgroundLeft2
+    [i_lastRefreshed setFrame:CGRectMake(2,r1y,width-8,r1height)];
+    [i_distanceToStation setFrame:CGRectMake(2,r2y,width-8,r2height)];
+    [i_configureInSettings setFrame:CGRectMake(2,r3y,width-8,r3height)];
+
+    // backgroundLeft
+
+    // row 1
+    i_titleNow.frame = CGRectMake(c1x,r1y,c1width,r1height);
+    i_titleLength.frame = CGRectMake(c2x,r1y,c2width,r1height);
+    i_titleEnd.frame = CGRectMake(c3x,r1y,c3width,r1height);
+    i_titleHigh.frame = CGRectMake(c4x,r1y,c4width,r1height);
+    i_titleLow.frame = CGRectMake(c5x,r1y,c5width,r1height);
+
+    // row 2
+    i_realTempName.frame = CGRectMake(c0x,r2y,c0width,r2height);
+    i_realTempNow.frame = CGRectMake(c1x,r2y,c1width,r2height);
+    i_realTempSparkView.frame = CGRectMake(c2x,r2y,c2width,r2height);
+    i_realTempEnd.frame = CGRectMake(c3x,r2y,c3width,r2height);
+    i_realTempHigh.frame = CGRectMake(c4x,r2y,c4width,r2height);
+    i_realTempLow.frame = CGRectMake(c5x,r2y,c5width,r2height);
+
+    // row 3
+    i_feelsLikeName.frame = CGRectMake(c0x,r3y,c0width,r3height);
+    i_feelsLikeNow.frame = CGRectMake(c1x,r3y,c1width,r3height);
+    i_feelsLikeSparkView.frame = CGRectMake(c2x,r3y,c2width,r3height);
+    i_feelsLikeEnd.frame = CGRectMake(c3x,r3y,c3width,r3height);
+    i_feelsLikeHigh.frame = CGRectMake(c4x,r3y,c4width,r3height);
+    i_feelsLikeLow.frame = CGRectMake(c5x,r3y,c5width,r3height);
+
+    // background
+    float temperatureWidth = (316.f - 8 - [self viewHeight]) / 2;
+    float moreInfoWidth = 316.f - 8.f - [self viewHeight] - temperatureWidth;
+
+    i_temperatureLabel.frame = CGRectMake(c0off,2.f,temperatureWidth,30.f);
+    i_feelsLikeLabel.frame = CGRectMake(c0off,34.f,temperatureWidth,14.f);
+    i_weatherTypeLabel.frame = CGRectMake(c0off,50.f,temperatureWidth,15.f);
+    i_iconView.frame = CGRectMake(c0off + temperatureWidth+2,0.f,[self viewHeight],[self viewHeight]);
+    i_locationLabel.frame = CGRectMake(c0off + temperatureWidth + [self viewHeight]+4,5.f,moreInfoWidth,15.f);
+    i_humidityLabel.frame = CGRectMake(c0off + temperatureWidth + [self viewHeight]+4,28.f,moreInfoWidth,15.f);
+    i_windLabel.frame = CGRectMake(c0off + temperatureWidth + [self viewHeight]+4,51.f,moreInfoWidth,15.f);
+}
+
+- (void)loadBackgroundLeft2Subviews {
     // build a convenience array while alloc'ing and init'ing
     NSArray *backgroundLeft2LabelArray = [NSArray arrayWithObjects:
         (i_lastRefreshed = [[UILabel alloc] init]),
@@ -224,11 +272,8 @@
     // basic tasks on all the labels
     for (UILabel *iterView in backgroundLeft2LabelArray) {
         [self clearLabelSmallWhiteText:iterView];
+        iterView.textAlignment = NSTextAlignmentCenter;
     }
-
-    [i_lastRefreshed setFrame:CGRectMake(2,r1y,312,r1height)];
-    [i_distanceToStation setFrame:CGRectMake(2,r2y,312,r2height)];
-    [i_configureInSettings setFrame:CGRectMake(2,r3y,312,r3height)];
 
     for (UILabel *iterView in backgroundLeft2LabelArray) {
         [i_backgroundLeftView2 addSubview:iterView];
@@ -237,21 +282,6 @@
 }
 
 - (void)loadBackgroundLeftSubviews {
-    static const float r1off = 5.f; static const float r1height = 15.f; static const float r1y = r1off;
-    static const float r2off = 8.f; static const float r2height = 15.f; static const float r2y = r1y+r1height+r2off;
-    static const float r3off = 8.f; static const float r3height = 15.f; static const float r3y = r2y+r2height+r3off;
-    static const float c0off = 2.f; static const float c0width = 45.f; static const float c0x = c0off;
-    static const float c1off = 2.f; static const float c1width = 45.f; static const float c1x = c0x+c0width+c1off;
-    static const float c2off = 2.f; static const float c2x = c1x+c1width+c2off;
-    static const float c3off = 2.f; static const float c3width = 45.f;
-    static const float c4off = 2.f; static const float c4width = 45.f;
-    static const float c5off = 2.f; static const float c5width = 45.f;
-    static const float rightbuff = 2.f;
-    static const float c2width = 316 - c0off - c0width - c1off - c1width - c2off - c3off - c3width - c4off - c4width - c5off - c5width - rightbuff;
-    static const float c3x = c2x+c2width+c3off;
-    static const float c4x = c3x+c3width+c4off;
-    static const float c5x = c4x+c4width+c5off;
-
     NSArray *backgroundLeftLabelArray = [NSArray arrayWithObjects:
         (i_titleNow = [[UILabel alloc] init]),
         (i_titleLength = [[UILabel alloc] init]),
@@ -275,28 +305,8 @@
         iterView.textAlignment = NSTextAlignmentCenter;
     }
 
-    // row 1
-    i_titleNow.frame = CGRectMake(c1x,r1y,c1width,r1height);
-    i_titleLength.frame = CGRectMake(c2x,r1y,c2width,r1height);
-    i_titleEnd.frame = CGRectMake(c3x,r1y,c3width,r1height);
-    i_titleHigh.frame = CGRectMake(c4x,r1y,c4width,r1height);
-    i_titleLow.frame = CGRectMake(c5x,r1y,c5width,r1height);
-
-    // row 2
-    i_realTempName.frame = CGRectMake(c0x,r2y,c0width,r2height);
-    i_realTempNow.frame = CGRectMake(c1x,r2y,c1width,r2height);
-    i_realTempSparkView = [[ASBSparkLineView alloc] initWithFrame:CGRectMake(c2x,r2y,c2width,r2height)];
-    i_realTempEnd.frame = CGRectMake(c3x,r2y,c3width,r2height);
-    i_realTempHigh.frame = CGRectMake(c4x,r2y,c4width,r2height);
-    i_realTempLow.frame = CGRectMake(c5x,r2y,c5width,r2height);
-
-    // row 3
-    i_feelsLikeName.frame = CGRectMake(c0x,r3y,c0width,r3height);
-    i_feelsLikeNow.frame = CGRectMake(c1x,r3y,c1width,r3height);
-    i_feelsLikeSparkView = [[ASBSparkLineView alloc] initWithFrame:CGRectMake(c2x,r3y,c2width,r3height)];
-    i_feelsLikeEnd.frame = CGRectMake(c3x,r3y,c3width,r3height);
-    i_feelsLikeHigh.frame = CGRectMake(c4x,r3y,c4width,r3height);
-    i_feelsLikeLow.frame = CGRectMake(c5x,r3y,c5width,r3height);
+    i_realTempSparkView = [[ASBSparkLineView alloc] init];
+    i_feelsLikeSparkView = [[ASBSparkLineView alloc] init];
 
     NSArray *backgroundLeftSparkArray = [NSArray arrayWithObjects: 
         i_realTempSparkView,i_feelsLikeSparkView,nil];
@@ -329,18 +339,7 @@
         (i_humidityLabel = [[UILabel alloc] init]),
         (i_windLabel = [[UILabel alloc] init]),nil];
 
-    float temperatureWidth = (316.f - 8 - [self viewHeight] - 1) / 2;
-    float moreInfoWidth = 316.f - 8.f - [self viewHeight] - temperatureWidth;
-
-    i_temperatureLabel.frame = CGRectMake(2.f,2.f,temperatureWidth,30.f);
-    i_feelsLikeLabel.frame = CGRectMake(2.f,34.f,temperatureWidth,14.f);
-    i_weatherTypeLabel.frame = CGRectMake(2.f,50.f,temperatureWidth,15.f);
-    i_locationLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],5.f,moreInfoWidth,15.f);
-    i_humidityLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],28.f,moreInfoWidth,15.f);
-    i_windLabel.frame = CGRectMake(6.f + temperatureWidth + [self viewHeight],51.f,moreInfoWidth,15.f);
-
     i_iconView = [[UIImageView alloc] init];
-    i_iconView.frame = CGRectMake(4.f + temperatureWidth,0.f,[self viewHeight],[self viewHeight]);
 
     for (UILabel *iterView in backgroundLabelArrayRightCol) {
         [iterView setTextAlignment:NSTextAlignmentRight];
@@ -363,9 +362,11 @@
 }
 
 - (void)loadSubviews {
+    NSLog(@"NCWunderground: loading subviews");
     [self loadBackgroundSubviews];
     [self loadBackgroundLeftSubviews];
     [self loadBackgroundLeft2Subviews];
+    [self positionSubviewsForBackgroundViewWidth:[UIScreen mainScreen].bounds.size.width];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(int)arg1
@@ -384,13 +385,13 @@
     NSArray *backgroundViews = [NSArray arrayWithObjects:i_backgroundLeftView2,
         i_backgroundLeftView,i_backgroundView,i_backgroundRightView,nil];
     for (int i = 0;i<=3;++i) {
-        [[backgroundViews objectAtIndex:i] setFrame:CGRectMake(screenWidth*i+2,0,screenWidth-8,[self viewHeight])];
+        [[backgroundViews objectAtIndex:i] setFrame:CGRectMake(screenWidth*i+2,0,screenWidth-4,[self viewHeight])];
     }
+    [self positionSubviewsForBackgroundViewWidth:screenWidth];
 }
 
 - (void)loadFullView {
     // Add subviews to i_backgroundView (or i_view) here.
-    [self loadSubviews];
     [self loadData];
 }
 
@@ -400,7 +401,11 @@
     //
     // All widgets are 316 points wide. Image size calculations match those of the Stocks widget.
 
-    i_view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {[UIScreen mainScreen].bounds.size.width, [self viewHeight]}}];
+    float screenWidth = [UIScreen mainScreen].bounds.size.width;
+
+    i_view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {screenWidth, [self viewHeight]}}];
+    UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
+    UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2.f) topCapHeight:floorf(bgImg.size.height / 2.f)];
     NSArray *backgroundViews = [NSArray arrayWithObjects:
         (i_backgroundLeftView2 = [[UIImageView alloc] initWithImage:stretchableBgImg]),
         (i_backgroundLeftView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
@@ -408,32 +413,29 @@
         (i_backgroundRightView = [[UIImageView alloc] initWithImage:stretchableBgImg]),nil];
 
     i_view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    i_view.contentSize = CGSizeMake(4 * [UIScreen mainScreen].bounds.size.width,[self viewHeight]);
-    i_view.contentOffset = CGPointMake(2 * [UIScreen mainScreen].bounds.size.width,0.f);
+    i_view.contentSize = CGSizeMake(4 * screenWidth,[self viewHeight]);
+    i_view.contentOffset = CGPointMake(2 * screenWidth,0.f);
     i_view.pagingEnabled = YES;
     i_view.showsHorizontalScrollIndicator = NO;
 
-    UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
-    UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2.f) topCapHeight:floorf(bgImg.size.height / 2.f)];
-
     for (int i = 0;i<=3;++i) {
-        [[backgroundViews objectAtIndex:i] setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width*i+2,0,screenWidth-8,[self viewHeight])];
+        [[backgroundViews objectAtIndex:i] setFrame:CGRectMake(screenWidth*i+2,0,screenWidth-8,[self viewHeight])];
         [[backgroundViews objectAtIndex:i] setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
-        [[backgroundViews objectAtIndex:i] addSubview:iterView];
+        [i_view addSubview:[backgroundViews objectAtIndex:i]];
+        [[backgroundViews objectAtIndex:i] release];
     }
+
+    // load subviews
+    [self loadSubviews];
 }
 
 - (void)unloadView {
+    i_backgroundLeftView2 = nil;
+    i_backgroundLeftView = nil;
+    i_backgroundView = nil;
+    i_backgroundRightView = nil;
     [i_view release];
     i_view = nil;
-    [i_backgroundLeftView2 release];
-    i_backgroundLeftView2 = nil;
-    [i_backgroundLeftView release];
-    i_backgroundLeftView = nil;
-    [i_backgroundView release];
-    i_backgroundView = nil;
-    [i_backgroundRightView release];
-    i_backgroundRightView = nil;
     // Destroy any additional subviews you added here. Don't waste memory :(.
 }
 

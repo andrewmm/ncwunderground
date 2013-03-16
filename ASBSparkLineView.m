@@ -224,6 +224,11 @@ static inline float yPlotValue(float maxHeight, float yInc, float val, float min
     return [self initWithData:[NSArray array] frame:frame label:[NSString string]];
 }
 
+// initializer
+- (id)init {
+    return [self initWithFrame:CGRectMake(0,0,0,0)];
+}
+
 // dealloc
 - (void)dealloc {
     [m_dataValues release];
