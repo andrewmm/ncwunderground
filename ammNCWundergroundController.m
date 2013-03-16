@@ -637,6 +637,7 @@
             NSLog(@"NCWunderground: We got a well-formed JSON, but it's an error: %@ / %@",
                 [[jsonDict objectForKey:@"error"] objectForKey:@"type"],
                 [[jsonDict objectForKey:@"error"] objectForKey:@"description"]);
+            return;
         }
 
         if ([jsonDict isKindOfClass:[NSDictionary class]]) {
