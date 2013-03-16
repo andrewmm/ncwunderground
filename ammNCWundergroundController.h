@@ -70,6 +70,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)updateBackgroundSubviewValues;
 - (void)updateBackgroundRightSubviewValues;
 
+- (void)positionSubviewsForBackgroundViewWidth:(float)width;
+
 - (void)loadBackgroundLeft2Subviews;
 - (void)loadBackgroundLeftSubviews;
 - (void)loadBackgroundSubviews;
@@ -78,6 +80,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)updateSubviewValues; // calls all the update*Values methods above
 - (void)loadSubviews; // calls all the load*Subviews methods above
 
+- (void)willAnimateRotationToInterfaceOrientation:(int)arg1;
 - (void)loadFullView;
 - (void)loadPlaceholderView;
 - (void)unloadView;
