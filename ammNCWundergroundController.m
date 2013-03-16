@@ -81,6 +81,9 @@
         @"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:
             userLocation] / 1609.344)]];
 
+    [userLocation release];
+    [stationLocation release];
+
     // "Configure" label
     [i_configureInSettings setText:@"Configure options in Settings."];
 }
