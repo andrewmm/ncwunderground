@@ -403,11 +403,13 @@
 }
 
 - (void)loadBackgroundRightSubviews {
+    NSArray *subviewLabelContainers;
     if (i_dayNames || i_dayTemps || i_dayIconViews) {
-        NSLog(@"NCWunderground: Trying to alloc new containers when they're non-nil, bad.")
+        NSLog(@"NCWunderground: Trying to alloc new containers when they're non-nil, bad.");
+        return;
     }
     else {
-        NSArray *subviewLabelContainers = [NSArray arrayWithObjects:
+        subviewLabelContainers = [NSArray arrayWithObjects:
             (i_dayNames = [[NSMutableArray alloc] init]),
             (i_dayTemps = [[NSMutableArray alloc] init]),nil];
         i_dayIconViews = [[NSMutableArray alloc] init];
@@ -505,7 +507,7 @@
         i_backgroundViews = [[NSMutableArray alloc] init];
     }
     for (int i = 0;i<4;++i) {
-        UIImageView *newBackgroundView = [[UIImageView alloc] init];
+        UIImageView *newBackgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg];
         [i_backgroundViews addObject:newBackgroundView];
         [newBackgroundView setFrame:
             CGRectMake(screenWidth*i+2,0,screenWidth-8,[self viewHeight])];
