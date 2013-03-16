@@ -3,7 +3,16 @@ Name: WeatherUnderground for Notification Center
 Depends: firmware (>= 6.1), com.saurik.substrate.safemode, com.chpwn.weeloader, com.arichardson.weepreferenceloader, mobilesubstrate
 Version: 0.0.3
 Architecture: iphoneos-arm
-Description: A Notification Center widget that pulls data from Weather Underground. You will need your own Weather Underground API key to use this widget.
+Description: Notification Center widget for Weather Underground.
+ 
+ You will need your own Weather Underground API key to use this widget.
+ 
+ In this version:
+ 
+ * Fixed a memory leak.
+ * Incorrect API Keys no longer crash your phone into Safe Mode.
+ * Some under-the-hood fixes.
+ * 12 pm/am are no longer displayed as 0 pm/am in the 'End Time' field for the hourly forecast.
 Maintainer: Andrew MacKie-Mason <drewmm@gmail.com>
 Author: Andrew MacKie-Mason <drewmm@gmail.com>
 Section: Addons (NotificationCenter)
