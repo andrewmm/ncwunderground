@@ -413,18 +413,20 @@
     for (int j = 0;j < i_numberOfDays;++j) {
         for (int i = 0; i < 2; i++) {
             NSMutableArray *container = [subviewLabelContainers objectAtIndex:i];
-            [container addObject:[[UILabel alloc] init]];
-            [self clearLabelSmallWhiteText:[container objectAtIndex:j]];
-            [[container objectAtIndex:j] setTextAlignment:NSTextAlignmentCenter];
+            UILabel *newLabel = [[UILabel alloc] init];
+            [container addObject:newLabel;
+            [self clearLabelSmallWhiteText:newLabel];
+            [newLabel setTextAlignment:NSTextAlignmentCenter];
             if (i == 1) {
-                [[container objectAtIndex:j] setFont:[UIFont systemFontOfSize:13]];
+                [newLabel setFont:[UIFont systemFontOfSize:13]];
             }
-            [i_backgroundRightView addSubview:[container objectAtIndex:j]];
-            [[container objectAtIndex:j] release];
+            [i_backgroundRightView addSubview:newLabel];
+            [newLabel release];
         }
-        [i_dayIconViews addObject:[[UIImageView alloc] init]];
-        [i_backgroundRightView addSubview:[i_dayIconViews objectAtIndex:j]];
-        [[i_dayIconViews objectAtIndex:j] release];
+        UIImageView *newImageView = [[UIImageView alloc] init];
+        [i_dayIconViews addObject:newImageView];
+        [i_backgroundRightView addSubview:newImageView];
+        [newImageView release];
     }
 }
 
