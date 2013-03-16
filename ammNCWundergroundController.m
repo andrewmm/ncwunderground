@@ -198,20 +198,45 @@
     i_humidityLabel.text = [@"Humidity: " stringByAppendingString:[current_observation objectForKey:@"relative_humidity"]];
     i_windLabel.text = [NSString stringWithFormat:@"Wind: %@ mph",[[current_observation objectForKey:@"wind_mph"] stringValue]];
     
-    NSString *wundergroundIconName = [[[[i_savedData objectForKey:@"current_observation"] objectForKey:@"icon_url"] lastPathComponent] stringByDeletingPathExtension];
-    NSString *localIconName;
-    localIconName = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
+    NSString *wundergroundIconName = [[[current_observation objectForKey:
+        @"icon_url"] lastPathComponent] stringByDeletingPathExtension];
+    NSString *localIconName = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
     i_weatherTypeLabel.text = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"word"];
     if (localIconName == nil) {
-        wundergroundIconName = [[i_savedData objectForKey:@"current_observation"] objectForKey:@"icon"];
+        wundergroundIconName = [current_observation objectForKey:@"icon"];
         localIconName = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
     }
-    i_weatherIcon = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:localIconName ofType:@"png"]];
-    i_iconView.image=i_weatherIcon;
+    UIImage *weatherIcon = [UIImage imageWithContentsOfFile:
+        [_ammNCWundergroundWeeAppBundle pathForResource:localIconName ofType:@"png"]];
+    i_iconView.image=weatherIcon;
 }
 
 - (void)updateBackgroundRightSubviewValues {
-    
+    NSArray *rightSubviewLabelContainers = [NSArray arrayWithObjects:i_dayNames,i_dayTemps,nil];
+    NSArray *forecastday = [i_savedData objectForKey:@"forecastday"];
+    for (int j = 0; j < i_numberOfDays; ++j) {
+        NSDictionary *day = [forecastday objectAtIndex:j];
+
+        [[i_dayNames objectAtIndex:j] setText:[[day objectForKey:
+            @"date"] objectForKey:@"weekday_short"]];
+
+        [[i_dayTemps objectAtIndex:j] setText:[NSString stringWithFormat:
+            @"%@/%@ (%@)",[[day objectForKey:@"high"] objectForKey:@"fahrenheit"],
+            [[day objectForKey:@"low"] objectForKey:@"fahrenheit"],
+            [[day objectForKey:@"pop"] stringValue]]];
+
+        NSString *wundergroundIconName = [[[day objectForKey:
+            @"icon_url"] lastPathComponent] stringByDeletingPathExtension];
+        NSString *localIconName = [[i_iconMap objectForKey:
+            wundergroundIconName] objectForKey:@"icon"];
+        if (localIconName == nil) {
+            wundergroundIconName = [current_observation objectForKey:@"icon"];
+            localIconName = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
+        }
+        UIImage *weatherIcon = [UIImage imageWithContentsOfFile:
+            [_ammNCWundergroundWeeAppBundle pathForResource:localIconName ofType:@"png"]];
+        [[i_dayIconViews objectAtIndex:j] setImage:weatherIcon];
+    }
 }
 
 - (void)positionSubviewsForBackgroundViewWidth:(float)width {
@@ -264,6 +289,21 @@
     i_locationLabel.frame = CGRectMake(c0off + temperatureWidth + [self viewHeight]+4,5.f,moreInfoWidth,15.f);
     i_humidityLabel.frame = CGRectMake(c0off + temperatureWidth + [self viewHeight]+4,28.f,moreInfoWidth,15.f);
     i_windLabel.frame = CGRectMake(c0off + temperatureWidth + [self viewHeight]+4,51.f,moreInfoWidth,15.f);
+
+    // backgroundRight
+    float dayWidth = (316 - 2 * (i_numberOfDays + 1)) / 5;
+    float iconDims = [self viewHeight] - 42;
+    if (dayWidth < iconDims)
+        iconDims = dayWidth;
+    NSArray *rightSubviewLabelContainers = [NSArray arrayWithObjects:i_dayNames,i_dayTemps,nil];
+    for (int j = 0; j < i_numberOfDays; ++j) {
+        for (int i = 0; i < 2; ++i) {
+            UILabel *label = [[rightSubviewLabelContainers objectAtIndex:i] objectAtIndex:j];
+            label.frame = CGRectMake(c0off + j * (2 + dayWidth),17 * i + 2,dayWidth,15);
+        }
+        [[i_dayIconViews objectAtIndex:j] setFrame:
+            CGRectMake(c0off + j * (2 + dayWidth),36,iconDims,iconDims)];
+    }
 }
 
 - (void)loadBackgroundLeft2Subviews {
@@ -309,11 +349,9 @@
         iterView.textAlignment = NSTextAlignmentCenter;
     }
 
-    i_realTempSparkView = [[ASBSparkLineView alloc] init];
-    i_feelsLikeSparkView = [[ASBSparkLineView alloc] init];
-
     NSArray *backgroundLeftSparkArray = [NSArray arrayWithObjects: 
-        i_realTempSparkView,i_feelsLikeSparkView,nil];
+        (i_realTempSparkView = [[ASBSparkLineView alloc] init]),
+        ( i_feelsLikeSparkView = [[ASBSparkLineView alloc] init]),nil];
     // Color all of the spark views
     for (ASBSparkLineView *iterView in backgroundLeftSparkArray) {
         iterView.penColor = [UIColor whiteColor];
@@ -360,7 +398,23 @@
 }
 
 - (void)loadBackgroundRightSubviews {
+    NSArray *subviewLabelContainers = [NSArray arrayWithObjects:
+        (i_dayNames = [[NSMutableArray alloc] init]),
+        (i_dayTemps = [[NSMutableArray alloc] init]),nil];
+    i_dayIconViews = [[NSMutableArray alloc] init];
 
+    for (int i = 0;i < i_numberOfDays;++i) {
+        for (NSMutableArray *container in subviewLabelContainers) {
+            [container addObject:[[UILabel alloc] init]];
+            [self clearLabelSmallWhiteText:[container objectAtIndex:i]];
+            [[container objectAtIndex:i] setTextAlignment:NSTextAlignmentCenter];
+            [i_backgroundRightView addSubview:[container objectAtIndex:i]];
+            [[container objectAtIndex:i] release];
+        }
+        [i_dayIconViews addObject:[[UIImageView alloc] init]];
+        [i_backgroundRightView addSubview:[i_dayIconViews objectAtIndex:i]];
+        [[i_dayIconViews objectAtIndex:i] release];
+    }
 }
 
 - (void)updateSubviewValues {

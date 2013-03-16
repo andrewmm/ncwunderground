@@ -47,11 +47,16 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     UILabel *i_temperatureLabel;
     UILabel *i_feelsLikeLabel;
     UILabel *i_weatherTypeLabel;
-    UIImage *i_weatherIcon;
     UIImageView *i_iconView;
     UILabel *i_locationLabel;
     UILabel *i_humidityLabel;
     UILabel *i_windLabel;
+
+    // backgroundRight subview (containers)
+    static const int i_numberOfDays = 5;
+    NSMutableArray *i_dayNames;
+    NSMutableArray *i_dayTemps;
+    NSMutableArray *i_dayIconViews;
 
     NSString *i_saveFile;
     NSMutableDictionary *i_savedData;
