@@ -372,18 +372,19 @@
 {
     float screenWidth;
     if (UIInterfaceOrientationIsLandscape(arg1)) {
-        screenWidth = 4 * [UIScreen mainScreen].bounds.size.height;
+        screenWidth = [UIScreen mainScreen].bounds.size.height;
     }
     else {
-        screenWidth = 4 * [UIScreen mainScreen].bounds.size.width;
+        screenWidth = [UIScreen mainScreen].bounds.size.width;
     }
 
-    i_view.frame.size.width = screenWidth;
+    i_view.contentOffset = CGPointMake(i_view.contentOffset.x / i_view.contentSize.width * screenWidth * 4,0);
+    i_view.contentSize = CGSizeMake(screenWidth*4,[self viewHeight]);
 
     NSArray *backgroundViews = [NSArray arrayWithObjects:i_backgroundLeftView2,
         i_backgroundLeftView,i_backgroundView,i_backgroundRightView,nil];
     for (int i = 0;i<=3;++i) {
-        [backgroundViews objectAtIndex:i].frame = CGRectMake(screenWidth*i+2,0,screenWidth-8,[self viewHeight]);
+        [[backgroundViews objectAtIndex:i] setFrame:CGRectMake(screenWidth*i+2,0,screenWidth-8,[self viewHeight])];
     }
 }
 
@@ -400,29 +401,25 @@
     // All widgets are 316 points wide. Image size calculations match those of the Stocks widget.
 
     i_view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {[UIScreen mainScreen].bounds.size.width, [self viewHeight]}}];
-    i_view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    i_view.contentSize = CGSizeMake(1280.f,[self viewHeight]);
-    i_view.pagingEnabled = YES;
-    i_view.contentOffset = CGPointMake(640.f,0.f);
-    i_view.showsHorizontalScrollIndicator = NO;
-
-    UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
-    UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2.f) topCapHeight:floorf(bgImg.size.height / 2.f)];
-
     NSArray *backgroundViews = [NSArray arrayWithObjects:
         (i_backgroundLeftView2 = [[UIImageView alloc] initWithImage:stretchableBgImg]),
         (i_backgroundLeftView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
         (i_backgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
         (i_backgroundRightView = [[UIImageView alloc] initWithImage:stretchableBgImg]),nil];
 
-    i_backgroundLeftView2.frame = CGRectMake(2,0,312.f,[self viewHeight]);
-    i_backgroundLeftView.frame = CGRectMake(322.f,0,312.f,[self viewHeight]);
-    i_backgroundView.frame = CGRectMake(642.f,0, 312.f,[self viewHeight]);
-    i_backgroundRightView.frame = CGRectMake(962.f,0,312.f,[self viewHeight]);
+    i_view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    i_view.contentSize = CGSizeMake(4 * [UIScreen mainScreen].bounds.size.width,[self viewHeight]);
+    i_view.contentOffset = CGPointMake(2 * [UIScreen mainScreen].bounds.size.width,0.f);
+    i_view.pagingEnabled = YES;
+    i_view.showsHorizontalScrollIndicator = NO;
 
-    for (UIImageView *iterView in backgroundViews) {
-        iterView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [i_view addSubview:iterView];
+    UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
+    UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2.f) topCapHeight:floorf(bgImg.size.height / 2.f)];
+
+    for (int i = 0;i<=3;++i) {
+        [[backgroundViews objectAtIndex:i] setFrame:CGRectMake([UIScreen mainScreen].bounds.size.width*i+2,0,screenWidth-8,[self viewHeight])];
+        [[backgroundViews objectAtIndex:i] setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
+        [[backgroundViews objectAtIndex:i] addSubview:iterView];
     }
 }
 
