@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Data Refresh Delay</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>validValues</key>
+			<array>
+				<integer>0</integer>
+				<integer>300</integer>
+				<integer>600</integer>
+				<integer>1200</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Instant</string>
+				<string>5 min</string>
+				<string>10 min</string>
+				<string>20 min</string>
+			</array>
+			<key>default</key>
+			<integer>300</integer>
+			<key>defaults</key>
+			<string>com.amm.ncwunderground</string>
+			<key>key</key>
+			<string>updateSeconds</string>
+			<key>alignment</key>
+			<string>3</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Hourly Forecast Length</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>validValues</key>
+			<array>
+				<integer>3</integer>
+				<integer>6</integer>
+				<integer>12</integer>
+				<integer>18</integer>
+				<integer>36</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>3 hr</string>
+				<string>6 hr</string>
+				<string>12 hr</string>
+				<string>18 hr</string>
+				<string>36 hr</string>
+			</array>
+			<key>default</key>
+			<integer>12</integer>
+			<key>defaults</key>
+			<string>com.amm.ncwunderground</string>
+			<key>key</key>
+			<string>hourlyLength</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.amm.ncwunderground</string>
+			<key>key</key>
+			<string>APIKey</string>
+			<key>label</key>
+			<string>API Key</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>NC Weather Underground</string>
+</dict>
+</plist>
