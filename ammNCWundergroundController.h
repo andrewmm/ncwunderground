@@ -10,6 +10,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     // background
     dispatch_queue_t backgroundQueue;
 
+    // prevent background things from changing views when NC is closed
+    BOOL i_isDisplayed;
+
     // base views
     UIScrollView *i_view;
     NSMutableArray *i_backgroundViews;

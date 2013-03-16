@@ -31,7 +31,7 @@
 }
 
 - (void)dealloc { 
-    NSLog(@"NCWunderground: dealloc");
+    i_isDisplayed = NO;
     // release all the views!
     [i_view release];
     [i_backgroundViews release];
@@ -516,9 +516,13 @@
 
     // load subviews
     [self loadSubviews];
+
+    i_isDisplayed = YES;
 }
 
 - (void)unloadView {
+    i_isDisplayed = NO;
+
     [i_backgroundViews release];
     i_backgroundViews = nil;
     [i_view release];
@@ -667,7 +671,12 @@
             // update the views now that we have new data. has to be done on main queue
             // this should be the last thing done on the background queue, because the main queue needs to use i_savedData
             dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [self updateSubviewValues];
+                if (i_isDisplayed) {
+                    [self updateSubviewValues];
+                }
+                else {
+                    NSLog(@"NCWunderground: prevented it from updating subviews while not displayed");
+                }
             });
         }
         else {
