@@ -124,6 +124,9 @@
     if ([endAMPM isEqualToString:@"PM"]) {
         endTime -= 12;
     }
+    if (endTime == 0) {
+        endTime = 12;
+    }
     i_titleEnd.text = [NSString stringWithFormat:@"%d %@",endTime,endAMPM];
 
     // "High" and "Low" header labels
