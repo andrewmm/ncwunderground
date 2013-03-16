@@ -1,6 +1,6 @@
 #import "ammNCWundergroundController.h"
 
-#define i_numberOfDays 5
+#define i_numberOfDays 4
 
 @implementation ammNCWundergroundController
 
@@ -214,7 +214,6 @@
 }
 
 - (void)updateBackgroundRightSubviewValues {
-    NSArray *rightSubviewLabelContainers = [NSArray arrayWithObjects:i_dayNames,i_dayTemps,nil];
     NSArray *forecastday = [i_savedData objectForKey:@"forecastday"];
     for (int j = 0; j < i_numberOfDays; ++j) {
         NSDictionary *day = [forecastday objectAtIndex:j];
@@ -223,7 +222,7 @@
             @"date"] objectForKey:@"weekday_short"]];
 
         [[i_dayTemps objectAtIndex:j] setText:[NSString stringWithFormat:
-            @"%@/%@ (%@)",[[day objectForKey:@"high"] objectForKey:@"fahrenheit"],
+            @"%@/%@ (%@%%)",[[day objectForKey:@"high"] objectForKey:@"fahrenheit"],
             [[day objectForKey:@"low"] objectForKey:@"fahrenheit"],
             [[day objectForKey:@"pop"] stringValue]]];
 
@@ -232,7 +231,7 @@
         NSString *localIconName = [[i_iconMap objectForKey:
             wundergroundIconName] objectForKey:@"icon"];
         if (localIconName == nil) {
-            wundergroundIconName = [current_observation objectForKey:@"icon"];
+            wundergroundIconName = [day objectForKey:@"icon"];
             localIconName = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
         }
         UIImage *weatherIcon = [UIImage imageWithContentsOfFile:
@@ -293,7 +292,7 @@
     i_windLabel.frame = CGRectMake(c0off + temperatureWidth + [self viewHeight]+4,51.f,moreInfoWidth,15.f);
 
     // backgroundRight
-    float dayWidth = (316 - 2 * (i_numberOfDays + 1)) / 5;
+    float dayWidth = (316 - 2 * (i_numberOfDays + 1)) / i_numberOfDays;
     float iconDims = [self viewHeight] - 42;
     if (dayWidth < iconDims)
         iconDims = dayWidth;
@@ -304,7 +303,7 @@
             label.frame = CGRectMake(c0off + j * (2 + dayWidth),17 * i + 2,dayWidth,15);
         }
         [[i_dayIconViews objectAtIndex:j] setFrame:
-            CGRectMake(c0off + j * (2 + dayWidth),36,iconDims,iconDims)];
+            CGRectMake(c0off + j * (2 + dayWidth) + (dayWidth - iconDims)/2,36,iconDims,iconDims)];
     }
 }
 
@@ -405,17 +404,21 @@
         (i_dayTemps = [[NSMutableArray alloc] init]),nil];
     i_dayIconViews = [[NSMutableArray alloc] init];
 
-    for (int i = 0;i < i_numberOfDays;++i) {
-        for (NSMutableArray *container in subviewLabelContainers) {
+    for (int j = 0;j < i_numberOfDays;++j) {
+        for (int i = 0; i < 2; i++) {
+            NSMutableArray *container = [subviewLabelContainers objectAtIndex:i];
             [container addObject:[[UILabel alloc] init]];
-            [self clearLabelSmallWhiteText:[container objectAtIndex:i]];
-            [[container objectAtIndex:i] setTextAlignment:NSTextAlignmentCenter];
-            [i_backgroundRightView addSubview:[container objectAtIndex:i]];
-            [[container objectAtIndex:i] release];
+            [self clearLabelSmallWhiteText:[container objectAtIndex:j]];
+            [[container objectAtIndex:j] setTextAlignment:NSTextAlignmentCenter];
+            if (i == 1) {
+                [[container objectAtIndex:j] setFont:[UIFont systemFontOfSize:13]];
+            }
+            [i_backgroundRightView addSubview:[container objectAtIndex:j]];
+            [[container objectAtIndex:j] release];
         }
         [i_dayIconViews addObject:[[UIImageView alloc] init]];
-        [i_backgroundRightView addSubview:[i_dayIconViews objectAtIndex:i]];
-        [[i_dayIconViews objectAtIndex:i] release];
+        [i_backgroundRightView addSubview:[i_dayIconViews objectAtIndex:j]];
+        [[i_dayIconViews objectAtIndex:j] release];
     }
 }
 
