@@ -1,5 +1,5 @@
 Package: com.amm.ncwunderground
-Name: ammNCWunderground
+Name: WeeWeatherUnderground for Notification Center
 Depends: firmware (>= 6.1), com.saurik.substrate.safemode, com.chpwn.weeloader, com.arichardson.weepreferenceloader
 Version: 0.0.2
 Architecture: iphoneos-arm
