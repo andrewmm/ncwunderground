@@ -17,6 +17,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     UIScrollView *i_view;
     NSMutableArray *i_backgroundViews;
 
+    // loading spinners go on all pages
+    NSMutableArray *i_spinners;
+
     // background left2 subviews
     UILabel *i_lastRefreshed;
     UILabel *i_distanceToStation;
