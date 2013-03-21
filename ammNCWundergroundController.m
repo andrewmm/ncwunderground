@@ -21,13 +21,14 @@
         
         i_locationManager = [[CLLocationManager alloc] init];
         i_locationUpdated = NO; // we use this later to ensure we only get one location update
-        
+        i_loadingData = NO; // indicates whether we're already loading data
+
         i_iconMap = [[NSDictionary alloc] initWithContentsOfFile:
             [_ammNCWundergroundWeeAppBundle pathForResource:
                 @"com.amm.ncwunderground.iconmap" ofType:@"plist"]];
 
         backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.urlqueue", NULL);
-    } return self;
+    } return self; 
 }
 
 - (void)dealloc { 
@@ -544,6 +545,12 @@
 // new functions
 
 - (void)loadData {
+    if (i_loadingData) {
+        NSLog(@"NCWunderground: tried to loadData while already loadingData");
+        return;
+    }
+
+    i_loadingData = YES;
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
@@ -577,6 +584,7 @@
     }
     else {
         NSLog(@"NCWunderground: Using save data");
+        i_loadingData = NO;
     }
 }
 
@@ -677,15 +685,18 @@
                 else {
                     NSLog(@"NCWunderground: prevented it from updating subviews while not displayed");
                 }
+                i_loadingData = NO;
             });
         }
         else {
             NSLog(@"NCWunderground: JSON was non-dict. Bad.");
+            i_loadingData = NO;
             return;
         }
     }
     else {
         NSLog(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
+        i_loadingData = NO;
         return;
     }
 }

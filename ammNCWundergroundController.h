@@ -21,6 +21,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     UILabel *i_lastRefreshed;
     UILabel *i_distanceToStation;
     UILabel *i_configureInSettings;
+    UIButton *i_refreshButton;
 
     // background left subviews and related
     UILabel *i_titleNow;
@@ -61,6 +62,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     NSMutableDictionary *i_savedData;
     CLLocationManager *i_locationManager;
     BOOL i_locationUpdated;
+    BOOL i_loadingData;
 
     NSDictionary *i_iconMap;
 }
