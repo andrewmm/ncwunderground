@@ -643,6 +643,11 @@
     }
     else {
         NSLog(@"NCWunderground: Using save data");
+        for (UIActivityIndicatorView *spinner in i_spinners) {
+            [spinner stopAnimating];
+            [spinner setHidden:YES];
+        }
+        [i_refreshButton setHidden:NO];
         i_loadingData = NO;
     }
 }
