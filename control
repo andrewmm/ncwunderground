@@ -10,7 +10,7 @@ Description: Notification Center widget for Weather Underground.
  Version 0.0.5:
  * Added a force refresh button to far left page.
  * Added spinners to each page to indicate that update is in progress.
-
+ 
  Version 0.0.4:
 
  * Fixed a memory leak.
