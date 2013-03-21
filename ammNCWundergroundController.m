@@ -254,10 +254,11 @@
     float r3off = 8.f; float r3height = 15.f; float r3y = r2y+r2height+r3off;
 
     // backgroundLeft2
-    [i_lastRefreshed setFrame:CGRectMake(2,r1y,width-8,r1height)];
-    [i_distanceToStation setFrame:CGRectMake(2,r2y,width-8,r2height)];
-    [i_configureInSettings setFrame:CGRectMake(2,r3y,width-8,r3height)];
+    [i_lastRefreshed setFrame:CGRectMake(36,r1y,width-76,r1height)];
+    [i_distanceToStation setFrame:CGRectMake(36,r2y,width-76,r2height)];
+    [i_configureInSettings setFrame:CGRectMake(36,r3y,width-76,r3height)];
     [i_refreshButton setFrame:CGRectMake(width-34,([self viewHeight] - 32)/2,32,32)];
+    [[i_backgroundViews objectAtIndex:0] bringSubviewToFront:i_refreshButton];
 
     // backgroundLeft
 
