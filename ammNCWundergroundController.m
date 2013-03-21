@@ -32,6 +32,10 @@
 }
 
 - (void)dealloc { 
+    // We release a lot of things here that are also released in unload view
+    // We don't want both of those releases going through, so there we set to
+    // nil after releasing. This is just in case unloadViews doesn't get called.
+
     i_isDisplayed = NO;
     // release all the views!
     [i_view release];
@@ -42,6 +46,10 @@
     [i_saveFile release];
     [i_locationManager release];
     [i_iconMap release];
+    [i_dayNames release];
+    [i_dayTemps release];
+    [i_dayIconViews release];
+    [i_spinners release];
 
     // get rid of the queue
     dispatch_release(backgroundQueue);
@@ -253,12 +261,17 @@
     float r2off = 8.f; float r2height = 15.f; float r2y = r1y+r1height+r2off;
     float r3off = 8.f; float r3height = 15.f; float r3y = r2y+r2height+r3off;
 
+    // position and hide spinners
+    for (spinner in i_spinners) {
+        [spinner setCenter:CGPointMake(width/2,[self viewHeight]/2)];
+        [spinner setHidden:YES];
+    }
+
     // backgroundLeft2
     [i_lastRefreshed setFrame:CGRectMake(36,r1y,width-76,r1height)];
     [i_distanceToStation setFrame:CGRectMake(36,r2y,width-76,r2height)];
     [i_configureInSettings setFrame:CGRectMake(36,r3y,width-76,r3height)];
     [i_refreshButton setFrame:CGRectMake(width-34,([self viewHeight] - 32)/2,32,32)];
-    [[i_backgroundViews objectAtIndex:0] bringSubviewToFront:i_refreshButton];
 
     // backgroundLeft
 
@@ -320,6 +333,7 @@
         (i_distanceToStation = [[UILabel alloc] init]),
         (i_configureInSettings = [[UILabel alloc] init]),nil];
 
+    // refresh button
     i_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIImage *refreshImage = [UIImage imageWithContentsOfFile:
         [_ammNCWundergroundWeeAppBundle pathForResource:
@@ -329,6 +343,13 @@
         forControlEvents:UIControlEventTouchUpInside];
     NSLog(@"NCWunderground: button actions %@",[i_refreshButton actionsForTarget:self
         forControlEvent:UIControlEventTouchUpInside]);
+
+    // loading spinner
+    if ([i_spinners count] != 0) {
+        [i_spinners removeAllObjects];
+    }
+    [i_spinners addObject:[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
+        UIActivityIndicatorViewStyleGray]];
     
     // basic tasks on all the labels
     for (UILabel *iterView in backgroundLeft2LabelArray) {
@@ -336,13 +357,18 @@
         iterView.textAlignment = NSTextAlignmentCenter;
     }
 
+    // add and release the labels
     for (UILabel *iterView in backgroundLeft2LabelArray) {
         [[i_backgroundViews objectAtIndex:0] addSubview:iterView];
         [iterView release];
     }
 
+    // add the other things
     [[i_backgroundViews objectAtIndex:0] addSubview:i_refreshButton];
+    [[i_backgroundViews objectAtIndex:0] addSubview:[i_spinners objectAtIndex:0]];
+
     // don't need to release i_refreshButton
+    [[i_spinners objectAtIndex:0] release];
 }
 
 - (void)loadBackgroundLeftSubviews {
@@ -362,6 +388,13 @@
         (i_feelsLikeEnd = [[UILabel alloc] init]),
         (i_feelsLikeHigh = [[UILabel alloc] init]),
         (i_feelsLikeLow = [[UILabel alloc] init]),nil];
+
+    // loading spinner
+    if ([i_spinners count] != 1) {
+        [i_spinners removeObjectsInRange:NSMakeRange(1,[i_spinners count]-1)];
+    }
+    [i_spinners addObject:[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
+        UIActivityIndicatorViewStyleGray]];
 
     // basic tasks on all the labels
     for (UILabel *iterView in backgroundLeftLabelArray) {
@@ -389,6 +422,8 @@
         [[i_backgroundViews objectAtIndex:1] addSubview:iterView];
         [iterView release];
     }
+    [[i_backgroundViews objectAtIndex:1] addSubview:[i_spinners objectAtIndex:1]];
+    [[i_spinners objectAtIndex:1] release];
 }
 
 - (void)loadBackgroundSubviews {
@@ -403,6 +438,13 @@
 
     i_iconView = [[UIImageView alloc] init];
 
+    // loading spinner
+    if ([i_spinners count] != 2) {
+        [i_spinners removeObjectsInRange:NSMakeRange(2,[i_spinners count]-2)];
+    }
+    [i_spinners addObject:[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
+        UIActivityIndicatorViewStyleGray]];
+
     for (UILabel *iterView in backgroundLabelArrayRightCol) {
         [iterView setTextAlignment:NSTextAlignmentRight];
     }
@@ -415,6 +457,9 @@
     
     [[i_backgroundViews objectAtIndex:2] addSubview:i_iconView];
     [i_iconView release];
+
+    [[i_backgroundViews objectAtIndex:2] addSubview:[i_spinners objectAtIndex:2]];
+    [[i_spinners objectAtIndex:2] release];
 }
 
 - (void)loadBackgroundRightSubviews {
@@ -429,6 +474,13 @@
             (i_dayTemps = [[NSMutableArray alloc] init]),nil];
         i_dayIconViews = [[NSMutableArray alloc] init];
     }
+
+    // loading spinner
+    if ([i_spinners count] != 3) {
+        [i_spinners removeObjectsInRange:NSMakeRange(3,[i_spinners count]-3)];
+    }
+    [i_spinners addObject:[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
+        UIActivityIndicatorViewStyleGray]];
     
     for (int j = 0;j < i_numberOfDays;++j) {
         for (int i = 0; i < 2; i++) {
@@ -448,6 +500,8 @@
         [[i_backgroundViews objectAtIndex:3] addSubview:newImageView];
         [newImageView release];
     }
+    [[i_backgroundViews objectAtIndex:3] addSubview:[i_spinners objectAtIndex:3]];
+    [[i_spinners objectAtIndex:3] release];
 }
 
 - (void)updateSubviewValues {
@@ -458,6 +512,7 @@
 }
 
 - (void)loadSubviews {
+    i_spinners = [[NSMutableArray alloc] init];
     [self loadBackgroundSubviews];
     [self loadBackgroundLeftSubviews];
     [self loadBackgroundLeft2Subviews];
@@ -551,6 +606,9 @@
     i_dayTemps = nil;
     [i_dayIconViews release];
     i_dayIconViews = nil;
+
+    [i_spinners release];
+    i_spinners = nil;
     // Destroy any additional subviews you added here. Don't waste memory :(.
 }
 
@@ -563,12 +621,12 @@
         NSLog(@"NCWunderground: tried to loadData while already loadingData");
         return;
     }
-
-    NSLog(@"NCWunderground: loading data");
-
-    //[i_refreshButton setHidden:YES];
-
     i_loadingData = YES;
+    [i_refreshButton setHidden:YES];
+    for (spinner in i_spinners) {
+        [spinner startAnimating];
+        [spinner setHidden:NO];
+    }
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
@@ -706,6 +764,11 @@
                 else {
                     NSLog(@"NCWunderground: prevented it from updating subviews while not displayed");
                 }
+                for (spinner in i_spinners) {
+                    [spinner stopAnimating];
+                    [spinner setHidden:YES];
+                }
+                [i_refreshButton setHidden:NO];
                 i_loadingData = NO;
             });
         }
