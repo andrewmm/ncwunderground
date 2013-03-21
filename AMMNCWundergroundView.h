@@ -54,3 +54,5 @@
 
 // Does: sets needsDisplay:YES on everything in i_refreshNeeded
 - (void)refreshViews;
+
+@end
