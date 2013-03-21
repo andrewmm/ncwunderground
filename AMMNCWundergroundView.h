@@ -1,7 +1,9 @@
 @interface AMMNCWundergroundView: UIScrollView {
 	int *i_pages; // number of pages in the scroll view
+	// TODO: get rid of these two. use the controller's
 	float *i_baseWidth; // screen width we design layout around (min)
 	float *i_screenWidth; // current screen width
+	//
 	float *i_viewHeight;
 	NSMutableArray *i_backgroundViews; // array of pages
 	NSMutableArray *i_subviewContainers; // one for each page
