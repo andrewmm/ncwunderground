@@ -502,6 +502,7 @@
     [self positionSubviewsForBackgroundViewWidth:[UIScreen mainScreen].bounds.size.width];
 }
 
+// TODO: get rid of this, in favor of the stack overflow solution
 - (void)willAnimateRotationToInterfaceOrientation:(int)arg1
 {
     float screenWidth;
@@ -539,11 +540,6 @@
     i_view = [[UIScrollView alloc] initWithFrame:(CGRect){CGPointZero, {screenWidth, [self viewHeight]}}];
     UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
     UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2.f) topCapHeight:floorf(bgImg.size.height / 2.f)];
-    /*NSArray *backgroundViews = [NSArray arrayWithObjects:
-        (i_backgroundLeftView2 = [[UIImageView alloc] initWithImage:stretchableBgImg]),
-        (i_backgroundLeftView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
-        (i_backgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg]),
-        (i_backgroundRightView = [[UIImageView alloc] initWithImage:stretchableBgImg]),nil];*/
 
     i_view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     i_view.contentSize = CGSizeMake(4 * screenWidth,[self viewHeight]);
@@ -569,6 +565,8 @@
     }
 
     // load subviews
+    // TODO: we do NOT want to be doing this. need to fix the way we're dealing with
+    // lanscape first, though
     [self loadSubviews];
 
     i_isDisplayed = YES;
