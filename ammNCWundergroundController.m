@@ -325,7 +325,7 @@
         [_ammNCWundergroundWeeAppBundle pathForResource:
                 @"refresh" ofType:@"png"]];
     [i_refreshButton setBackgroundImage:refreshImage forState:UIControlStateNormal];
-    [i_refreshButton addTarget:self action:@selector(refresh:) 
+    [i_refreshButton addTarget:self action:@selector(loadData) 
         forControlEvents:UIControlEventTouchUpInside];
     NSLog(@"NCWunderground: button actions %@",[i_refreshButton actionsForTarget:self
         forControlEvent:UIControlEventTouchUpInside]);
@@ -556,11 +556,6 @@
 
 - (float)viewHeight {
     return 71.f;
-}
-
-- (void)refresh:(id)sender {
-    NSLog(@"NCWunderground: refresh tapped");
-    [self loadData];
 }
 
 - (void)loadData {
