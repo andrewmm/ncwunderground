@@ -100,7 +100,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)downloadData;
 - (void)startURLRequest; // should only run inside backgroundQueue
 
-- (void)locationManager:(CLLocationManager *)manage didUpdateLocations:(NSArray *)locations;
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations;
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *) error;
 
 
