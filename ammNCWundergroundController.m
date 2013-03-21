@@ -325,8 +325,10 @@
         [_ammNCWundergroundWeeAppBundle pathForResource:
                 @"refresh" ofType:@"png"]];
     [i_refreshButton setBackgroundImage:refreshImage forState:UIControlStateNormal];
-    [i_refreshButton addTarget:self action:@selector(loadData) 
+    [i_refreshButton addTarget:self action:@selector(refresh:) 
         forControlEvents:UIControlEventTouchUpInside];
+    NSLog(@"NCWunderground: button actions %@",[i_refreshButton actionsForTarget:self
+        forControlEvent:UIControlEventTouchUpInside]);
     
     // basic tasks on all the labels
     for (UILabel *iterView in backgroundLeft2LabelArray) {
@@ -521,9 +523,10 @@
     }
     for (int i = 0;i<4;++i) {
         UIImageView *newBackgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg];
+        [newBackgroundView setUserInteractionEnabled:YES]; // allow buttons to be pressed
         [i_backgroundViews addObject:newBackgroundView];
         [newBackgroundView setFrame:
-            CGRectMake(screenWidth*i+2,0,screenWidth-8,[self viewHeight])];
+            CGRectMake(screenWidth*i+2,0,screenWidth-4,[self viewHeight])];
         [newBackgroundView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
         [i_view addSubview:newBackgroundView];
         [newBackgroundView release];
@@ -556,7 +559,10 @@
     return 71.f;
 }
 
-// new functions
+- (void)refresh:(id)sender {
+    NSLog(@"NCWunderground: refresh tapped");
+    [self loadData];
+}
 
 - (void)loadData {
     if (i_loadingData) {
