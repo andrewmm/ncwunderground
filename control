@@ -12,7 +12,6 @@ Description: Notification Center widget for Weather Underground.
  * Added spinners to each page to indicate that update is in progress.
  
  Version 0.0.4:
-
  * Fixed a memory leak.
  * Incorrect API Keys no longer crash your phone into Safe Mode.
  * Some under-the-hood fixes.
