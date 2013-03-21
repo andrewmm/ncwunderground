@@ -270,10 +270,10 @@
     }
 
     // backgroundLeft2
-    [i_lastRefreshed setFrame:CGRectMake(36,r1y,width-76,r1height)];
-    [i_distanceToStation setFrame:CGRectMake(36,r2y,width-76,r2height)];
-    [i_configureInSettings setFrame:CGRectMake(36,r3y,width-76,r3height)];
-    [i_refreshButton setFrame:CGRectMake(width-34,([self viewHeight] - 32)/2,32,32)];
+    [i_lastRefreshed setFrame:CGRectMake(56,r1y,width-116,r1height)];
+    [i_distanceToStation setFrame:CGRectMake(56,r2y,width-116,r2height)];
+    [i_configureInSettings setFrame:CGRectMake(56,r3y,width-116,r3height)];
+    [i_refreshButton setFrame:CGRectMake(width-54,([self viewHeight] - 32)/2,32,32)];
 
     // backgroundLeft
 
