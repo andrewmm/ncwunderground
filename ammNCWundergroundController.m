@@ -262,7 +262,7 @@
     float r3off = 8.f; float r3height = 15.f; float r3y = r2y+r2height+r3off;
 
     // position and hide spinners
-    for (spinner in i_spinners) {
+    for (UIActivityIndicatorView *spinner in i_spinners) {
         [spinner setCenter:CGPointMake(width/2,[self viewHeight]/2)];
         [spinner setHidden:YES];
     }
@@ -623,7 +623,7 @@
     }
     i_loadingData = YES;
     [i_refreshButton setHidden:YES];
-    for (spinner in i_spinners) {
+    for (UIActivityIndicatorView *spinner in i_spinners) {
         [spinner startAnimating];
         [spinner setHidden:NO];
     }
@@ -764,7 +764,7 @@
                 else {
                     NSLog(@"NCWunderground: prevented it from updating subviews while not displayed");
                 }
-                for (spinner in i_spinners) {
+                for (UIActivityIndicatorView *spinner in i_spinners) {
                     [spinner stopAnimating];
                     [spinner setHidden:YES];
                 }
