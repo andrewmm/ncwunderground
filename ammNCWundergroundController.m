@@ -744,7 +744,7 @@
             // this should be the last thing done on the background queue, because the main queue needs to use i_savedData
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 if (i_isDisplayed) {
-                    [self updateSubviewValues];
+                    [self updateSubviewValues]; // TODO: is this unnecessary to do every time?
                 }
                 else {
                     NSLog(@"NCWunderground: prevented it from updating subviews while not displayed");
