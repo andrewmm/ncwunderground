@@ -21,24 +21,21 @@
 @property (nonatomic, readonly) NSMutableArray *backgroundViews;
 @property (nonatomic, readonly) NSMutableDictionary *subviews;
 
+
 // Takes: number of pages, base width, view height
-// Does: initializes
+// Does: initializes (calls setPages)
 - (void)initWithPages:(int)n_pages width:(float)width height:(float)height;
 
 // Override pages setter
 // Takes: new number of pages
 /* Does: sets pages
-		 removes current set of background views, if any
-		 creates new background views */
+		 sets up background views, subview containers, and spiners */
 - (void)setPages:(int)n_pages;
 
 // Override screenWidth setter
 // Takes: new width of screen
 /* Does: sets screenWidth
-		 removes current background views from main view
-		 creates and adds new background views
-		 adds subview containers to new background views with proper positioning
-		 release old background views */
+		 calls setPages */
 - (void)setScreenWidth:(int)width;
 
 // Takes: BOOL indicating whether we're loading or now
@@ -55,7 +52,3 @@
 
 // Does: sets needsDisplay:YES on everything in i_refreshNeeded
 - (void)refreshViews;
-
-// Takes: current screen width 
-// Does: changes frames of subview containers
-//- (void)positionSubviewContainersForScreenWidth:(float)width;
