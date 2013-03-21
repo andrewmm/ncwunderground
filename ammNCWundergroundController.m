@@ -221,7 +221,8 @@
         localIconName = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
     }
     UIImage *weatherIcon = [UIImage imageWithContentsOfFile:
-        [_ammNCWundergroundWeeAppBundle pathForResource:localIconName ofType:@"png"]];
+        [_ammNCWundergroundWeeAppBundle pathForResource:
+            [NSString stringWithFormat:@"icons/%@",localIconName] ofType:@"png"]];
     i_iconView.image=weatherIcon;
 }
 
@@ -247,7 +248,8 @@
             localIconName = [[i_iconMap objectForKey:wundergroundIconName] objectForKey:@"icon"];
         }
         UIImage *weatherIcon = [UIImage imageWithContentsOfFile:
-            [_ammNCWundergroundWeeAppBundle pathForResource:localIconName ofType:@"png"]];
+            [_ammNCWundergroundWeeAppBundle pathForResource:
+                [NSString stringWithFormat:@"icons/%@",localIconName] ofType:@"png"]];
         [[i_dayIconViews objectAtIndex:j] setImage:weatherIcon];
     }
 }
