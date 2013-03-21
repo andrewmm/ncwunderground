@@ -325,7 +325,7 @@
         [_ammNCWundergroundWeeAppBundle pathForResource:
                 @"refresh" ofType:@"png"]];
     [i_refreshButton setBackgroundImage:refreshImage forState:UIControlStateNormal];
-    [i_refreshButton addTarget:self action:@selector(loadData) 
+    [i_refreshButton addTarget:self action:@selector(loadData:) 
         forControlEvents:UIControlEventTouchUpInside];
     NSLog(@"NCWunderground: button actions %@",[i_refreshButton actionsForTarget:self
         forControlEvent:UIControlEventTouchUpInside]);
@@ -488,7 +488,7 @@
     // Add subviews to i_backgroundView (or i_view) here.
     // Actually, we do it in load placeholder view because it needs to happen before
     // rotation method is called
-    [self loadData];
+    [self loadData:nil];
 }
 
 - (void)loadPlaceholderView {
@@ -558,11 +558,15 @@
     return 71.f;
 }
 
-- (void)loadData {
+- (void)loadData:(id)caller {
     if (i_loadingData) {
         NSLog(@"NCWunderground: tried to loadData while already loadingData");
         return;
     }
+
+    NSLog(@"NCWunderground: loading data");
+
+    //[i_refreshButton setHidden:YES];
 
     i_loadingData = YES;
 
@@ -581,7 +585,8 @@
         [self updateSubviewValues];
     }
 
-    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:
+        @"com.amm.ncwunderground"];
     NSNumber *updateSeconds = [defaultsDom objectForKey:@"updateSeconds"];
     int updateLength;
     if (updateSeconds) {
@@ -592,7 +597,9 @@
         updateLength = 300; // default to 5 minutes
     }
 
-    if ([i_savedData objectForKey:@"last request"] == nil || [[NSDate date] timeIntervalSince1970] - [[i_savedData objectForKey:@"last request"] integerValue] >= updateLength) {
+    if (caller != nil || [i_savedData objectForKey:@"last request"] == nil || 
+        [[NSDate date] timeIntervalSince1970] - [[i_savedData objectForKey:
+            @"last request"] integerValue] >= updateLength) {
         // It's been too long since we last queried the database. Let's do it again.
         [self downloadData];
     }

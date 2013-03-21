@@ -93,7 +93,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 - (float)viewHeight;
 
-- (void)loadData;
+- (void)loadData:(id)caller;
 - (void)downloadData;
 - (void)startURLRequest; // should only run inside backgroundQueue
 
