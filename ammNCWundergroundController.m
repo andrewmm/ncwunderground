@@ -343,13 +343,6 @@
         forControlEvents:UIControlEventTouchUpInside];
     NSLog(@"NCWunderground: button actions %@",[i_refreshButton actionsForTarget:self
         forControlEvent:UIControlEventTouchUpInside]);
-
-    // loading spinner
-    if ([i_spinners count] != 0) {
-        [i_spinners removeAllObjects];
-    }
-    [i_spinners addObject:[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-        UIActivityIndicatorViewStyleGray]];
     
     // basic tasks on all the labels
     for (UILabel *iterView in backgroundLeft2LabelArray) {
@@ -388,13 +381,6 @@
         (i_feelsLikeEnd = [[UILabel alloc] init]),
         (i_feelsLikeHigh = [[UILabel alloc] init]),
         (i_feelsLikeLow = [[UILabel alloc] init]),nil];
-
-    // loading spinner
-    if ([i_spinners count] != 1) {
-        [i_spinners removeObjectsInRange:NSMakeRange(1,[i_spinners count]-1)];
-    }
-    [i_spinners addObject:[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-        UIActivityIndicatorViewStyleGray]];
 
     // basic tasks on all the labels
     for (UILabel *iterView in backgroundLeftLabelArray) {
@@ -438,13 +424,6 @@
 
     i_iconView = [[UIImageView alloc] init];
 
-    // loading spinner
-    if ([i_spinners count] != 2) {
-        [i_spinners removeObjectsInRange:NSMakeRange(2,[i_spinners count]-2)];
-    }
-    [i_spinners addObject:[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-        UIActivityIndicatorViewStyleGray]];
-
     for (UILabel *iterView in backgroundLabelArrayRightCol) {
         [iterView setTextAlignment:NSTextAlignmentRight];
     }
@@ -474,13 +453,6 @@
             (i_dayTemps = [[NSMutableArray alloc] init]),nil];
         i_dayIconViews = [[NSMutableArray alloc] init];
     }
-
-    // loading spinner
-    if ([i_spinners count] != 3) {
-        [i_spinners removeObjectsInRange:NSMakeRange(3,[i_spinners count]-3)];
-    }
-    [i_spinners addObject:[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-        UIActivityIndicatorViewStyleGray]];
     
     for (int j = 0;j < i_numberOfDays;++j) {
         for (int i = 0; i < 2; i++) {
@@ -512,11 +484,21 @@
 }
 
 - (void)loadSubviews {
-    i_spinners = [[NSMutableArray alloc] init];
-    [self loadBackgroundSubviews];
-    [self loadBackgroundLeftSubviews];
+    i_spinners = [[NSMutableArray alloc] initWithObjects:
+        [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
+            UIActivityIndicatorViewStyleGray],
+        [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
+            UIActivityIndicatorViewStyleGray],
+        [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
+            UIActivityIndicatorViewStyleGray],
+        [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
+            UIActivityIndicatorViewStyleGray]];
+
     [self loadBackgroundLeft2Subviews];
+    [self loadBackgroundLeftSubviews];
+    [self loadBackgroundSubviews];
     [self loadBackgroundRightSubviews];
+
     [self positionSubviewsForBackgroundViewWidth:[UIScreen mainScreen].bounds.size.width];
 }
 
