@@ -486,13 +486,13 @@
 - (void)loadSubviews {
     i_spinners = [[NSMutableArray alloc] initWithObjects:
         [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-            UIActivityIndicatorViewStyleGray],
+            UIActivityIndicatorViewStyleWhiteLarge],
         [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-            UIActivityIndicatorViewStyleGray],
+            UIActivityIndicatorViewStyleWhiteLarge],
         [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-            UIActivityIndicatorViewStyleGray],
+            UIActivityIndicatorViewStyleWhiteLarge],
         [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-            UIActivityIndicatorViewStyleGray]];
+            UIActivityIndicatorViewStyleWhiteLarge],nil];
 
     [self loadBackgroundLeft2Subviews];
     [self loadBackgroundLeftSubviews];
