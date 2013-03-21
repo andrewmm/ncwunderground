@@ -257,6 +257,7 @@
     [i_lastRefreshed setFrame:CGRectMake(2,r1y,width-8,r1height)];
     [i_distanceToStation setFrame:CGRectMake(2,r2y,width-8,r2height)];
     [i_configureInSettings setFrame:CGRectMake(2,r3y,width-8,r3height)];
+    [i_refreshButton setFrame:CGRectMake(width-34,([self viewHeight] - 32)/2,32,32)];
 
     // backgroundLeft
 
@@ -317,6 +318,14 @@
         (i_lastRefreshed = [[UILabel alloc] init]),
         (i_distanceToStation = [[UILabel alloc] init]),
         (i_configureInSettings = [[UILabel alloc] init]),nil];
+
+    i_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIImage *refreshImage = [UIImage imageWithContentsOfFile:
+        [_ammNCWundergroundWeeAppBundle pathForResource:
+                @"refresh" ofType:@"png"]];
+    [i_refreshButton setBackgroundImage:refreshImage forState:UIControlStateNormal];
+    [i_refreshButton addTarget:self action:@selector(loadData) 
+        forControlEvents:UIControlEventTouchUpInside];
     
     // basic tasks on all the labels
     for (UILabel *iterView in backgroundLeft2LabelArray) {
@@ -328,6 +337,10 @@
         [[i_backgroundViews objectAtIndex:0] addSubview:iterView];
         [iterView release];
     }
+
+    [[i_backgroundViews objectAtIndex:0] addSubview:i_refreshButton];
+    [[i_backgroundViews objectAtIndex:0] bringSubviewToFront:i_refreshButton];
+    // don't need to release i_refreshButton
 }
 
 - (void)loadBackgroundLeftSubviews {
