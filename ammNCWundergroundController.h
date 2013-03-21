@@ -2,7 +2,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UITableView.h>
 #import "ASBSparkLineView.h"
-#import <dispatch/dispatch.h>
+#import <dispatch/dispatch.h> 
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
@@ -16,10 +16,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     // base views
     UIScrollView *i_view;
     NSMutableArray *i_backgroundViews;
-    /*UIImageView *i_backgroundLeftView2;
-    UIImageView *i_backgroundLeftView;
-    UIImageView *i_backgroundView;
-    UIImageView *i_backgroundRightView;*/
 
     // background left2 subviews
     UILabel *i_lastRefreshed;
