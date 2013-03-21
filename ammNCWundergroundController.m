@@ -342,7 +342,6 @@
     }
 
     [[i_backgroundViews objectAtIndex:0] addSubview:i_refreshButton];
-    [[i_backgroundViews objectAtIndex:0] bringSubviewToFront:i_refreshButton];
     // don't need to release i_refreshButton
 }
 
