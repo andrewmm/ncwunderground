@@ -124,9 +124,40 @@
 
     // -- current conditions page -- //
 
-    for (int i=0; i < 3; ++i) { // 
-        // hrm
+    labelWidth = ([self baseWidth] - 4 * colBuffer - [self viewHeight]) / 2;
+    leftHeight = ([self viewHeight] - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
+    rightHeight = leftHeight * 4 / 3;
+
+    float xArray[] = {colBuffer,colBuffer * 3 + labelWidth + [self viewHeight]};
+    float heightArray [][] = {{leftHeight * 2, rightHeight},
+        {leftHeight,rightHeight},{leftHeight,rightHeight}};
+    float yArray[][] = {{rowFirstBuffer,rowFirstBuffer},
+        {rowFirstBuffer + heightArray[0][0] + rowBuffer,
+            rowFirstBuffer + heightArray[0][2] + rowBuffer},
+        {rowFirstBuffer + heightArray[0][0] + heightArray[1][0] + rowBuffer * 2,
+            rowFirstBuffer + heightArray[0][2] + heightArray[1][2] + rowBuffer * 2}};
+    for (int i=0; i < 3; ++i) { // row
+        for (int j = 0; j < 2; ++j) { // column
+            UILabel *newLabel = [[UILabel alloc] init];
+            [newLabel setBackgroundColor:[UIColor clearColor]];
+            [newLabel setTextColor:[UIColor whiteColor]];
+            [newLabel setFont:[UIFont systemFontOfSize:(heightArray[i][j]-1)]];
+            if (j == 1)
+                [newLabel setTextAlignment:NSTextAlignmentRight];
+            [newLabel setFrame:CGRectMake(xArray[j],yArray[i][j],
+                heightArray[i][j],labelWidth)];
+
+            [i_view addSubview:newLabel toPage:2 withTag:
+                (200 + (i+1)*10 + (j+1)) manualRefresh:NO];
+            [newLabel release];
+        }
     }
+
+    UIImageView *iconView = [[UIImageView alloc] init];
+    [iconView setFrame:CGRectMake(colBuffer * 2 + labelWidth,rowFirstBuffer,
+        [self viewHeight],[self viewHeight])];
+    [i_view addSubview:iconView toPage:2 withTag:210 manualRefresh:NO];
+    [iconView release];
 }
 
 
