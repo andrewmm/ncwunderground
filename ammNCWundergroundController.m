@@ -303,7 +303,7 @@
     float moreInfoWidth = 316.f - 8.f - [self viewHeight] - temperatureWidth;
 
     i_temperatureLabel.frame = CGRectMake(c0off,2.f,temperatureWidth,30.f);
-    i_feelsLikeLabel.frame = CGRectMake(c0off,34.f,temperatureWidth,14.f);
+    i_feelsLikeLabel.frame = CGRectMake(c0off,34.f,temperatureWidth,15.f);
     i_weatherTypeLabel.frame = CGRectMake(c0off,50.f,temperatureWidth,15.f);
     i_iconView.frame = CGRectMake(c0off + temperatureWidth+2,0.f,[self viewHeight],[self viewHeight]);
     i_locationLabel.frame = CGRectMake(c0off + temperatureWidth + [self viewHeight]+4,5.f,moreInfoWidth,15.f);
