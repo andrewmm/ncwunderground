@@ -28,11 +28,17 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @property (atomic, assign) BOOL loadingData;
 @property (nonatomic, readonly) float baseWidth;
 @property (nonatomic, readonly) float currentWidth;
+@property (nonatomic, readonly) float viewHeight;
 
-- (void)init;
+- (id)init;
 
+/* Does: adds all the specific subviews to i_view
+         hooks subview values up to i_model */
 - (void)addSubviewsToView;
 
+/* Takes: object which is responsible for calling it
+          SPECIAL: iff caller==nil, this will respect user's preferences re: delay on reloading data */
+// Does: tells the model to reload the data
 - (void)loadData:(id)caller;
 
 @end

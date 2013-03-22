@@ -1,7 +1,5 @@
 #import "ammNCWundergroundController.h"
 
-#define i_numberOfDays 4
-
 @implementation ammNCWundergroundController
 
 @synthesize view=i_view;
