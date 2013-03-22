@@ -158,6 +158,18 @@
         [self viewHeight],[self viewHeight])];
     [i_view addSubview:iconView toPage:2 withTag:210 manualRefresh:NO];
     [iconView release];
+
+    // -- daily forecast page -- //
+
+    for (int i = 0; i < 2; ++i) { // rows
+        for (int j = 0; j < [self numberOfDays]; ++j) { // columns
+            
+        }
+    }
+}
+
+- (int)numberOfDays {
+    return 4;
 }
 
 

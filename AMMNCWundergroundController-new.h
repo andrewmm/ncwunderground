@@ -41,4 +41,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 // Does: tells the model to reload the data
 - (void)loadData:(id)caller;
 
+// Returns: number of days in daily forecast (4)
+- (int)numberOfDays;
+
 @end
