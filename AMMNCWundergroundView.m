@@ -163,19 +163,38 @@
     }
 }
 
-// Takes: subview to add, page to add it to, whether it needs manual refresh
+// Takes: subview to add, page to add it to, (optional: tag, default 0) whether it needs manual refresh
 /* Does: retains subview
          adds it to appropriate array in i_subviews
          adds it as a subview to the right subview container
          marks it as refresh needed, if necessary */
 // Returns: YES if successful, NO otherwise
-- (BOOL)addSubview:(UIView *)subview toPage:(int)page manualRefresh:(BOOL)refresh {
-    [[i_subviews objectForKey:[i_backgroundViews objectAtIndex:
-        page]] addObject:subview];
-    [[i_subviewContainers objectAtIndex:page] addSubview:subview];
+- (BOOL)addSubview:(UIView *)subview toPage:(int)page withTag:(int)tag manualRefresh:(BOOL)refresh {
+    // lots of error checking
+    UIImageView *t_backgroundView = [i_backgroundViews objectAtIndex:page];
+    if (!t_backgroundView) {
+        return NO;
+    }
+    NSMutableArray *t_subviewArray = [i_subviews objectForKey:t_backgroundView];
+    if (!t_subviewArray) {
+        return NO;
+    }
+    [t_subviewArray addObject:subview];
+    UIView *t_subviewContainer = [i_subviewContainers objectAtIndex:page];
+    if (!t_subviewContainer) {
+        return NO;
+    }
+
+    [t_subviewContainer addSubview:subview];
     if(refresh) {
         [i_refreshNeeded addObject:subview];
     }
+    [subview setTag:tag];
+
+    return YES;
+}
+- (BOOL)addSubview:(UIView *)subview toPage:(int)page manualRefresh:(BOOL)refresh {
+    return [self addSubview:subview toPage:page withTag:0 manualRefresh:refresh];
 }
 
 // Does: sets needsDisplay:YES on everything in i_refreshNeeded

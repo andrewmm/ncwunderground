@@ -44,12 +44,13 @@
 // Does: activates or hides spinners
 - (void)loading:(BOOL)status;
 
-// Takes: subview to add, page to add it to, whether it needs manual refresh
+// Takes: subview to add, page to add it to, (optional: tag, default 0) whether it needs manual refresh
 /* Does: retains subview
 		 adds it to appropriate array in i_subviews
 		 adds it as a subview to the right subview container
 		 marks it as refresh needed, if necessary */
 // Returns: YES if successful, NO otherwise
+- (BOOL)addSubview:(UIView *)subview toPage:(int)page withTag:(int)tag manualRefresh:(BOOL)refresh;
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page manualRefresh:(BOOL)refresh;
 
 // Does: sets needsDisplay:YES on everything in i_refreshNeeded
