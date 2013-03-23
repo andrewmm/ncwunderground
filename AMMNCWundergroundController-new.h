@@ -7,7 +7,7 @@
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
-@interface ammNCWundergroundController: NSObject <BBWeeAppController> {
+@interface AMMNCWundergroundController: NSObject <BBWeeAppController> {
     // view and model
     AMMNCWundergroundView *i_view;
     AMMNCWundergroundModel *i_model;
