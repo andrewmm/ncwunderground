@@ -13,8 +13,7 @@
     _ammNCWundergroundWeeAppBundle = [[NSBundle bundleForClass:[self class]] retain];
 }
 
-- (id)init { // View should be created and destroyed in loadPlaceholderView and loadFullView/unloadView, not here
-             // model should be created and destroyed in init/dealloc
+- (id)init {
     if ((self = [super init]) != nil) {
         i_viewHeight = 71;
         i_baseWidth = [UIScreen mainScreen].bounds.size.width;
