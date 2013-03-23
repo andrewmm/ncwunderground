@@ -33,6 +33,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (id)init;
 - (void)dealloc;
 
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (void)loadFullView;
+- (void)loadPlaceholderView;
+- (void)unloadView;
+
 /* Does: adds all the specific subviews to i_view
          hooks subview values up to i_model */
 - (void)addSubviewsToView;
