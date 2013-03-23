@@ -31,6 +31,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @property (nonatomic, readonly) float viewHeight;
 
 - (id)init;
+- (void)dealloc;
 
 /* Does: adds all the specific subviews to i_view
          hooks subview values up to i_model */
