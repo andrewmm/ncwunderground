@@ -316,4 +316,16 @@
     return 4;
 }
 
-
+// Returns: user preferences for number of hours to display
+- (int)hourlyForecastLength {
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] 
+        persistentDomainForName:@"com.amm.ncwunderground"];
+    NSNumber *hourlyLength = [defaultsDom objectForKey:@"hourlyLength"];
+    if (hourlyLength) {
+        return [hourlyLength integerValue];
+    }
+    else {
+        NSLog(@"NCWunderground: user defaults contain no hourly forecast length field. Defaulting to 12 hours.");
+        return 12;
+    }
+}
