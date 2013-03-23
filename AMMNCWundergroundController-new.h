@@ -41,6 +41,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 // Does: tells the model to reload the data
 - (void)loadData:(id)caller;
 
+// Does: after data model has been updated, loads data into views
+- (void)associateModelToView;
+
 // Returns: number of days in daily forecast (4)
 - (int)numberOfDays;
 
