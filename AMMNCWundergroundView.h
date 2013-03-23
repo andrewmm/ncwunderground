@@ -53,6 +53,10 @@
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page withTag:(int)tag manualRefresh:(BOOL)refresh;
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page manualRefresh:(BOOL)refresh;
 
+// Takes: page number, tag number
+// Returns: subview
+- (UIView *)getSubviewFromPage:(int)page withTag:(int)tag;
+
 // Does: sets needsDisplay:YES on everything in i_refreshNeeded
 - (void)refreshViews;
 
