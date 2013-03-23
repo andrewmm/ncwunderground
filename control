@@ -6,7 +6,7 @@ Architecture: iphoneos-arm
 Description: Notification Center widget for Weather Underground.
  
  You will need your own Weather Underground API key to use this widget.
-
+ 
  Version 0.0.6:
  * Re-fixed a (re-introduced) crash caused by opening the Notification Center and closing it very quickly thereafter.
  
