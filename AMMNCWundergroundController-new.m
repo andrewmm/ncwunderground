@@ -124,7 +124,7 @@
 
     // -- current conditions page -- //
 
-    labelWidth = ([self baseWidth] - 4 * colBuffer - [self viewHeight]) / 2;
+    labelWidth = ([self baseWidth] - 4 - 4 * colBuffer - [self viewHeight]) / 2;
     leftHeight = ([self viewHeight] - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
     rightHeight = leftHeight * 4 / 3;
 
