@@ -747,15 +747,15 @@
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 if (i_isDisplayed) {
                     [self updateSubviewValues]; // TODO: is this unnecessary to do every time?
+                    for (UIActivityIndicatorView *spinner in i_spinners) {
+                        [spinner stopAnimating];
+                        [spinner setHidden:YES];
+                    }
+                    [i_refreshButton setHidden:NO];
                 }
                 else {
                     NSLog(@"NCWunderground: prevented it from updating subviews while not displayed");
                 }
-                for (UIActivityIndicatorView *spinner in i_spinners) {
-                    [spinner stopAnimating];
-                    [spinner setHidden:YES];
-                }
-                [i_refreshButton setHidden:NO];
                 i_loadingData = NO;
             });
         }
