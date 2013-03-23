@@ -197,6 +197,26 @@
     return [self addSubview:subview toPage:page withTag:0 manualRefresh:refresh];
 }
 
+// Takes: page number, tag number
+// Returns: subview
+- (UIView *)getSubviewFromPage:(int)page withTag:(int)tag {
+    UIView *subviewContainer = [i_subviewContainers objectAtIndex:page];
+    if (subviewContainer) {
+        subview = [subviewContainer viewWithTag:tag];
+        if (subview) {
+            return subview;
+        }
+        else {
+            NSLog(@"NCWunderground: subview requested for non-existent tag; returning nil.");
+            return nil;
+        }
+    }
+    else {
+        NSLog(@"NCWunderground: subview requested for non-existent page; returning nil.");
+        return nil;
+    }
+}
+
 // Does: sets needsDisplay:YES on everything in i_refreshNeeded
 - (void)refreshViews {
     for (UIView *view in i_refreshNeeded) {
