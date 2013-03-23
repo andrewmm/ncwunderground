@@ -97,7 +97,10 @@
         [newLabel setTextAlignment:NSTextAlignmentCenter];
         [newLabel setFrame:CGRectMake(0.2*[self baseWidth],5+23*i,
             0.6*[self baseWidth],15)]
-        [i_view addSubview:newLabel toPage:0 withTag:i manualRefresh:NO];
+        if (i == 2) {
+            [newLabel setText:@"Configure options in Settings app."];
+        }
+        [i_view addSubview:newLabel toPage:0 withTag:(i+1) manualRefresh:NO];
         [newLabel release];
     }
 
@@ -112,7 +115,7 @@
     [refreshButton setFrame:CGRectMake(0.85*[self baseWidth],
         ([self viewHeight] - 0.1*[self baseWidth])/2,
         0.1*[self baseWidth],0.1*[self baseWidth])]
-    [i_view addSubview:refreshButton toPage:0 withTag:3 manualRefresh:NO];
+    [i_view addSubview:refreshButton toPage:0 withTag:4 manualRefresh:NO];
     // don't need to release refresh button
 
     // -- hourly forecast / sparklines page -- //
@@ -264,9 +267,9 @@
                 updateLength = 300; // default to 5 minutes
             }
 
-            if ([[NSDate date] timeIntervalSince1970] - [i_model lastRequest] >= updateLength) {
+            if ([[NSDate date] timeIntervalSince1970] - [i_model lastRequestInt] >= updateLength) {
                 NSLog(@"NCWunderground: Too soon to download data again. Done updating.");
-                [[i_view getSubviewFromPage:0 withTag:3] setHidden:NO]; // hide the refresh button
+                [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // hide the refresh button
                 [i_view setLoading:NO];
                 i_loadingData = NO;
                 return;
