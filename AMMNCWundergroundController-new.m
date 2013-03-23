@@ -61,6 +61,20 @@
     [super dealloc];
 }
 
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    float screenWidth;
+    if (UIInterfaceOrientationIsLandscape(arg1)) {
+        [i_view setScreenWidth:[UIScreen mainScreen].bounds.size.height];
+    }
+    else {
+        [i_view setScreenWidth:[UIScreen mainScreen].bounds.size.width];
+    }
+}
+
+- (void)loadFullView;
+- (void)loadPlaceholderView;
+- (void)unloadView;
+
 /* Does: adds all the specific subviews to i_view
          hooks subview values up to i_model */
 - (void)addSubviewsToView {
