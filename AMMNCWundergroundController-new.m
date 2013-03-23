@@ -141,10 +141,24 @@
             [newLabel setTextAlignment:NSTextAlignmentCenter];
 
             // calculate locations
-            float x = colBuffer + (colBuffer + labelWidth) * j;
-            if (j > 1)
-                x += colBuffer + sparkWidth;
-            [newLabel setFrame:CGRectMake(x,y,labelWidth,rowHeight)];
+            if (i == 0) {
+                float x = colBuffer + (colBuffer + labelWidth) * (j+1)
+                if (j > 1) {
+                    x = x - labelWidth + sparkWidth;
+                }
+                else if (j == 1) {
+                    [newLabel setFrame:CGRectMake(x,y,sparkWidth,rowHeight)];
+                }
+                else {
+                    [newLabel setFrame:CGRectMake(x,y,labelWidth,rowHeight)];
+                }
+            }
+            else {
+                float x = colBuffer + (colBuffer + labelWidth) * j;
+                if (j > 1)
+                    x += colBuffer + sparkWidth;
+                [newLabel setFrame:CGRectMake(x,y,labelWidth,rowHeight)];
+            }
 
             [i_view addSubview:newLabel toPage:1 withTag:tag manualRefresh:NO];
             [newLabel release];
