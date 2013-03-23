@@ -42,6 +42,25 @@
     return self;
 }
 
+- (void)dealloc {
+    [i_view release];
+    i_view = nil;
+
+    [i_model release];
+    i_model = nil;
+
+    [i_saveFile relase];
+    i_saveFile = nil;
+
+    [i_locationManager release];
+    i_locationManager = nil;
+
+    [i_iconMap release];
+    i_iconMap = nil;
+
+    [super dealloc];
+}
+
 /* Does: adds all the specific subviews to i_view
          hooks subview values up to i_model */
 - (void)addSubviewsToView {
