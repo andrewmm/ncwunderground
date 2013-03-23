@@ -156,15 +156,37 @@
     UIImageView *iconView = [[UIImageView alloc] init];
     [iconView setFrame:CGRectMake(colBuffer * 2 + labelWidth,rowFirstBuffer,
         [self viewHeight],[self viewHeight])];
-    [i_view addSubview:iconView toPage:2 withTag:210 manualRefresh:NO];
+    [i_view addSubview:iconView toPage:2 withTag:210 manualRefresh:YES];
     [iconView release];
 
     // -- daily forecast page -- //
 
-    for (int i = 0; i < 2; ++i) { // rows
-        for (int j = 0; j < [self numberOfDays]; ++j) { // columns
-            
+    float dayWidth = ([self baseWidth] - 4 - colBuffer * ((float)[self numberOfDays] + 1)) / (float)[self numberOfDays];
+    float rowBuffer = 3;
+    float iconDims = [self viewHeight] - 15 * 2 - rowBuffer * 4;
+    if (dayWidth < iconDims)
+        iconDims = dayWidth;
+    float iconY = 15 * 2 + rowBuffer * 3 + ([self viewHeight] - 15 * 2 - rowBuffer * 4 - iconDims) / 2;
+
+    for (int j = 0; j < [self numberOfDays]; ++j) { // columns
+        for (int i = 0; i < 2; ++i) { // rows
+            UILabel *newLabel = [[UILabel alloc] init];
+            [newLabel setBackgroundColor:[UIColor clearColor]];
+            [newLabel setTextColor:[UIColor whiteColor]];
+            [newLabel setFont:[UIFont systemFontOfSize:14]];
+            [newLabel setTextAlignment:NSTextAlignmentCenter];
+            [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth),
+                rowBuffer + (rowBuffer + 15) * i, dayWidth, 15)];
+            [i_view addSubview:newLabel toPage:3 withTag:
+                (300 + (i+1)*10 + (j+1)) manualRefresh:NO];
+            [newLabel release];
         }
+
+        UIImageView *dayIconView = [[UIImageView alloc] init];
+        [dayIconView setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth),
+            iconY, iconDims, iconDims)];
+        [i_view addSubview:dayIconView toPage:3 withTag:
+            (300 + (j+1)) manualRefresh:YES];
     }
 }
 
