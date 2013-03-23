@@ -42,7 +42,7 @@
 
 // Takes: BOOL indicating whether we're loading or now
 // Does: activates or hides spinners
-- (void)loading:(BOOL)status;
+- (void)setLoading:(BOOL)status;
 
 // Takes: subview to add, page to add it to, (optional: tag, default 0) whether it needs manual refresh
 /* Does: retains subview
