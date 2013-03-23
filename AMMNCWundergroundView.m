@@ -150,7 +150,7 @@
 
 // Takes: BOOL indicating whether we're loading or now
 // Does: activates or hides spinners
-- (void)loading:(BOOL)status {
+- (void)setLoading:(BOOL)status {
     if(status) {
         for(UIActivityIndicatorView *spinner in i_spinners) {
             [spinner startAnimating];
