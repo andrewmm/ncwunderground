@@ -191,6 +191,60 @@
     }
 }
 
+/* Takes: object which is responsible for calling it
+          SPECIAL: iff caller==nil, this will respect user's preferences re: delay on reloading data */
+// Does: tells the model to reload the data
+- (void)loadData:(id)caller {
+    if (i_loadingData) {
+        NSLog(@"NCWunderground: Cannot reload data, because data is already loading.");
+        return;
+    }
+    i_loadingData = YES;
+    [[i_view getSubviewFromPage:0 withTag:3] setHidden:YES]; // hide the refresh button
+    [i_view setLoading:YES];
+
+    // Try to load in save data
+    if ([i_model loadSaveData:i_saveFile]) {
+        // loading the save file succeeded
+        NSLog(@"NCWunderground: Save file loaded, updating views.");
+        [self associateModelToView];
+
+        // If caller==nil, check update delay preferences
+        if (!caller) {
+            NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:
+                @"com.amm.ncwunderground"];
+            NSNumber *updateSeconds = [defaultsDom objectForKey:@"updateSeconds"];
+            int updateLength;
+            if (updateSeconds) {
+                updateLength = [updateSeconds integerValue];
+            }
+            else {
+                NSLog(@"NCWunderground: User's defaults contain no update delay. Defaulting to 5 minutes.");
+                updateLength = 300; // default to 5 minutes
+            }
+
+            if ([[NSDate date] timeIntervalSince1970] - [i_model lastRequest] >= updateLength) {
+                NSLog(@"NCWunderground: Too soon to download data again. Done updating.");
+                [[i_view getSubviewFromPage:0 withTag:3] setHidden:NO]; // hide the refresh button
+                [i_view setLoading:NO];
+                i_loadingData = NO;
+                return;
+            }
+        }
+    }
+    else {
+        NSLog(@"NCWunderground: No save file found.");
+    }
+
+    [i_model downloadData];
+}
+
+// Does: after data model has been updated, loads data into views
+- (void)associateModelToView {
+
+}
+
+// Returns: number of days in daily forecast (4)
 - (int)numberOfDays {
     return 4;
 }
