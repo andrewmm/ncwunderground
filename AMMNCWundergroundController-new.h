@@ -53,4 +53,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 // Returns: number of days in daily forecast (4)
 - (int)numberOfDays;
 
+// Returns: user preferences for number of hours to display
+- (int)hourlyForecastLength;
+
 @end
