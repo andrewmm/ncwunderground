@@ -18,10 +18,7 @@
     if ((self = [super init]) != nil) {
         i_viewHeight = 71;
         i_baseWidth = [UIScreen mainScreen].bounds.size.width;
-        i_currentWidth = i_baseWidth;
 
-        i_view = [[AMMNCWundergroundView alloc] initWithPages:4
-            width:currentWidth height:i_viewHeight];
         i_model = [[AMMNCWundergroundModel alloc] init];
 
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
@@ -71,9 +68,21 @@
     }
 }
 
-- (void)loadFullView;
-- (void)loadPlaceholderView;
-- (void)unloadView;
+- (void)loadFullView {
+    [self addSubviewsToView];
+    [self loadData:nil];
+}
+
+- (void)loadPlaceholderView {
+    i_currentWidth = i_baseWidth;
+    i_view = [[AMMNCWundergroundView alloc] initWithPages:4
+            width:i_currentWidth height:i_viewHeight];
+}
+
+- (void)unloadView {
+    [i_view release];
+    i_view = nil;
+}
 
 /* Does: adds all the specific subviews to i_view
          hooks subview values up to i_model */
