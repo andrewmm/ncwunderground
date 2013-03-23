@@ -322,7 +322,38 @@
 
     // -- hourly forecast page -- //
     int intervalLength = [self hourlyForecastLength];
+
+    NSMutableArray *realTempSparkData = [i_model hourlyTempNumberArrayF:
+        0 to:(intervalLength-1)];
+    NSMutableArray *feelsLikeSparkData = [i_model hourlyFeelsNumberArrayF:
+        0 to:(intervalLength-1)];
+
+    ASBSparkLineView *realTempSparkView = [i_view getSubviewFromPage:1 withTag:120];
+    ASBSparkLineView *feelsLikeSparkView = [i_view getSubviewFromPage:1 withTag:130];
+
+    [realTempSparkView setDataValues:realTempSparkData];
+    [feelsLikeSparkView setDataValues:feelsLikeSparkData];
     
+    NSArray *textArray = [NSArray arrayWithObjects:
+        [i_model hourlyTime12Hr:0],
+        [NSString stringWithFormat:@"%d hr",intervalLength],
+        [i_model hourlyTime12Hr:(intervalLength - 1)],
+        @"High",@"Low",@"Temp",[i_model hourlyTempStringF:0],
+        [i_model hourlyTempStringF:(intervalLength-1)],
+        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMaximum] stringValue]],
+        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMinimum] stringValue]],
+        @"Like",[i_model hourlyFeelsStringF:0],
+        [i_model hourlyFeelsStringF:(intervalLength-1)],
+        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMaximum] stringValue]],
+        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMinimum] stringValue]],
+        nil];
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            UILabel *label = [i_view getSubviewFromPage:1 withTag:
+                (100 + 10 * (i+1) + (j+1))];
+            [label setText:[textArray objectAtIndex:(i * 5 + j)]];
+        }
+    }
 }
 
 // Returns: number of days in daily forecast (4)
