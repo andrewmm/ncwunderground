@@ -374,7 +374,7 @@
             [i_model currentFeelsStringF]],
         [NSString stringWithFormat:@"Humidity: %@",
             [i_model currentHumidityString]],
-        [localIconInfo objectForKey:@"word"],//current conditions string
+        [localIconInfo objectForKey:@"word"],
         [NSString stringWithFormat:@"Wind: %@",
             [i_model currentWindMPHString]],nil];
 
