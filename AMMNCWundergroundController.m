@@ -1,4 +1,4 @@
-#import "AMMNCWundergroundController-new.h"
+#import "AMMNCWundergroundController.h"
 
 @implementation AMMNCWundergroundController
 
