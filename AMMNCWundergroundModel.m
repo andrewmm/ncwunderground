@@ -135,4 +135,16 @@
         @"current_observation"] objectForKey:@"wind_mph"] stringValue]];
 }
 
+// Returns: current location (city, state)
+- (NSString *)currentLocationString {
+    return [[[i_saveData objectForKey:@"current_observation"]
+        objectForKey:@"display_location"] objectForKey:@"full"];
+}
+
+// Returns: current conditions icon name
+- (NSString *)currentConditionsIconName {
+    return [[[[i_saveData objectForKey:@"current_observation"] objectForKey:
+        @"icon_url"] lastPathComponent] stringByDeletingPathExtension];
+}
+
 @end
