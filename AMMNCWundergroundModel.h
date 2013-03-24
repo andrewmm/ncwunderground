@@ -51,9 +51,11 @@ root
 - (id)init;
 - (void)dealloc;
 
+// Returns: current latitude/longitude as a double
 - (double)latitudeDouble;
 - (double)longitudeDouble;
 
+// Returns: observation latitude/longitude as a double
 - (double)obsLatitudeDouble;
 - (double)obsLongitudeDouble;
 
