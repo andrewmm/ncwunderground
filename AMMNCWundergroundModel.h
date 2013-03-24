@@ -43,7 +43,7 @@ root
 
 */
 
-
+@class AMMNCWundergroundController;
 
 @interface AMMNCWundergroundModel: NSObject <CLLocationManagerDelegate> {
     NSMutableDictionary *i_saveData;
