@@ -111,4 +111,28 @@
     return theArray;
 }
 
+// Returns: current temp string including °F
+- (NSString *)currentTempStringF {
+    return [NSString stringWithFormat:@"%@ °F",[[i_saveData objectForKey:
+        @"current_observation"] objectForKey:@"temp_f"]];
+}
+
+// Returns: current feels string including °F
+- (NSString *)currentFeelsStringF {
+    return [NSString stringWithFormat:@"%@ °F",[[i_saveData objectForKey:
+        @"current_observation"] objectForKey:@"feelslike_f"]];
+}
+
+// Returns: current humidity string, including %
+- (NSString *)currentHumidityString {
+    return [[i_saveData objectForKey:
+        @"current_observation"] objectForKey:@"relative_humidity"];
+}
+
+// Returns: current wind speed, including mph
+- (NSString *)currentWindMPHString {
+    return [NSString stringWithFormat:@"%@ mph",[[[i_saveData objectForKey:
+        @"current_observation"] objectForKey:@"wind_mph"] stringValue]];
+}
+
 @end
