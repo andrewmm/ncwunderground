@@ -1,3 +1,49 @@
+/*
+The i_saveData object must have the following structure. This should be inforced by downloadData. Other fields are permitted.
+
+root
+    current_observation
+        display_location
+            full (STRING)
+            latitude (STRING)
+            longitude (STRING)
+        feelslike_f (STRING)
+        forecast_url (STRING)
+        icon_url (STRING)
+        observation_location
+            latitude (STRING)
+            longitude (STRING)
+        temp_f (NUMBER)
+        weather (STRING)
+        wind_mph (NUMBER)
+    forecastday (ARRAY)
+        (for each)
+            date
+                weekday_short (STRING)
+            high
+                fahrenheit (STRING)
+            icon_url (STRING)
+            low
+                fahrenheit (STRING)
+            pop (NUMBER)
+    hourly_forecast (ARRAY)
+        (for each)
+            FCTTIME
+                ampm (STRING)
+                hour (STRING)
+            feelslike
+                english (STRING)
+            pop (STRING)
+            temp
+                english (STRING)
+    last_request (NUMBER)
+    latitude (STRING)
+    longitude (STRING)
+
+*/
+
+
+
 @interface AMMNCWundergroundModel: NSObject {
     NSMutableDictionary *i_saveData;
 }
