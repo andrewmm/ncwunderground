@@ -13,6 +13,7 @@ root
         observation_location
             latitude (STRING)
             longitude (STRING)
+        relative_humidity (STRING)
         temp_f (NUMBER)
         weather (STRING)
         wind_mph (NUMBER)
