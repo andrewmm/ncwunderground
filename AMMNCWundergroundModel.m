@@ -55,4 +55,12 @@
         @"FCTTIME"] objectForKey:@"ampm"]];
 }
 
+// Takes: index into hourly forecast array
+// Returns: Real temp string for that hour with °F
+- (NSString *)hourlyTempStringF:(int)forecastIndex {
+    return [NSString stringWithFormat:@"%@ °F",[[[[i_saveData objectForKey:
+        @"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:
+        @"temp"] objectForKey:@"english"]]
+}
+
 @end
