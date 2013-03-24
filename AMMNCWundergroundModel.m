@@ -60,7 +60,30 @@
 - (NSString *)hourlyTempStringF:(int)forecastIndex {
     return [NSString stringWithFormat:@"%@ °F",[[[[i_saveData objectForKey:
         @"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:
-        @"temp"] objectForKey:@"english"]]
+        @"temp"] objectForKey:@"english"]];
+}
+
+// Takes: index into hourly forecast array
+// Returns: Feels like temp string for that hour with °F
+- (NSString *)hourlyFeelsStringF:(int)forecastIndex {
+    return [NSString stringWithFormat:@"%@ °F",[[[[i_saveData objectForKey:
+        @"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:
+        @"feelslike"] objectForKey:@"english"]];
+}
+
+// Takes: start index and length in forecast array
+// Returns: array of temps as NSNumber's in that range
+- (NSMutableArray *)hourlyTempNumberArrayF:(int)startIndex length:(int)length {
+    NSMutableArray *theArray = [NSMutableArray array];
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    [f setNumberStyle:NSNumberFormatterDecimalStyle];
+    for (int i = startIndex; i < startIndex + length; ++i) {
+        NSNumber *theNumber = [f numberFromString:[[[[i_saveData objectForKey:
+        @"hourly_forecast"] objectAtIndex:i] objectForKey:
+        @"temp"] objectForKey:@"english"]];
+        [theArray addObject:theNumber];
+    }
+    return theArray;
 }
 
 @end
