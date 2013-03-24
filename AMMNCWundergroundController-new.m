@@ -331,9 +331,9 @@
     int intervalLength = [self hourlyForecastLength];
 
     NSMutableArray *realTempSparkData = [i_model hourlyTempNumberArrayF:
-        0 to:(intervalLength-1)];
+        0 length:intervalLength];
     NSMutableArray *feelsLikeSparkData = [i_model hourlyFeelsNumberArrayF:
-        0 to:(intervalLength-1)];
+        0 length:intervalLength];
 
     ASBSparkLineView *realTempSparkView = [i_view getSubviewFromPage:1 withTag:120];
     ASBSparkLineView *feelsLikeSparkView = [i_view getSubviewFromPage:1 withTag:130];
