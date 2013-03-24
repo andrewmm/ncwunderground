@@ -84,10 +84,11 @@ root
 - (NSString *)dailyDayShortString:(int)forecastIndex;
 - (NSString *)dailyHighStringF:(int)forecastIndex; // should not include °F
 - (NSString *)dailyLowStringF:(int)forecastIndex; // should not include °F
-- (NSString *)dailyPOPString:(int)forecastIndex;
+- (NSString *)dailyPOPString:(int)forecastIndex; // includes %
 - (NSString *)dailyConditionsIconName:(int)forecastIndex;
 
 - (BOOL)loadSaveData:(NSString *)saveFile;
-- (void)downloadData;
+- (void)startURLRequest;
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations;
 
 @end
