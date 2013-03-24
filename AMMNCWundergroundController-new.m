@@ -212,11 +212,18 @@
         }
     }
 
-    UIImageView *iconView = [[UIImageView alloc] init];
-    [iconView setFrame:CGRectMake(colBuffer * 2 + labelWidth,rowFirstBuffer,
-        [self viewHeight],[self viewHeight])];
-    [i_view addSubview:iconView toPage:2 withTag:210 manualRefresh:YES];
-    [iconView release];
+    CGRect iconRect = CGRectMake(colBuffer * 2 + labelWidth,rowFirstBuffer,
+        [self viewHeight],[self viewHeight]);
+
+    UIImageView *iconBackView = [[UIImageView alloc] init];
+    [iconBackView setFrame:iconRect];
+    [i_view addSubview:iconBackView toPage:2 withTag:200 manualRefresh:YES];
+    [iconBackView release];
+
+    UIImageView *iconFrontView = [[UIImageView alloc] init];
+    [iconFrontView setFrame:iconRect];
+    [i_view addSubview:iconFrontView toPage:2 withTag:201 manualRefresh:YES];
+    [iconFrontView release];
 
     // -- daily forecast page -- //
 
