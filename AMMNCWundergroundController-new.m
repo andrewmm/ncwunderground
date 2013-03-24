@@ -342,9 +342,9 @@
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
     
     NSArray *page1TextArray = [NSArray arrayWithObjects:
-        [i_model hourlyTime12Hr:0],
+        [i_model hourlyTime12HrString:0],
         [NSString stringWithFormat:@"%d hr",intervalLength],
-        [i_model hourlyTime12Hr:(intervalLength - 1)],
+        [i_model hourlyTime12HrString:(intervalLength - 1)],
         @"High",@"Low",@"Temp",[i_model hourlyTempStringF:0],
         [i_model hourlyTempStringF:(intervalLength-1)],
         [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMaximum] stringValue]],
