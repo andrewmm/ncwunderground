@@ -92,7 +92,7 @@
 }
 
 // Takes: start index and length in hourly forecast array
-
+// Returns: array of feelslike as NSNumber's in that range
 - (NSMutableArray *)hourlyFeelsNumberArrayF:(int)startIndex length:(int)length {
     if (startIndex + length >= [[i_saveData objectForKey:
         @"hourly_forecast"] count]) {
