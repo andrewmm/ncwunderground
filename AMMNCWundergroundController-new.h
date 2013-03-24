@@ -30,6 +30,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @property (nonatomic, readonly) float currentWidth;
 @property (nonatomic, readonly) float viewHeight;
 
++ (void)initialize;
 - (id)init;
 - (void)dealloc;
 
