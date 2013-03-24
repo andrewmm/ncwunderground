@@ -38,13 +38,21 @@
     return [last_request intValue];
 }
 
-- (int)hourlyTime12Hr:(int)forecastIndex {
+// Takes: index into hourly forecast array
+// Returns: time for that hour in 12 hour format, string
+- (NSString *)hourlyTime12HrString:(int)forecastIndex {
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     int hour = [[f numberFromString:[[[[i_saveData objectForKey:
         @"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:
         @"FCTTIME"] objectForKey:@"hour"]] intValue];
-    // TODO: not finished
+    if (hour > 12)
+        hour -= 12;
+    if (hour == 0)
+        hour = 12;
+    return [NSString stringWithFormat:@"%d %@",hour,[[[[i_saveData objectForKey:
+        @"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:
+        @"FCTTIME"] objectForKey:@"ampm"]];
 }
 
 @end
