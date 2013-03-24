@@ -45,11 +45,13 @@ root
 
 
 
-@interface AMMNCWundergroundModel: NSObject {
+@interface AMMNCWundergroundModel: NSObject <CLLocationManagerDelegate> {
     NSMutableDictionary *i_saveData;
+    dispatch_queue_t backgroundQueue;
+    AMMNCWundergroundController *i_controller;
 }
 
-- (id)init;
+- (id)initWithController:(AMMNCWundergroundController *)controller;
 - (void)dealloc;
 
 // Returns: current latitude/longitude as a double

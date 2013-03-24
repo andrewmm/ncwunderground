@@ -2,15 +2,17 @@
 
 @implementation AMMNCWundergroundModel
 
-- (id)init {
+- (id)initWithController:(AMMNCWundergroundController *)controller {
     i_saveData = [[NSMutableDictionary alloc] init];
-
+    backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.backgroundqueue", NULL);
+    i_controller = controller;
     [super init];
 }
 
 - (void)dealloc {
     [i_saveData release];
     i_saveData = nil;
+    dispatch_release(backgroundQueue);
 }
 
 // Returns: current latitude as a double
