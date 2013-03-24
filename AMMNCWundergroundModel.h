@@ -59,9 +59,12 @@ root
 - (double)obsLatitudeDouble;
 - (double)obsLongitudeDouble;
 
+// Returns: last request date (seconds since 1970) as an int
 - (int)lastRequestInt;
 
-- (int)hourlyTime12Hr:(int)forecastIndex;
+// Take: indices into hourly forecast arrays
+// Return: formatted information from those arrays 
+- (NSString *)hourlyTime12HrString:(int)forecastIndex;
 - (NSString *)hourlyTempStringF:(int)forecastIndex;
 - (NSString *)hourlyFeelsStringF:(int)forecastIndex;
 - (NSMutableArray *)hourlyTempNumberArrayF:(int)startIndex to:(int)endIndex;
