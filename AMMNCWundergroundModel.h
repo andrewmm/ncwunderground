@@ -29,8 +29,10 @@
 - (NSString *)dailyDayShortString:(int)forecastIndex;
 - (NSString *)dailyHighStringF:(int)forecastIndex; // should not include °F
 - (NSString *)dailyLowStringF:(int)forecastIndex; // should not include °F
-- (NSString *)dailyHumidityString:(int)forecastIndex;
+- (NSString *)dailyPOPString:(int)forecastIndex;
 - (NSString *)dailyConditionsIconName:(int)forecastIndex;
 
 - (BOOL)loadSaveData:(NSString *)saveFile;
 - (void)downloadData;
+
+@end

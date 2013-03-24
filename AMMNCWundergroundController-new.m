@@ -419,7 +419,7 @@
         [[i_view getSubviewFromPage:3 withTag:(320 + (j+1))] setText:
             [NSString stringWithFormat:@"%@/%@ (%@)",
                 [i_model dailyHighStringF:j],[i_model dailyLowStringF:j],
-                [i_model dailyHumidityString:j]]];
+                [i_model dailyPOPString:j]]];
 
         remoteIconName = [i_model dailyConditionsIconName:j];
         localIconInfo = [i_iconMap objectForKey:remoteIconName];
