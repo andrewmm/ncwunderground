@@ -341,7 +341,7 @@
     [realTempSparkView setDataValues:realTempSparkData];
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
     
-    NSArray *textArray = [NSArray arrayWithObjects:
+    NSArray *page1TextArray = [NSArray arrayWithObjects:
         [i_model hourlyTime12Hr:0],
         [NSString stringWithFormat:@"%d hr",intervalLength],
         [i_model hourlyTime12Hr:(intervalLength - 1)],
@@ -354,13 +354,62 @@
         [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMaximum] stringValue]],
         [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMinimum] stringValue]],
         nil];
+
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 5; ++j) {
             UILabel *label = [i_view getSubviewFromPage:1 withTag:
                 (100 + 10 * (i+1) + (j+1))];
-            [label setText:[textArray objectAtIndex:(i * 5 + j)]];
+            [label setText:[page1TextArray objectAtIndex:(i * 5 + j)]];
         }
     }
+
+    // -- current conditions page -- //
+
+    NSString *remoteIconName = [i_model currentConditionsIconName];
+    NSDictionary *localIconInfo = [i_iconMap objectForKey:remoteIconName];
+
+    NSArray *page2TextArray = [NSArray arrayWithObjects:
+        [i_model currentTempStringF],[i_model currentLocationString],
+        [NSString stringWithFormat:@"Feels Like %@",
+            [i_model currentFeelsStringF]],
+        [NSString stringWithFormat:@"Humidity: %@",
+            [i_model currentHumidityString]],
+        [localIconInfo objectForKey:@"word"],//current conditions string
+        [NSString stringWithFormat:@"Wind: %@",
+            [i_model currentWindMPHString]],nil];
+
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            UILabel *label = [i_view getSubviewFromPage:2 withTag:
+                (200 + 10 * (i+1) + (j+1))];
+            [label setText:[page2TextArray objectAtIndex:(i*2+j)]];
+        }
+    }
+
+    id localIcon = [localIconInfo objectForKey:@"icon"];
+    UIImage *weatherIcon;
+    UIImage *weatherIconFront;
+    if ([localIcon isKindOfClass:[NSString class]]) {
+        weatherIcon = [UIImage imageWithContentsOfFile:
+            [_ammNCWundergroundWeeAppBundle pathForResource:
+                [NSString stringWithFormat:
+                    @"icons/%@",localIcon] ofType:@"png"]];
+    }
+    else {
+        weatherIcon = [UIImage imageWithContentsOfFile:
+            [_ammNCWundergroundWeeAppBundle pathForResource:
+                [NSString stringWithFormat:
+                    @"icons/%@",[localIcon objectForKey:
+                        @"back"]] ofType:@"png"]];
+        weatherIconFront = [UIImage imageWithContentsOfFile:
+            [_ammNCWundergroundWeeAppBundle pathForResource:
+                [NSString stringWithFormat:
+                    @"icons/%@",[localIcon objectForKey:
+                        @"front"]] ofType:@"png"]];
+    }
+
+    [[i_view getSubviewFromPage:2 withTag:200] setImage:weatherIcon];
+    [[i_view getSubviewFromPage:2 withTag:201] setImage:weatherIconFront];
 }
 
 // Returns: number of days in daily forecast (4)
