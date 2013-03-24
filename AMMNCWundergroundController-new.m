@@ -18,7 +18,7 @@
         i_viewHeight = 71;
         i_baseWidth = [UIScreen mainScreen].bounds.size.width;
 
-        i_model = [[AMMNCWundergroundModel alloc] init];
+        i_model = [[AMMNCWundergroundModel alloc] initWithController:self];
 
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                              NSUserDomainMask, YES);
