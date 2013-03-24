@@ -410,6 +410,27 @@
 
     [[i_view getSubviewFromPage:2 withTag:200] setImage:weatherIcon];
     [[i_view getSubviewFromPage:2 withTag:201] setImage:weatherIconFront];
+
+    // -- daily forecast page -- //
+
+    for (int j = 0; j < [self numberOfDays]; ++j) {
+        [[i_view getSubviewFromPage:3 withTag:(310 + (j+1))] setText:
+            [i_model dailyDayShortString:j]];
+        [[i_view getSubviewFromPage:3 withTag:(320 + (j+1))] setText:
+            [NSString stringWithFormat:@"%@/%@ (%@)",
+                [i_model dailyHighStringF:j],[i_model dailyLowStringF:j],
+                [i_model dailyHumidityString:j]]];
+
+        remoteIconName = [i_model dailyConditionsIconName:j];
+        localIconInfo = [i_iconMap objectForKey:remoteIconName];
+        localIcon = [localIconInfo objectForKey:@"icon"];
+        weatherIcon = [UIImage imageWithContentsOfFile:
+            [_ammNCWundergroundWeeAppBundle pathForResource:
+                [NSString stringWithFormat:
+                    @"icons/%@",localIcon] ofType:@"png"]];
+        [[i_view getSubviewFromPage:3 withTag:(330 + (j+1))] setImage:
+            weatherIcon];
+    }
 }
 
 // Returns: number of days in daily forecast (4)
