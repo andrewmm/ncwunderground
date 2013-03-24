@@ -67,8 +67,8 @@ root
 - (NSString *)hourlyTime12HrString:(int)forecastIndex;
 - (NSString *)hourlyTempStringF:(int)forecastIndex;
 - (NSString *)hourlyFeelsStringF:(int)forecastIndex;
-- (NSMutableArray *)hourlyTempNumberArrayF:(int)startIndex to:(int)endIndex;
-- (NSMutableArray *)hourlyFeelsNumberArrayF:(int)startIndex to:(int)endIndex;
+- (NSMutableArray *)hourlyTempNumberArrayF:(int)startIndex length:(int)length;
+- (NSMutableArray *)hourlyFeelsNumberArrayF:(int)startIndex length:(int)length;
 
 - (NSString *)currentTempStringF;
 - (NSString *)currentFeelsStringF;
