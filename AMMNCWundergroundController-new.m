@@ -301,7 +301,22 @@
         NSLog(@"NCWunderground: No save file found.");
     }
 
-    [i_model downloadData];
+    i_locationManager.delegate = self;
+    i_locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    i_locationUpdated = NO;
+    [i_locationManager startUpdatingLocation];
+}
+
+- (void)dataDownloaded {
+    if (i_view) {
+        [self associateModelToView];
+    }
+    else {
+        NSLog(@"NCWunderground: didn't update view, because it no longer exists.");
+    }
+    [[i_view getSubviewFromPage:0 withTag:3] setHidden:NO]; // reveal the refresh button
+    [i_view setLoading:NO];
+    i_loadingData = NO;
 }
 
 // Does: after data model has been updated, loads data into views

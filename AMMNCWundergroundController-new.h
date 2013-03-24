@@ -48,6 +48,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 // Does: tells the model to reload the data
 - (void)loadData:(id)caller;
 
+- (void)dataDownloaded;
+
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView;
 
