@@ -16,5 +16,12 @@
 - (NSMutableArray *)hourlyTempNumberArrayF:(int)startIndex to:(int)endIndex;
 - (NSMutableArray *)hourlyFeelsNumberArrayF:(int)startIndex to:(int)endIndex;
 
+- (NSString *)currentTempStringF;
+- (NSString *)currentFeelsStringF;
+- (NSString *)currentHumidityString;
+- (NSString *)currentWindMPHString;
+- (NSString *)currentLocationString;
+- (NSString *)currentConditionsString;
+
 - (BOOL)loadSaveData:(NSString *)saveFile;
 - (void)downloadData;
