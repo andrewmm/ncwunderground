@@ -252,7 +252,7 @@
         [dayIconView setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth),
             iconY, iconDims, iconDims)];
         [i_view addSubview:dayIconView toPage:3 withTag:
-            (300 + (j+1)) manualRefresh:YES];
+            (300 + 30 + (j+1)) manualRefresh:YES];
     }
 }
 
