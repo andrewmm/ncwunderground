@@ -71,6 +71,7 @@ root
 - (NSMutableArray *)hourlyTempNumberArrayF:(int)startIndex length:(int)length;
 - (NSMutableArray *)hourlyFeelsNumberArrayF:(int)startIndex length:(int)length;
 
+// Return: formatted information about current conditions
 - (NSString *)currentTempStringF;
 - (NSString *)currentFeelsStringF;
 - (NSString *)currentHumidityString;
