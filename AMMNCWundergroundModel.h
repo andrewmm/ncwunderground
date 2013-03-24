@@ -1,6 +1,9 @@
-@interface AMMNCWundergroundModel: NSMutableDictionary {
-	
+@interface AMMNCWundergroundModel: NSObject {
+    NSMutableDictionary *i_saveData;
 }
+
+- (id)init;
+- (void)dealloc;
 
 - (double)latitudeDouble;
 - (double)longitudeDouble;
