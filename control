@@ -1,11 +1,15 @@
 Package: com.amm.ncwunderground
 Name: WeatherUnderground for Notification Center
 Depends: firmware (>= 6.1), com.saurik.substrate.safemode, com.chpwn.weeloader, com.arichardson.weepreferenceloader, mobilesubstrate
-Version: 0.1.1
+Version: 0.2.0
 Architecture: iphoneos-arm
 Description: Notification Center widget for Weather Underground.
  
  You will need your own Weather Underground API key to use this widget.
+ 
+ Version 0.2.0:
+ * Better failure modes for various cases.
+ * Shorter timeout on data download.
  
  Version 0.1.1:
  * On first open, defaults to current conditions page.
