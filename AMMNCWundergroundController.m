@@ -212,9 +212,12 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             UILabel *newLabel = [[UILabel alloc] init];
             [newLabel setBackgroundColor:[UIColor clearColor]];
             [newLabel setTextColor:[UIColor whiteColor]];
-            [newLabel setFont:[UIFont systemFontOfSize:14.f]];
-            if (j == 1)
+            if (j == 1) {
+                [newLabel setFont:[UIFont systemFontOfSize:14.f]];
                 [newLabel setTextAlignment:NSTextAlignmentRight];
+            }
+            else
+                [newLabel setFont:[UIFont systemFontOfSize:(heightArray[i][0]-0.5)]];
             [newLabel setFrame:CGRectMake(xArray[j],yArray[i][j],
                 labelWidth,heightArray[i][j])];
 
@@ -251,7 +254,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             UILabel *newLabel = [[UILabel alloc] init];
             [newLabel setBackgroundColor:[UIColor clearColor]];
             [newLabel setTextColor:[UIColor whiteColor]];
-            [newLabel setFont:[UIFont systemFontOfSize:14]];
+            if (i == 0)
+                [newLabel setFont:[UIFont systemFontOfSize:14]];
+            else
+                [newLabel setFont:[UIFont systemFontOfSize:13.5]];
             [newLabel setTextAlignment:NSTextAlignmentCenter];
             [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth),
                 rowBuffer + (rowBuffer + 15) * i, dayWidth, 15)];
