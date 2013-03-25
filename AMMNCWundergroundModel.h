@@ -83,6 +83,7 @@ root
 - (NSString *)currentLocationString;
 - (NSString *)currentConditionsIconName;
 - (NSString *)currentConditionsString;
+- (NSString *)currentConditionsURL;
 
 - (NSString *)dailyDayShortString:(int)forecastIndex;
 - (NSString *)dailyHighStringF:(int)forecastIndex; // should not include °F
