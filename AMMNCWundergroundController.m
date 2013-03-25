@@ -312,6 +312,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 - (void)dataDownloaded {
     if (i_view) {
+        [i_model saveDataToFile:i_saveFile];
         [self associateModelToView];
     }
     else {
@@ -330,6 +331,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView {
+    NSLog(@"NCWunderground: objectAtIndex associateModelToView");
     // -- details page -- //
 
     // "Last Refreshed"
@@ -399,15 +401,21 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [i_model currentFeelsStringF]],
         [NSString stringWithFormat:@"Humidity: %@",
             [i_model currentHumidityString]],
-        [localIconInfo objectForKey:@"word"],
+        [i_model currentConditionsString],
         [NSString stringWithFormat:@"Wind: %@",
             [i_model currentWindMPHString]],nil];
+
+    if ([page2TextArray count] != 6) {
+        NSLog(@"NCWunderground: page2TextArray not the right length. BAD.");
+        return;
+    }
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 2; ++j) {
             UILabel *label = (UILabel *)[i_view getSubviewFromPage:
                 2 withTag:(200 + 10 * (i+1) + (j+1))];
             [label setText:[page2TextArray objectAtIndex:(i*2+j)]];
+
         }
     }
 
@@ -459,6 +467,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [(UIImageView *)[i_view getSubviewFromPage:3 withTag:(330 + (j+1))] setImage:
             weatherIcon];
     }
+
 }
 
 // Returns: number of days in daily forecast (4)

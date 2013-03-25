@@ -86,6 +86,7 @@
         old_subviewContainers = i_subviewContainers;
     }
     i_subviewContainers = [[NSMutableArray alloc] init];
+    NSLog(@"NCWunderground: objectAtIndex setPages");
     for (int i = 0; i < i_pages; ++i) {
         UIView *newSubviewContainer = [[UIView alloc] init];
         [i_subviewContainers addObject:newSubviewContainer];
@@ -153,6 +154,7 @@
          marks it as refresh needed, if necessary */
 // Returns: YES if successful, NO otherwise
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page withTag:(int)tag manualRefresh:(BOOL)refresh {
+    NSLog(@"NCWunderground: objectAtIndex addSubview:toPage");
     // lots of error checking
     UIImageView *t_backgroundView = [i_backgroundViews objectAtIndex:page];
     if (!t_backgroundView) {
@@ -178,6 +180,7 @@
 // Takes: page number, tag number
 // Returns: subview
 - (UIView *)getSubviewFromPage:(int)page withTag:(int)tag {
+    
     UIView *subviewContainer = [i_subviewContainers objectAtIndex:page];
     if (subviewContainer) {
         UIView *subview = [subviewContainer viewWithTag:tag];

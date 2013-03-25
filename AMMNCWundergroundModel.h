@@ -82,6 +82,7 @@ root
 - (NSString *)currentWindMPHString;
 - (NSString *)currentLocationString;
 - (NSString *)currentConditionsIconName;
+- (NSString *)currentConditionsString;
 
 - (NSString *)dailyDayShortString:(int)forecastIndex;
 - (NSString *)dailyHighStringF:(int)forecastIndex; // should not include °F
@@ -90,7 +91,7 @@ root
 - (NSString *)dailyConditionsIconName:(int)forecastIndex;
 
 - (BOOL)loadSaveData:(NSString *)saveFile;
-- (void)saveData:(NSString *)saveFile;
+- (void)saveDataToFile:(NSString *)saveFile;
 - (void)startURLRequest;
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations;
 
