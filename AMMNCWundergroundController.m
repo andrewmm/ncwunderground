@@ -327,15 +327,15 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)dataDownloaded {
+    [i_model saveDataToFile:i_saveFile];
     if (i_view) {
-        [i_model saveDataToFile:i_saveFile];
         [self associateModelToView];
+        [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
+        [i_view setLoading:NO];
     }
     else {
         NSLog(@"NCWunderground: didn't update view, because it no longer exists.");
     }
-    [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
-    [i_view setLoading:NO];
     i_loadingData = NO;
 }
 
