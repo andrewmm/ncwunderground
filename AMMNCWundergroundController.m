@@ -8,7 +8,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @synthesize saveFile=i_saveFile;
 @synthesize locationManager=i_locationManager;
 @synthesize locationUpdated=i_locationUpdated;
-@synthesize loadingData=i_loadingData;
 @synthesize baseWidth=i_baseWidth;
 @synthesize currentWidth=i_currentWidth;
 @synthesize viewHeight=i_viewHeight;
@@ -32,8 +31,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
         i_locationManager = [[CLLocationManager alloc] init];
         i_locationUpdated = NO;
-
-        i_loadingData = NO;
 
         i_iconMap = [[NSDictionary alloc] initWithContentsOfFile:
             [_ammNCWundergroundWeeAppBundle pathForResource:
@@ -278,12 +275,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
           SPECIAL: iff caller==nil, this will respect user's preferences re: delay on reloading data */
 // Does: tells the model to reload the data
 - (void)loadData:(id)caller {
-    if (i_loadingData) {
-        NSLog(@"NCWunderground: Cannot reload data, because data is already loading.");
-        return;
-    }
     NSLog(@"NCWunderground: Loading data.");
-    i_loadingData = YES;
     [[i_view getSubviewFromPage:0 withTag:4] setHidden:YES]; // hide the refresh button
     [i_view setLoading:YES];
 
@@ -311,7 +303,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                 NSLog(@"NCWunderground: Too soon to download data again. Done updating.");
                 [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // hide the refresh button
                 [i_view setLoading:NO];
-                i_loadingData = NO;
                 return;
             }
         }
@@ -336,13 +327,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     else {
         NSLog(@"NCWunderground: didn't update view, because it no longer exists.");
     }
-    i_loadingData = NO;
 }
 
 - (void)dataDownloadFailed {
     [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
     [i_view setLoading:NO];
-    i_loadingData = NO;
 }
 
 // Does: after data model has been updated, loads data into views
