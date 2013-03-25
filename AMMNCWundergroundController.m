@@ -153,6 +153,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                 float x = colBuffer + (colBuffer + labelWidth) * (j+1);
                 if (j > 1) {
                     x = x - labelWidth + sparkWidth;
+                    [newLabel setFrame:CGRectMake(x,y,labelWidth,rowHeight)];
                 }
                 else if (j == 1) {
                     [newLabel setFrame:CGRectMake(x,y,sparkWidth,rowHeight)];
