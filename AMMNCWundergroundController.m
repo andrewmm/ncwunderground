@@ -191,6 +191,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
     // -- current conditions page -- //
 
+    rowFirstBuffer = 2;
+    rowBuffer = 3;
+
     labelWidth = ([self baseWidth] - 4 - 4 * colBuffer - [self viewHeight]) / 2;
     float leftHeight = ([self viewHeight] - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
     float rightHeight = leftHeight * 4 / 3;
@@ -200,19 +203,19 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         {leftHeight,rightHeight},{leftHeight,rightHeight}};
     float yArray[3][2] = {{rowFirstBuffer,rowFirstBuffer},
         {rowFirstBuffer + heightArray[0][0] + rowBuffer,
-            rowFirstBuffer + heightArray[2][0] + rowBuffer},
-        {rowFirstBuffer + heightArray[0][0] + heightArray[0][1] + rowBuffer * 2,
-            rowFirstBuffer + heightArray[2][0] + heightArray[2][1] + rowBuffer * 2}};
+            rowFirstBuffer + heightArray[0][1] + rowBuffer},
+        {rowFirstBuffer + heightArray[0][0] + heightArray[1][0] + rowBuffer * 2,
+            rowFirstBuffer + heightArray[0][1] + heightArray[1][1] + rowBuffer * 2}};
     for (int i=0; i < 3; ++i) { // row
         for (int j = 0; j < 2; ++j) { // column
             UILabel *newLabel = [[UILabel alloc] init];
             [newLabel setBackgroundColor:[UIColor clearColor]];
             [newLabel setTextColor:[UIColor whiteColor]];
-            [newLabel setFont:[UIFont systemFontOfSize:(heightArray[i][j]-1)]];
+            [newLabel setFont:[UIFont systemFontOfSize:14.f]];
             if (j == 1)
                 [newLabel setTextAlignment:NSTextAlignmentRight];
             [newLabel setFrame:CGRectMake(xArray[j],yArray[i][j],
-                heightArray[i][j],labelWidth)];
+                labelWidth,heightArray[i][j])];
 
             [i_view addSubview:newLabel toPage:2 withTag:
                 (200 + (i+1)*10 + (j+1)) manualRefresh:NO];
