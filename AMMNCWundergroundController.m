@@ -365,7 +365,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView {
-    NSLog(@"NCWunderground: objectAtIndex associateModelToView");
     // -- details page -- //
 
     // "Last Refreshed"
