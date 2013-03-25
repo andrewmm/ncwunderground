@@ -140,8 +140,9 @@
 - (void)setLoading:(BOOL)status {
     if(status) {
         NSLog(@"NCWunderground: starting loading indicators");
-        for(UIActivityIndicatorView *spinner in i_spinners) {
-            [self bringSubviewToFront:spinner];
+        for(int i = 0; i < i_pages; ++i) {
+            UIActivityIndicatorView *spinner = [i_spinners objectAtIndex:i];
+            [[i_subviewContainers objectAtIndex:i] bringSubviewToFront:spinner];
             [spinner startAnimating];
         }
     }
