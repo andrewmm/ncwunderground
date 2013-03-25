@@ -140,11 +140,13 @@
 // Does: activates or hides spinners
 - (void)setLoading:(BOOL)status {
     if(status) {
+        NSLog(@"NCWunderground: starting loading indicators");
         for(UIActivityIndicatorView *spinner in i_spinners) {
             [spinner startAnimating];
         }
     }
     else {
+        NSLog(@"NCWunderground: stopping loading indicators");
         for(UIActivityIndicatorView *spinner in i_spinners) {
             [spinner stopAnimating];
         }

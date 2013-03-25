@@ -272,6 +272,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         NSLog(@"NCWunderground: Cannot reload data, because data is already loading.");
         return;
     }
+    NSLog(@"NCWunderground: Loading data.");
     i_loadingData = YES;
     [[i_view getSubviewFromPage:0 withTag:4] setHidden:YES]; // hide the refresh button
     [i_view setLoading:YES];
