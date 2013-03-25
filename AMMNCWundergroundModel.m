@@ -254,12 +254,17 @@
     NSString *apiKey = [defaultsDom objectForKey:@"APIKey"];
     if (apiKey == nil) {
         NSLog(@"NCWunderground: got null APIKey, not updating data.");
+        dispatch_async(dispatch_get_main_queue(),^(void) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
+                @"No API Key" message:
+                @"Please enter a Weather Underground API Key in Settings/Notifications/Weather Underground." delegate:
+                nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+            [alert release];
+            [i_controller dataDownloadFailed];
+        });
         [request release];
-
-        // TODO
-        // We shouldn't silently fail here. We should overwrite the
-        // views with something instructing the user to enter the API key.
-
+        [i_controller dataDownloadFailed];
         return;
     }
     NSString *urlString = [NSString stringWithFormat:
