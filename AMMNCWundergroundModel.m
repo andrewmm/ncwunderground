@@ -268,7 +268,7 @@
         [i_saveData objectForKey:@"longitude"]];
     [request setURL:[NSURL URLWithString:urlString]];
     [request setHTTPMethod:@"GET"];
-    [request setTimeoutInterval:5];
+    [request setTimeoutInterval:10];
 
     NSData *resultJSON = [NSURLConnection sendSynchronousRequest:
         request returningResponse:&response error:&error];
