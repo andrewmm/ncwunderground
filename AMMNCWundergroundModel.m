@@ -275,14 +275,15 @@
     [request release];
     if (!resultJSON) {
         NSLog(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
-
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
-            @"Connection Failed" message:
-            @"Weather widget failed to connect to server." delegate:
-            nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
-        [alert release];
-        [i_controller dataDownloadFailed];
+        dispatch_async(dispatch_get_main_queue(),^(void) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
+                @"Connection Failed" message:
+                @"Weather widget failed to connect to server." delegate:
+                nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+            [alert release];
+            [i_controller dataDownloadFailed];
+        });
         return;
     }
 
@@ -291,12 +292,14 @@
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:resultJSON options:0 error:&error];
         if (error) {
             NSLog(@"NCWunderground: JSON was malformed. Bad.");
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
-                @"Data Corrupted" message:
-                @"Weather widget received data from the server, but it was corrupted." delegate:
-                nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-            [alert release];
+            dispatch_async(dispatch_get_main_queue(),^(void) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
+                    @"Data Corrupted" message:
+                    @"Weather widget received data from the server, but it was corrupted." delegate:
+                    nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+                [alert release];
+            });
             [i_controller dataDownloadFailed];
             return;
         }
@@ -306,15 +309,17 @@
                 [[[jsonDict objectForKey:@"response"] objectForKey:
                 @"error"] objectForKey:@"type"],[[[jsonDict objectForKey:
                 @"response"] objectForKey:@"error"] objectForKey:@"description"]);
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
-                [NSString stringWithFormat:@"Server Error (%@)",
-                [[[jsonDict objectForKey:@"response"] objectForKey:
-                @"error"] objectForKey:@"type"]] message:[NSString stringWithFormat:
-                @"The weather server returned an error: %@.",[[[jsonDict objectForKey:
-                @"response"] objectForKey:@"error"] objectForKey:@"description"]]
-                delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-            [alert release];
+            dispatch_async(dispatch_get_main_queue(),^(void) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
+                    [NSString stringWithFormat:@"Server Error (%@)",
+                    [[[jsonDict objectForKey:@"response"] objectForKey:
+                    @"error"] objectForKey:@"type"]] message:[NSString stringWithFormat:
+                    @"The weather server returned an error: %@.",[[[jsonDict objectForKey:
+                    @"response"] objectForKey:@"error"] objectForKey:@"description"]]
+                    delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+                [alert release];
+            });
             [i_controller dataDownloadFailed];
             return;
         }
@@ -346,24 +351,28 @@
         }
         else {
             NSLog(@"NCWunderground: JSON was non-dict. Bad.");
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
-                @"Data Corrupted" message:
-                @"Weather widget received data from the server, but it was corrupted." delegate:
-                nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-            [alert release];
+            dispatch_async(dispatch_get_main_queue(),^(void) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
+                    @"Data Corrupted" message:
+                    @"Weather widget received data from the server, but it was corrupted." delegate:
+                    nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+                [alert release];
+            });
             [i_controller dataDownloadFailed];
             return;
         }
     }
     else {
         NSLog(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
-            @"Invalid iOS" message:
-            @"Your version of iOS does not support NSJSONSerialization. Please contact the developer at <drewmm@gmail.com>." delegate:
-            nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
-        [alert release];
+        dispatch_async(dispatch_get_main_queue(),^(void) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
+                @"Invalid iOS" message:
+                @"Your version of iOS does not support NSJSONSerialization. Please contact the developer at <drewmm@gmail.com>." delegate:
+                nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+            [alert release];
+        });
         [i_controller dataDownloadFailed];
         return;
     }
