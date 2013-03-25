@@ -141,6 +141,7 @@
     if(status) {
         NSLog(@"NCWunderground: starting loading indicators");
         for(UIActivityIndicatorView *spinner in i_spinners) {
+            [self bringSubviewToFront:spinner];
             [spinner startAnimating];
         }
     }
