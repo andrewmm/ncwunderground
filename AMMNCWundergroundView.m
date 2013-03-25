@@ -3,6 +3,7 @@
 @implementation AMMNCWundergroundView
 
 @synthesize pages=i_pages;
+@synthesize baseWidth=i_baseWidth;
 @synthesize screenWidth=i_screenWidth;
 @synthesize viewHeight=i_viewHeight;
 @synthesize backgroundViews=i_backgroundViews;
@@ -180,7 +181,7 @@
 // Takes: page number, tag number
 // Returns: subview
 - (UIView *)getSubviewFromPage:(int)page withTag:(int)tag {
-    
+
     UIView *subviewContainer = [i_subviewContainers objectAtIndex:page];
     if (subviewContainer) {
         UIView *subview = [subviewContainer viewWithTag:tag];
