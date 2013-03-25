@@ -263,11 +263,18 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [newLabel release];
         }
 
+        CGRect iconRect = CGRectMake(colBuffer + j * (colBuffer + dayWidth) + (dayWidth - iconDims) / 2,
+            iconY, iconDims, iconDims);
+
         UIImageView *dayIconView = [[UIImageView alloc] init];
-        [dayIconView setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth),
-            iconY, iconDims, iconDims)];
+        UIImageView *dayIconViewBack = [[UIImageView alloc] init];
+        [dayIconView setFrame:iconRect];
+        [i_view addSubview:dayIconViewBack toPage:3 withTag:
+            (330 + (j+1)) manualRefresh:YES];
         [i_view addSubview:dayIconView toPage:3 withTag:
-            (300 + 30 + (j+1)) manualRefresh:YES];
+            (340 + (j+1)) manualRefresh:YES];
+        [dayIconView release];
+        [dayIconViewBack release];
     }
 }
 
@@ -397,9 +404,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
     // -- current conditions page -- //
 
-    NSString *remoteIconName = [i_model currentConditionsIconName];
-    NSDictionary *localIconInfo = [i_iconMap objectForKey:remoteIconName];
-
     NSArray *page2TextArray = [NSArray arrayWithObjects:
         [i_model currentTempStringF],[i_model currentLocationString],
         [NSString stringWithFormat:@"Feels Like %@",
@@ -424,33 +428,23 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         }
     }
 
-    id localIcon = [localIconInfo objectForKey:@"icon"];
-    UIImage *weatherIcon;
+    NSString *remoteIconName = [i_model currentConditionsIconName];
+    NSDictionary *localIconInfo = [i_iconMap objectForKey:remoteIconName];
+    UIImage *weatherIconBack;
     UIImage *weatherIconFront;
-    if ([localIcon isKindOfClass:[NSString class]]) {
-        weatherIcon = [UIImage imageWithContentsOfFile:
-            [_ammNCWundergroundWeeAppBundle pathForResource:
-                [NSString stringWithFormat:
-                    @"icons/%@",localIcon] ofType:@"png"]];
-    }
-    else {
-        weatherIcon = [UIImage imageWithContentsOfFile:
-            [_ammNCWundergroundWeeAppBundle pathForResource:
-                [NSString stringWithFormat:
-                    @"icons/%@",[localIcon objectForKey:
-                        @"back"]] ofType:@"png"]];
-        weatherIconFront = [UIImage imageWithContentsOfFile:
-            [_ammNCWundergroundWeeAppBundle pathForResource:
-                [NSString stringWithFormat:
-                    @"icons/%@",[localIcon objectForKey:
-                        @"front"]] ofType:@"png"]];
-    }
-    UIImageView *rearIconView = (UIImageView *)[i_view getSubviewFromPage:
-        2 withTag:200];
-    UIImageView *frontIconView = (UIImageView *)[i_view getSubviewFromPage:
-        2 withTag:201];
-    [rearIconView setImage:weatherIcon];
-    [frontIconView setImage:weatherIconFront];
+
+    weatherIconBack = [UIImage imageWithContentsOfFile:
+        [_ammNCWundergroundWeeAppBundle pathForResource:
+            [NSString stringWithFormat:@"icons/%@",
+                [localIconInfo objectForKey:@"back"]] ofType:@"png"]];
+    weatherIconFront = [UIImage imageWithContentsOfFile:
+        [_ammNCWundergroundWeeAppBundle pathForResource:
+            [NSString stringWithFormat:@"icons/%@",
+                [localIconInfo objectForKey:@"front"]] ofType:@"png"]];
+    [(UIImageView *)[i_view getSubviewFromPage:2 withTag:200] setImage:
+        weatherIconBack];
+    [(UIImageView *)[i_view getSubviewFromPage:2 withTag:201] setImage:
+        weatherIconFront];
 
     // -- daily forecast page -- //
 
@@ -464,13 +458,18 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
         remoteIconName = [i_model dailyConditionsIconName:j];
         localIconInfo = [i_iconMap objectForKey:remoteIconName];
-        localIcon = [localIconInfo objectForKey:@"icon"];
-        weatherIcon = [UIImage imageWithContentsOfFile:
+        weatherIconBack = [UIImage imageWithContentsOfFile:
+        [_ammNCWundergroundWeeAppBundle pathForResource:
+            [NSString stringWithFormat:@"icons/%@",
+                [localIconInfo objectForKey:@"back"]] ofType:@"png"]];
+        weatherIconFront = [UIImage imageWithContentsOfFile:
             [_ammNCWundergroundWeeAppBundle pathForResource:
-                [NSString stringWithFormat:
-                    @"icons/%@",localIcon] ofType:@"png"]];
-        [(UIImageView *)[i_view getSubviewFromPage:3 withTag:(330 + (j+1))] setImage:
-            weatherIcon];
+                [NSString stringWithFormat:@"icons/%@",
+                    [localIconInfo objectForKey:@"front"]] ofType:@"png"]];
+        [(UIImageView *)[i_view getSubviewFromPage:3 withTag:
+            (330 + (j+1))] setImage:weatherIconBack];
+        [(UIImageView *)[i_view getSubviewFromPage:3 withTag:
+            (340 + (j+1))] setImage:weatherIconFront];
     }
 
 }
