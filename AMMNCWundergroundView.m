@@ -54,6 +54,9 @@
 - (void)setPages:(int)n_pages {
     i_pages = n_pages;
 
+    // remove old background views from self
+    [[self subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
+
     // images for background views
     UIImage *bgImg = [UIImage imageWithContentsOfFile:
         @"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
