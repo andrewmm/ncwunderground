@@ -13,6 +13,7 @@
 }
 
 @property (nonatomic, assign) int pages;
+@property (nonatomic, readonly) float baseWidth;
 @property (nonatomic, assign) float screenWidth;
 @property (nonatomic, assign) float viewHeight;
 @property (nonatomic, readonly) NSMutableArray *backgroundViews;
