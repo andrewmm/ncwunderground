@@ -14,7 +14,6 @@ Description: Notification Center widget for Weather Underground.
  Version 0.1.0:
  * Complete code rewrite for easier maintainability.
  * WARNING: This has been tested, but there may be undiscovered problems. Use at your own risk, and let me know if there are issues.
-
 Maintainer: Andrew MacKie-Mason <drewmm@gmail.com>
 Author: Andrew MacKie-Mason <drewmm@gmail.com>
 Section: Addons (NotificationCenter)
