@@ -69,21 +69,38 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 - (void)loadFullView {
     if (i_currentWidth != i_baseWidth) {
+        NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] 
+            persistentDomainForName:@"com.amm.ncwunderground"];
+        int cur_page = [defaultsDom integerForKey:@"cur_page"] + 2;
+        // We store it as -2 so 0 corresponds to default
+
         [i_view release];
         i_view = [[AMMNCWundergroundView alloc] initWithPages:4
-            width:i_currentWidth height:i_viewHeight];
+            atPage:cur_page width:i_currentWidth height:i_viewHeight];
     }
     [self addSubviewsToView];
     [self loadData:nil];
 }
 
 - (void)loadPlaceholderView {
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] 
+        persistentDomainForName:@"com.amm.ncwunderground"];
+    int cur_page = [defaultsDom integerForKey:@"cur_page"] + 2;
+    // We store it as -2 so 0 corresponds to default
+
     i_currentWidth = i_baseWidth;
     i_view = [[AMMNCWundergroundView alloc] initWithPages:4
-            width:i_currentWidth height:i_viewHeight];
+            atPage:cur_page width:i_currentWidth height:i_viewHeight];
 }
 
 - (void)unloadView {
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] 
+        persistentDomainForName:@"com.amm.ncwunderground"];
+    [defaultsDom setInteger:
+        (int)([i_view contentOffset] / i_currentWidth - 2) forKey:
+        @"cur_page"]; // We store it as +1 so that 0 corresponds to not set
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
     [i_view release];
     i_view = nil;
 }
