@@ -524,4 +524,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     }
 }
 
+- (void)openForecastURL {
+    [[UIApplication sharedApplication] openURL:[NSURL urlFromString:
+        [i_model currentConditionsURL]]];
+}
+
 @end
