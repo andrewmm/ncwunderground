@@ -26,8 +26,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                              NSUserDomainMask, YES);
         i_saveFile = [[NSString alloc] initWithString:
-            [[paths objectAtIndex:0] stringByAppendingString:
-                @"/com.amm.ncwunderground.save.plist"]];
+            [_ammNCWundergroundWeeAppBundle pathForResource:
+                @"com.amm.ncwunderground.savefile" ofType:@"plist"]];
 
         i_locationManager = [[CLLocationManager alloc] init];
         i_locationUpdated = NO;
