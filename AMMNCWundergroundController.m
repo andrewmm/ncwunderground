@@ -297,7 +297,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                 updateLength = 300; // default to 5 minutes
             }
 
-            if ([[NSDate date] timeIntervalSince1970] - [i_model lastRequestInt] >= updateLength) {
+            if ([[NSDate date] timeIntervalSince1970] - [i_model lastRequestInt] <= updateLength) {
                 NSLog(@"NCWunderground: Too soon to download data again. Done updating.");
                 [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // hide the refresh button
                 [i_view setLoading:NO];
