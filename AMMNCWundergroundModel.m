@@ -301,16 +301,17 @@
             return;
         }
 
-        if ([jsonDict objectForKey:@"error"]) {
+        if ([[jsonDict objectForKey:@"response"] objectForKey:@"error"]) {
             NSLog(@"NCWunderground: We got a well-formed JSON, but it's an error: %@ / %@",
-                [[jsonDict objectForKey:@"error"] objectForKey:@"type"],
-                [[jsonDict objectForKey:@"error"] objectForKey:@"description"]);
+                [[[jsonDict objectForKey:@"response"] objectForKey:
+                @"error"] objectForKey:@"type"],[[[jsonDict objectForKey:
+                @"response"] objectForKey:@"error"] objectForKey:@"description"]);
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:
                 [NSString stringWithFormat:@"Server Error (%@)",
-                    [[jsonDict objectForKey:@"error"] objectForKey:@"type"]]
-                message:[NSString stringWithFormat:
-                    @"The weather server returned an error: %@.",
-                    [[jsonDict objectForKey:@"error"] objectForKey:@"description"]]
+                [[[jsonDict objectForKey:@"response"] objectForKey:
+                @"error"] objectForKey:@"type"]] message:[NSString stringWithFormat:
+                @"The weather server returned an error: %@.",[[[jsonDict objectForKey:
+                @"response"] objectForKey:@"error"] objectForKey:@"description"]]
                 delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
             [alert release];
