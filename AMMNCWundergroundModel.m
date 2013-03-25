@@ -1,18 +1,23 @@
 #import "AMMNCWundergroundModel.h"
+#import "AMMNCWundergroundController.h"
 
 @implementation AMMNCWundergroundModel
 
 - (id)initWithController:(AMMNCWundergroundController *)controller {
-    i_saveData = [[NSMutableDictionary alloc] init];
-    backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.backgroundqueue", NULL);
-    i_controller = controller;
-    [super init];
+    if ((self = [super init])) {
+        i_saveData = [[NSMutableDictionary alloc] init];
+        backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.backgroundqueue", NULL);
+        i_controller = controller;
+    }
+    return self;
 }
 
 - (void)dealloc {
     [i_saveData release];
     i_saveData = nil;
     dispatch_release(backgroundQueue);
+
+    [super dealloc];
 }
 
 // Returns: current latitude as a double
@@ -35,9 +40,31 @@
     return [longitude doubleValue];
 }
 
+// Returns: longitude of the observation station
+- (double)obsLatitudeDouble {
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    [f setNumberStyle:NSNumberFormatterDecimalStyle];
+    NSNumber *latitude = [f numberFromString:[[[i_saveData objectForKey:
+        @"current_observation"] objectForKey:
+        @"observation_location"] objectForKey:@"latitude"]];
+    [f release];
+    return [latitude doubleValue];
+}
+
+// Returns: latitude of the observation station
+- (double)obsLongitudeDouble {
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    [f setNumberStyle:NSNumberFormatterDecimalStyle];
+    NSNumber *latitude = [f numberFromString:[[[i_saveData objectForKey:
+        @"current_observation"] objectForKey:
+        @"observation_location"] objectForKey:@"longitude"]];
+    [f release];
+    return [latitude doubleValue];
+}
+
 // Returns: last request date (seconds since 1970) as an int
 - (int)lastRequestInt {
-    return [last_request intValue];
+    return [[i_saveData objectForKey:@"last_request"] intValue];
 }
 
 // Takes: index into hourly forecast array
@@ -190,11 +217,12 @@
 - (BOOL)loadSaveData:(NSString *)saveFile {
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
-    if ([fileManager fileExistsAtPath:i_saveFile]) {
-        NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] initWithContentsOfFile:i_saveFile];
-        [i_savedData addEntriesFromDictionary:tempDict];
+    if ([fileManager fileExistsAtPath:saveFile]) {
+        NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] 
+            initWithContentsOfFile:saveFile];
+        [i_saveData addEntriesFromDictionary:tempDict];
         [tempDict release];
-        if ([i_savedData objectForKey:@"last_request"] == nil) {
+        if ([i_saveData objectForKey:@"last_request"] == nil) {
             NSLog(@"NCWunderground: save file exists, but appears corrupted.");
             return NO;
         }
@@ -203,6 +231,10 @@
     else {
         return NO;
     }
+}
+
+- (void)saveData:(NSString *)saveFile {
+    [i_saveData writeToFile:saveFile atomically:YES];
 }
 
 // This should only ever run inside the backgroundQueue
@@ -226,8 +258,8 @@
     }
     NSString *urlString = [NSString stringWithFormat:
         @"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/q/%@,%@.json",
-        apiKey,[i_savedData objectForKey:@"latitude"],
-        [i_savedData objectForKey:@"longitude"]];
+        apiKey,[i_saveData objectForKey:@"latitude"],
+        [i_saveData objectForKey:@"longitude"]];
     [request setURL:[NSURL URLWithString:urlString]];
     [request setHTTPMethod:@"GET"];
 
@@ -261,7 +293,7 @@
         if ([jsonDict isKindOfClass:[NSDictionary class]]) {
             NSLog(@"NCWunderground: Data download succeeded. Parsing.");
             // update last-request time
-            [i_savedData setObject:[NSNumber numberWithInteger:
+            [i_saveData setObject:[NSNumber numberWithInteger:
                 [[NSDate date] timeIntervalSince1970]] forKey:@"last_request"];
 
             // convenience pointers
@@ -269,15 +301,13 @@
                 @"current_observation"];
             NSDictionary *dailyForecast = [[jsonDict objectForKey:
                 @"forecast"] objectForKey:@"simpleforecast"];
-            NSDictionary *displayLocation = [currentObservation objectForKey:
-                @"display_location"];
 
             // import current observations, daily forecast, and hourly forecast
-            [i_savedData setObject:currentObservation forKey:
+            [i_saveData setObject:currentObservation forKey:
                 @"current_observation"];
-            [i_savedData setObject:[dailyForecast objectForKey:
+            [i_saveData setObject:[dailyForecast objectForKey:
                 @"forecastday"] forKey:@"forecastday"];
-            [i_savedData setObject:[jsonDict objectForKey:
+            [i_saveData setObject:[jsonDict objectForKey:
                 @"hourly_forecast"] forKey:@"hourly_forecast"];
 
             // Tell the controller that the data has been updated
@@ -287,13 +317,13 @@
         }
         else {
             NSLog(@"NCWunderground: JSON was non-dict. Bad.");
-            i_loadingData = NO;
+            [i_controller dataDownloadFailed];
             return;
         }
     }
     else {
         NSLog(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
-        i_loadingData = NO;
+        [i_controller dataDownloadFailed];
         return;
     }
 }
@@ -302,17 +332,17 @@
 //       Then starts the URL request on the background queue.
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
     NSLog(@"NCWunderground: didUpdateToLocation: %@", [locations lastObject]);
-    if (i_locationUpdated == NO) {
+    if ([i_controller locationUpdated] == NO) {
         if (locations != nil) {
-            [i_savedData setObject:[NSString stringWithFormat:
+            [i_saveData setObject:[NSString stringWithFormat:
                 @"%.8f", [[locations lastObject] coordinate].latitude] forKey:
                 @"latitude"];
-            [i_savedData setObject:[NSString stringWithFormat:
+            [i_saveData setObject:[NSString stringWithFormat:
                 @"%.8f", [[locations lastObject] coordinate].longitude] forKey:
                 @"longitude"];
         
-            i_locationUpdated = YES;
-            [i_locationManager stopUpdatingLocation];
+            [i_controller setLocationUpdated:YES];
+            [[i_controller locationManager] stopUpdatingLocation];
 
             // start a URL request in the backgroundQueue
             dispatch_async(backgroundQueue, ^(void) {
@@ -327,7 +357,7 @@
 
 
 // save data to disk for later use
-//[i_savedData writeToFile:i_saveFile atomically:YES];
+
 //NSLog(@"NCWunderground: data saved to disk at %@",i_saveFile);
 
 @end

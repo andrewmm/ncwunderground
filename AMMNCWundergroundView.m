@@ -6,7 +6,6 @@
 @synthesize screenWidth=i_screenWidth;
 @synthesize viewHeight=i_viewHeight;
 @synthesize backgroundViews=i_backgroundViews;
-@synthesize subviews=i_subviews;
 
 // Takes: number of pages, base width, view height
 // Does: initializes
@@ -20,23 +19,15 @@
 
         // set up visual effects of top view
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.contentSize = CGSizeMake(n_pages * screenWidth,height);
+        self.contentSize = CGSizeMake(n_pages * width,height);
         self.contentOffset = CGPointMake(0,0); // TODO make this come from NSUserDefaults
         self.pagingEnabled = YES;
         self.showsHorizontalScrollIndicator = NO;
 
-        // images for background views
-        UIImage *bgImg = [UIImage imageWithContentsOfFile:
-            @"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
-        UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:
-            floorf(bgImg.size.width / 2) topCapHeight:
-            floorf(bgImg.size.height / 2)];
-
         // set up pages
         [self setPages:n_pages];
 
-        // alloc i_subviews and i_refreshNeeded for later use
-        i_subviews = [[NSMutableDictionary alloc] init];
+        // alloc i_refreshNeeded for later use
         i_refreshNeeded = [[NSMutableArray alloc] init];
     }
     return self;
@@ -50,7 +41,6 @@
     [i_backgroundViews release];
     [i_subviewContainers release];
     [i_spinners release];
-    [i_subviews release];
     [i_refreshNeeded release];
     [super dealloc];
 }
@@ -63,11 +53,17 @@
 - (void)setPages:(int)n_pages {
     i_pages = n_pages;
 
+    // images for background views
+    UIImage *bgImg = [UIImage imageWithContentsOfFile:
+        @"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
+    UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:
+        floorf(bgImg.size.width / 2) topCapHeight:
+        floorf(bgImg.size.height / 2)];
+
     // set up background views
     // preserve old ones, if they exist
-    NSMutableArray *old_backgroundViews;
-    if(i_backgroundViews) {
-        old_backgroundViews = i_backgroundViews;
+    if (i_backgroundViews) {
+        [i_backgroundViews release];
     }
     i_backgroundViews = [[NSMutableArray alloc] init];
     for (int i = 0; i < i_pages; ++i) {
@@ -80,24 +76,14 @@
         [newBackgroundView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
         [self addSubview:newBackgroundView];
 
-        // switch over the subviews
-        NSMutableArray *oldSubviewArray = [i_subviews objectForKey:
-            [old_backgroundViews objectAtIndex:i]];
-        if (oldSubviewArray) {
-            [i_subviews setObject:oldSubviewArray forKey:newBackgroundView];
-            [i_subviews removeObjectForKey:[old_backgroundViews objectAtIndex:i]];
-        }
-        else {
-            [i_subviews setObject:[NSMutableArray arrayWithCapacity:1]
-                forKey:newBackgroundView];
-        }
-
         [newBackgroundView release];
     }
 
     // set up subview containers
+    // preserve old ones
+    NSMutableArray *old_subviewContainers;
     if (i_subviewContainers) {
-        [i_subviewContainers release];
+        old_subviewContainers = i_subviewContainers;
     }
     i_subviewContainers = [[NSMutableArray alloc] init];
     for (int i = 0; i < i_pages; ++i) {
@@ -108,14 +94,16 @@
         [[i_backgroundViews objectAtIndex:i] addSubview:newSubviewContainer];
 
         // add the subviews, if they exist
-        NSMutableArray *subviewArray = [i_subviews objectForKey:
-            [i_backgroundViews objectAtIndex:i]];
-        if (oldSubviewArray) {
-            for (UIView *subview in oldSubviewArray) {
+        if (old_subviewContainers) {
+            for (UIView *subview in [[old_subviewContainers objectAtIndex:i] subviews]) {
                 [newSubviewContainer addSubview:subview];
             }
         }
         [newSubviewContainer release];
+    }
+
+    if (old_subviewContainers) {
+        [old_subviewContainers release];
     }
 
     // set up spinners
@@ -132,18 +120,13 @@
         [[i_subviewContainers objectAtIndex:i] addSubview:newSpinner];
         [newSpinner release];
     }
-
-    // release the old background views
-    if (old_backgroundViews) {
-        [old_backgroundViews release];
-    }
 }
 
 // Override screenWidth setter
 // Takes: new width of screen
 /* Does: sets screenWidth
          calls setPages */
-- (void)setScreenWidth:(int)width {
+- (void)setScreenWidth:(float)width {
     i_screenWidth = width;
     [self setPages:i_pages];
 }
@@ -175,11 +158,6 @@
     if (!t_backgroundView) {
         return NO;
     }
-    NSMutableArray *t_subviewArray = [i_subviews objectForKey:t_backgroundView];
-    if (!t_subviewArray) {
-        return NO;
-    }
-    [t_subviewArray addObject:subview];
     UIView *t_subviewContainer = [i_subviewContainers objectAtIndex:page];
     if (!t_subviewContainer) {
         return NO;
@@ -202,7 +180,7 @@
 - (UIView *)getSubviewFromPage:(int)page withTag:(int)tag {
     UIView *subviewContainer = [i_subviewContainers objectAtIndex:page];
     if (subviewContainer) {
-        subview = [subviewContainer viewWithTag:tag];
+        UIView *subview = [subviewContainer viewWithTag:tag];
         if (subview) {
             return subview;
         }
@@ -220,7 +198,7 @@
 // Does: sets needsDisplay:YES on everything in i_refreshNeeded
 - (void)refreshViews {
     for (UIView *view in i_refreshNeeded) {
-        [view setNeedsDisplay:YES];
+        [view setNeedsDisplay];
     }
 }
 

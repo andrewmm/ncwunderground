@@ -1,32 +1,26 @@
 @interface AMMNCWundergroundView: UIScrollView {
-	int *i_pages; // number of pages in the scroll view
+	int i_pages; // number of pages in the scroll view
 	// TODO: get rid of these two. use the controller's
-	float *i_baseWidth; // screen width we design layout around (min)
-	float *i_screenWidth; // current screen width
+	float i_baseWidth; // screen width we design layout around (min)
+	float i_screenWidth; // current screen width
 	//
-	float *i_viewHeight;
+	float i_viewHeight;
 	NSMutableArray *i_backgroundViews; // array of pages
 	NSMutableArray *i_subviewContainers; // one for each page
 	NSMutableArray *i_spinners; // loading spinner for each page
-
-	// subview dictionary
-	// key=pointer to page
-	// value=NSMutableArray of subviews for that page
-	NSMutableDictionary *i_subviews;
  
 	NSMutableArray *i_refreshNeeded;
 }
 
-@property (nonatomic, assign) int *pages;
-@property (nonatomic, assign) float *screenWidth;
-@property (nonatomic, assign) float *viewHeight;
+@property (nonatomic, assign) int pages;
+@property (nonatomic, assign) float screenWidth;
+@property (nonatomic, assign) float viewHeight;
 @property (nonatomic, readonly) NSMutableArray *backgroundViews;
-@property (nonatomic, readonly) NSMutableDictionary *subviews;
 
 
 // Takes: number of pages, base width, view height
 // Does: initializes (calls setPages)
-- (void)initWithPages:(int)n_pages width:(float)width height:(float)height;
+- (id)initWithPages:(int)n_pages width:(float)width height:(float)height;
 
 // Override pages setter
 // Takes: new number of pages
@@ -38,7 +32,7 @@
 // Takes: new width of screen
 /* Does: sets screenWidth
 		 calls setPages */
-- (void)setScreenWidth:(int)width;
+- (void)setScreenWidth:(float)width;
 
 // Takes: BOOL indicating whether we're loading or now
 // Does: activates or hides spinners

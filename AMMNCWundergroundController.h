@@ -3,9 +3,8 @@
 #import <UIKit/UITableView.h>
 #import "ASBSparkLineView.h"
 #import "AMMNCWundergroundView.h"
+#import "AMMNCWundergroundModel.h"
 #import <dispatch/dispatch.h>
-
-static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 @interface AMMNCWundergroundController: NSObject <BBWeeAppController> {
     // view and model
@@ -23,9 +22,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     float i_viewHeight;
 }
 
+@property (readonly) AMMNCWundergroundView *view;
 @property (nonatomic, readonly) NSString *saveFile;
-@property (atomic, assign) BOOL locationUpdated;
-@property (atomic, assign) BOOL loadingData;
+@property (readonly) CLLocationManager *locationManager;
+@property (assign) BOOL locationUpdated;
+@property (assign) BOOL loadingData;
 @property (nonatomic, readonly) float baseWidth;
 @property (nonatomic, readonly) float currentWidth;
 @property (nonatomic, readonly) float viewHeight;
@@ -49,6 +50,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)loadData:(id)caller;
 
 - (void)dataDownloaded;
+- (void)dataDownloadFailed;
 
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView;
