@@ -95,9 +95,10 @@
 // Takes: index into hourly forecast array
 // Returns: Feels like temp string for that hour with °F
 - (NSString *)hourlyFeelsStringF:(int)forecastIndex {
-    return [NSString stringWithFormat:@"%@ °F",[[[[i_saveData objectForKey:
+    NSString *temp = [NSString stringWithFormat:@"%@ °F",[[[[i_saveData objectForKey:
         @"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:
         @"feelslike"] objectForKey:@"english"]];
+    return temp;
 }
 
 // Takes: start index and length in hourly forecast array
@@ -113,8 +114,8 @@
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     for (int i = startIndex; i < startIndex + length; ++i) {
         NSNumber *theNumber = [f numberFromString:[[[[i_saveData objectForKey:
-        @"hourly_forecast"] objectAtIndex:i] objectForKey:
-        @"temp"] objectForKey:@"english"]];
+            @"hourly_forecast"] objectAtIndex:i] objectForKey:
+            @"temp"] objectForKey:@"english"]];
         [theArray addObject:theNumber];
     }
     return theArray;
@@ -176,6 +177,11 @@
         @"icon_url"] lastPathComponent] stringByDeletingPathExtension];
 }
 
+- (NSString *)currentConditionsString {
+    return [[i_saveData objectForKey:@"current_observation"] objectForKey:
+        @"weather"];
+}
+
 // Takes: index into daily forecast array
 // Returns: short name of the corresponding day (Mon, Tue, etc)
 - (NSString *)dailyDayShortString:(int)forecastIndex {
@@ -201,7 +207,7 @@
 // Returns: percentage of perciptation for that day, including %
 - (NSString *)dailyPOPString:(int)forecastIndex {
     return [NSString stringWithFormat:@"%@%%",[[[[i_saveData objectForKey:@"forecastday"] objectAtIndex:
-        forecastIndex] objectForKey:@"low"] stringValue]];
+        forecastIndex] objectForKey:@"pop"] stringValue]];
 }
 
 // Takes: index into daily forecast array
@@ -233,7 +239,7 @@
     }
 }
 
-- (void)saveData:(NSString *)saveFile {
+- (void)saveDataToFile:(NSString *)saveFile {
     [i_saveData writeToFile:saveFile atomically:YES];
 }
 
