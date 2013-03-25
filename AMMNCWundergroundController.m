@@ -347,10 +347,12 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     // -- details page -- //
 
     // "Last Refreshed"
-    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[i_model lastRequestInt]];
+    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:
+        [i_model lastRequestInt]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"h:mm:ss a"];
-    UILabel *lastRefreshedLabel = (UILabel *)[i_view getSubviewFromPage:0 withTag:1];
+    UILabel *lastRefreshedLabel = (UILabel *)[i_view getSubviewFromPage:
+        0 withTag:1];
     [lastRefreshedLabel setText:[NSString stringWithFormat:
         @"Last Refreshed: %@",[dateFormatter stringFromDate:lastRefreshedDate]]];
     [dateFormatter release];
@@ -360,9 +362,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [i_model latitudeDouble] longitude:[i_model longitudeDouble]];
     CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:
         [i_model obsLatitudeDouble] longitude:[i_model obsLongitudeDouble]];
-    [(UILabel *)[i_view getSubviewFromPage:0 withTag:2] setText:[NSString stringWithFormat:
-        @"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:
-            userLocation] / 1609.344)]];
+    [(UILabel *)[i_view getSubviewFromPage:0 withTag:2] setText:
+        [NSString stringWithFormat:@"Distance From Station: %.2lf mi",
+            ([stationLocation distanceFromLocation:userLocation] / 1609.344)]];
     [userLocation release];
     [stationLocation release];
 
