@@ -261,10 +261,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
     // put a transparent button on top of the icon to open the url
     UIButton *urlButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [refreshButton addTarget:self action:@selector(openForecastURL)
+    [urlButton addTarget:self action:@selector(openForecastURL)
         forControlEvents:UIControlEventTouchUpInside];
-    [refreshButton setFrame:iconRect];
-    [i_view addSubview:refreshButton toPage:2 withTag:202 manualRefresh:NO];
+    [urlButton setFrame:iconRect];
+    [i_view addSubview:urlButton toPage:2 withTag:202 manualRefresh:NO];
     // don't need to release the button
 
     // -- daily forecast page -- //
@@ -525,7 +525,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)openForecastURL {
-    [[UIApplication sharedApplication] openURL:[NSURL urlFromString:
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:
         [i_model currentConditionsURL]]];
 }
 
