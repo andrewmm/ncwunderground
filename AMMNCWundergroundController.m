@@ -268,7 +268,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         return;
     }
     i_loadingData = YES;
-    [[i_view getSubviewFromPage:0 withTag:3] setHidden:YES]; // hide the refresh button
+    [[i_view getSubviewFromPage:0 withTag:4] setHidden:YES]; // hide the refresh button
     [i_view setLoading:YES];
 
     // Try to load in save data
@@ -318,13 +318,13 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     else {
         NSLog(@"NCWunderground: didn't update view, because it no longer exists.");
     }
-    [[i_view getSubviewFromPage:0 withTag:3] setHidden:NO]; // reveal the refresh button
+    [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
     [i_view setLoading:NO];
     i_loadingData = NO;
 }
 
 - (void)dataDownloadFailed {
-    [[i_view getSubviewFromPage:0 withTag:3] setHidden:NO]; // reveal the refresh button
+    [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
     [i_view setLoading:NO];
     i_loadingData = NO;
 }
