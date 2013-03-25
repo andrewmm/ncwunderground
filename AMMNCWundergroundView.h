@@ -21,7 +21,7 @@
 
 // Takes: number of pages, base width, view height
 // Does: initializes (calls setPages)
-- (id)initWithPages:(int)n_pages width:(float)width height:(float)height;
+- (id)initWithPages:(int)n_pages atPage:(int)cur_page width:(float)width height:(float)height;
 
 // Override pages setter
 // Takes: new number of pages
