@@ -4,58 +4,47 @@
 <dict>
 	<key>nt_clear</key>
 	<dict>
-		<key>word</key>
-		<string>Clear</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>31</string>
 	</dict>
 	<key>nt_tstorms</key>
 	<dict>
-		<key>word</key>
-		<string>T-Storms</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>47</string>
 	</dict>
 	<key>nt_sunny</key>
 	<dict>
-		<key>word</key>
-		<string>Clear</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>31</string>
 	</dict>
 	<key>nt_snow</key>
 	<dict>
-		<key>word</key>
-		<string>Snowing</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>46</string>
 	</dict>
 	<key>nt_rain</key>
 	<dict>
-		<key>word</key>
-		<string>Raining</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>45</string>
+	</dict>
+	<key>nt_sleet</key>
+	<dict>
+		<key>front</key>
+		<string>5</string>
 	</dict>
 	<key>nt_partlysunny</key>
 	<dict>
-		<key>word</key>
-		<string>Partly Sunny</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>33</string>
 	</dict>
 	<key>nt_partlycloudy</key>
 	<dict>
-		<key>word</key>
-		<string>Partly Cloudy</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>29</string>
 	</dict>
 	<key>nt_mostlysunny</key>
 	<dict>
-		<key>word</key>
-		<string>Mostly Sunny</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>27</string>
 	</dict>
 	<key>nt_mostlycloudy</key>
@@ -65,137 +54,156 @@
 		<key>icon</key>
 		<string>29</string>
 	</dict>
+	<key>nt_hazy</key>
+	<dict>
+		<key>front</key>
+		<string>21</string>
+		<key>back</key>
+		<string>31</string>
+	</dict>
+	<key>nt_fog</key>
+	<dict>
+		<key>front</key>
+		<string>22</string>
+		<key>back</key>
+		<string>31</string>
+	</dict>
+	<key>nt_flurries</key>
+	<dict>
+		<key>front</key>
+		<string>6</string>
+	</dict>
+	<key>nt_chancetstorms</key>
+	<dict>
+		<key>front</key>
+		<string>17</string>
+	</dict>
+	<key>nt_chancesnow</key>
+	<dict>
+		<key>front</key>
+		<string>16</string>
+	</dict>
+	<key>nt_chancesleet</key>
+	<dict>
+		<key>front</key>
+		<string>5</string>
+	</dict>
+	<key>nt_chancerain</key>
+	<dict>
+		<key>front</key>
+		<string>10</string>
+	</dict>
+	<key>nt_chanceflurries</key>
+	<dict>
+		<key>front</key>
+		<string>6</string>
+	</dict>
+	<key>nt_cloudy</key>
+	<dict>
+		<key>front</key>
+		<string>26</string>
+		<key>back</key>
+		<string>31</string>
+	</dict>
 	<key>tstorms</key>
 	<dict>
-		<key>word</key>
-		<string>T-Storms</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>0</string>
 	</dict>
 	<key>sunny</key>
 	<dict>
-		<key>word</key>
-		<string>Sunny</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>36</string>
 	</dict>
 	<key>rain</key>
 	<dict>
-		<key>word</key>
-		<string>Raining</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>12</string>
 	</dict>
 	<key>sleet</key>
 	<dict>
-		<key>word</key>
-		<string>Sleeting</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>5</string>
 	</dict>
 	<key>partlysunny</key>
 	<dict>
-		<key>word</key>
-		<string>Partly Sunny</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>34</string>
 	</dict>
 	<key>partlycloudy</key>
 	<dict>
-		<key>word</key>
-		<string>Partly Cloudy</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>30</string>
 	</dict>
 	<key>mostlysunny</key>
 	<dict>
-		<key>word</key>
-		<string>Mostly Sunny</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>28</string>
 	</dict>
 	<key>hazy</key>
 	<dict>
-		<key>word</key>
-		<string>Hazy</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>21</string>
+		<key>back</key>
+		<string>32</string>
 	</dict>
 	<key>fog</key>
 	<dict>
-		<key>word</key>
-		<string>Foggy</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>22</string>
+		<key>back</key>
+		<string>32</string>
 	</dict>
 	<key>flurries</key>
 	<dict>
-		<key>word</key>
-		<string>Flurries</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>6</string>
 	</dict>
 	<key>clear</key>
 	<dict>
-		<key>word</key>
-		<string>Clear</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>32</string>
 	</dict>
 	<key>chancetstorms</key>
 	<dict>
-		<key>word</key>
-		<string>Chance of T-Storms</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>17</string>
 	</dict>
 	<key>chancesnow</key>
 	<dict>
-		<key>word</key>
-		<string>Chance of Snow</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>16</string>
 	</dict>
 	<key>chancesleet</key>
 	<dict>
-		<key>word</key>
-		<string>Chance of Sleet</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>5</string>
 	</dict>
 	<key>chancerain</key>
 	<dict>
-		<key>word</key>
-		<string>Chance of Rain</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>10</string>
 	</dict>
 	<key>chanceflurries</key>
 	<dict>
-		<key>word</key>
-		<string>Chance of Flurries</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>6</string>
 	</dict>
 	<key>snow</key>
 	<dict>
-		<key>word</key>
-		<string>Snowing</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>16</string>
 	</dict>
 	<key>cloudy</key>
 	<dict>
-		<key>word</key>
-		<string>Cloudy</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>26</string>
+		<key>back</key>
+		<string>32</string>
 	</dict>
 	<key>mostlycloudy</key>
 	<dict>
-		<key>word</key>
-		<string>Mostly Cloudy</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>28</string>
 	</dict>
 </dict>
