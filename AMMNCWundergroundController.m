@@ -195,9 +195,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         {leftHeight,rightHeight},{leftHeight,rightHeight}};
     float yArray[3][2] = {{rowFirstBuffer,rowFirstBuffer},
         {rowFirstBuffer + heightArray[0][0] + rowBuffer,
-            rowFirstBuffer + heightArray[0][2] + rowBuffer},
-        {rowFirstBuffer + heightArray[0][0] + heightArray[1][0] + rowBuffer * 2,
-            rowFirstBuffer + heightArray[0][2] + heightArray[1][2] + rowBuffer * 2}};
+            rowFirstBuffer + heightArray[2][0] + rowBuffer},
+        {rowFirstBuffer + heightArray[0][0] + heightArray[0][1] + rowBuffer * 2,
+            rowFirstBuffer + heightArray[2][0] + heightArray[2][1] + rowBuffer * 2}};
     for (int i=0; i < 3; ++i) { // row
         for (int j = 0; j < 2; ++j) { // column
             UILabel *newLabel = [[UILabel alloc] init];
