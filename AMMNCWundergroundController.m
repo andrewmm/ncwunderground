@@ -71,6 +71,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)loadFullView {
+    if (i_currentWidth != i_baseWidth) {
+        [i_view release];
+        i_view = [[AMMNCWundergroundView alloc] initWithPages:4
+            width:i_currentWidth height:i_viewHeight];
+    }
     [self addSubviewsToView];
     [self loadData:nil];
 }
