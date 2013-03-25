@@ -10,7 +10,7 @@
 
 // Takes: number of pages, base width, view height
 // Does: initializes
-- (id)initWithPages:(int)n_pages width:(float)width height:(float)height {
+- (id)initWithPages:(int)n_pages atPage:(int)cur_page width:(float)width height:(float)height {
     CGRect frameRect = (CGRect){CGPointZero, {width, height}};
     if((self = [super initWithFrame:frameRect]) != nil) {
         i_pages = n_pages;
@@ -21,7 +21,7 @@
         // set up visual effects of top view
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.contentSize = CGSizeMake(n_pages * width,height);
-        self.contentOffset = CGPointMake(0,0); // TODO make this come from NSUserDefaults
+        self.contentOffset = CGPointMake(cur_page * width,0);
         self.pagingEnabled = YES;
         self.showsHorizontalScrollIndicator = NO;
 
@@ -35,7 +35,7 @@
 }
 
 - (id)init {
-    return [self initWithPages:1 width:320 height:71];
+    return [self initWithPages:1 atPage:0 width:320 height:71];
 }
 
 - (void)dealloc {
