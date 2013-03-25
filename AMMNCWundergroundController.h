@@ -59,4 +59,6 @@
 // Returns: user preferences for number of hours to display
 - (int)hourlyForecastLength;
 
+- (void)openForecastURL;
+
 @end
