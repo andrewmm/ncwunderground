@@ -259,6 +259,14 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [i_view addSubview:iconFrontView toPage:2 withTag:201 manualRefresh:YES];
     [iconFrontView release];
 
+    // put a transparent button on top of the icon to open the url
+    UIButton *urlButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [refreshButton addTarget:self action:@selector(openForecastURL)
+        forControlEvents:UIControlEventTouchUpInside];
+    [refreshButton setFrame:iconRect];
+    [i_view addSubview:refreshButton toPage:2 withTag:202 manualRefresh:NO];
+    // don't need to release the button
+
     // -- daily forecast page -- //
 
     float dayWidth = ([self baseWidth] - 4 - colBuffer * ((float)[self numberOfDays] + 1)) / (float)[self numberOfDays];
