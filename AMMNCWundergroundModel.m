@@ -182,6 +182,11 @@
         @"weather"];
 }
 
+- (NSString *)currentConditionsURL {
+    return [[i_saveData objectForKey:@"current_observation"] objectForKey:
+        @"forecast_url"];
+}
+
 // Takes: index into daily forecast array
 // Returns: short name of the corresponding day (Mon, Tue, etc)
 - (NSString *)dailyDayShortString:(int)forecastIndex {
