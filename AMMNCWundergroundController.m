@@ -1,8 +1,12 @@
 #import "AMMNCWundergroundController.h"
 
+static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
+
 @implementation AMMNCWundergroundController
 
+@synthesize view=i_view;
 @synthesize saveFile=i_saveFile;
+@synthesize locationManager=i_locationManager;
 @synthesize locationUpdated=i_locationUpdated;
 @synthesize loadingData=i_loadingData;
 @synthesize baseWidth=i_baseWidth;
@@ -45,7 +49,7 @@
     [i_model release];
     i_model = nil;
 
-    [i_saveFile relase];
+    [i_saveFile release];
     i_saveFile = nil;
 
     [i_locationManager release];
@@ -58,8 +62,7 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    float screenWidth;
-    if (UIInterfaceOrientationIsLandscape(arg1)) {
+    if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
         [i_view setScreenWidth:[UIScreen mainScreen].bounds.size.height];
     }
     else {
@@ -96,7 +99,7 @@
         [newLabel setFont:[UIFont systemFontOfSize:14]];
         [newLabel setTextAlignment:NSTextAlignmentCenter];
         [newLabel setFrame:CGRectMake(0.2*[self baseWidth],5+23*i,
-            0.6*[self baseWidth],15)]
+            0.6*[self baseWidth],15)];
         if (i == 2) {
             [newLabel setText:@"Configure options in Settings app."];
         }
@@ -114,7 +117,7 @@
         forControlEvents:UIControlEventTouchUpInside];
     [refreshButton setFrame:CGRectMake(0.85*[self baseWidth],
         ([self viewHeight] - 0.1*[self baseWidth])/2,
-        0.1*[self baseWidth],0.1*[self baseWidth])]
+        0.1*[self baseWidth],0.1*[self baseWidth])];
     [i_view addSubview:refreshButton toPage:0 withTag:4 manualRefresh:NO];
     // don't need to release refresh button
 
@@ -142,7 +145,7 @@
 
             // calculate locations
             if (i == 0) {
-                float x = colBuffer + (colBuffer + labelWidth) * (j+1)
+                float x = colBuffer + (colBuffer + labelWidth) * (j+1);
                 if (j > 1) {
                     x = x - labelWidth + sparkWidth;
                 }
@@ -184,13 +187,13 @@
     // -- current conditions page -- //
 
     labelWidth = ([self baseWidth] - 4 - 4 * colBuffer - [self viewHeight]) / 2;
-    leftHeight = ([self viewHeight] - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
-    rightHeight = leftHeight * 4 / 3;
+    float leftHeight = ([self viewHeight] - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
+    float rightHeight = leftHeight * 4 / 3;
 
     float xArray[] = {colBuffer,colBuffer * 3 + labelWidth + [self viewHeight]};
-    float heightArray [][] = {{leftHeight * 2, rightHeight},
+    float heightArray [3][2] = {{leftHeight * 2, rightHeight},
         {leftHeight,rightHeight},{leftHeight,rightHeight}};
-    float yArray[][] = {{rowFirstBuffer,rowFirstBuffer},
+    float yArray[3][2] = {{rowFirstBuffer,rowFirstBuffer},
         {rowFirstBuffer + heightArray[0][0] + rowBuffer,
             rowFirstBuffer + heightArray[0][2] + rowBuffer},
         {rowFirstBuffer + heightArray[0][0] + heightArray[1][0] + rowBuffer * 2,
@@ -228,7 +231,7 @@
     // -- daily forecast page -- //
 
     float dayWidth = ([self baseWidth] - 4 - colBuffer * ((float)[self numberOfDays] + 1)) / (float)[self numberOfDays];
-    float rowBuffer = 3;
+    rowBuffer = 3;
     float iconDims = [self viewHeight] - 15 * 2 - rowBuffer * 4;
     if (dayWidth < iconDims)
         iconDims = dayWidth;
@@ -301,7 +304,7 @@
         NSLog(@"NCWunderground: No save file found.");
     }
 
-    i_locationManager.delegate = self;
+    i_locationManager.delegate = i_model;
     i_locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
     i_locationUpdated = NO;
     [i_locationManager startUpdatingLocation];
@@ -319,6 +322,12 @@
     i_loadingData = NO;
 }
 
+- (void)dataDownloadFailed {
+    [[i_view getSubviewFromPage:0 withTag:3] setHidden:NO]; // reveal the refresh button
+    [i_view setLoading:NO];
+    i_loadingData = NO;
+}
+
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView {
     // -- details page -- //
@@ -327,7 +336,8 @@
     NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[i_model lastRequestInt]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"h:mm:ss a"];
-    [[i_view getSubviewFromPage:0 withTag:1] setText:[NSString stringWithFormat:
+    UILabel *lastRefreshedLabel = (UILabel *)[i_view getSubviewFromPage:0 withTag:1];
+    [lastRefreshedLabel setText:[NSString stringWithFormat:
         @"Last Refreshed: %@",[dateFormatter stringFromDate:lastRefreshedDate]]];
     [dateFormatter release];
 
@@ -336,7 +346,7 @@
         [i_model latitudeDouble] longitude:[i_model longitudeDouble]];
     CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:
         [i_model obsLatitudeDouble] longitude:[i_model obsLongitudeDouble]];
-    [[i_view getSubviewFromPage:0 withTag:2] setText:[NSString stringWithFormat:
+    [(UILabel *)[i_view getSubviewFromPage:0 withTag:2] setText:[NSString stringWithFormat:
         @"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:
             userLocation] / 1609.344)]];
     [userLocation release];
@@ -350,8 +360,8 @@
     NSMutableArray *feelsLikeSparkData = [i_model hourlyFeelsNumberArrayF:
         0 length:intervalLength];
 
-    ASBSparkLineView *realTempSparkView = [i_view getSubviewFromPage:1 withTag:120];
-    ASBSparkLineView *feelsLikeSparkView = [i_view getSubviewFromPage:1 withTag:130];
+    ASBSparkLineView *realTempSparkView = (ASBSparkLineView *)[i_view getSubviewFromPage:1 withTag:120];
+    ASBSparkLineView *feelsLikeSparkView = (ASBSparkLineView *)[i_view getSubviewFromPage:1 withTag:130];
 
     [realTempSparkView setDataValues:realTempSparkData];
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
@@ -372,8 +382,8 @@
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 5; ++j) {
-            UILabel *label = [i_view getSubviewFromPage:1 withTag:
-                (100 + 10 * (i+1) + (j+1))];
+            UILabel *label = (UILabel *)[i_view getSubviewFromPage:
+                1 withTag:(100 + 10 * (i+1) + (j+1))];
             [label setText:[page1TextArray objectAtIndex:(i * 5 + j)]];
         }
     }
@@ -395,8 +405,8 @@
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 2; ++j) {
-            UILabel *label = [i_view getSubviewFromPage:2 withTag:
-                (200 + 10 * (i+1) + (j+1))];
+            UILabel *label = (UILabel *)[i_view getSubviewFromPage:
+                2 withTag:(200 + 10 * (i+1) + (j+1))];
             [label setText:[page2TextArray objectAtIndex:(i*2+j)]];
         }
     }
@@ -422,19 +432,22 @@
                     @"icons/%@",[localIcon objectForKey:
                         @"front"]] ofType:@"png"]];
     }
-
-    [[i_view getSubviewFromPage:2 withTag:200] setImage:weatherIcon];
-    [[i_view getSubviewFromPage:2 withTag:201] setImage:weatherIconFront];
+    UIImageView *rearIconView = (UIImageView *)[i_view getSubviewFromPage:
+        2 withTag:200];
+    UIImageView *frontIconView = (UIImageView *)[i_view getSubviewFromPage:
+        2 withTag:201];
+    [rearIconView setImage:weatherIcon];
+    [frontIconView setImage:weatherIconFront];
 
     // -- daily forecast page -- //
 
     for (int j = 0; j < [self numberOfDays]; ++j) {
-        [[i_view getSubviewFromPage:3 withTag:(310 + (j+1))] setText:
-            [i_model dailyDayShortString:j]];
-        [[i_view getSubviewFromPage:3 withTag:(320 + (j+1))] setText:
-            [NSString stringWithFormat:@"%@/%@ (%@)",
-                [i_model dailyHighStringF:j],[i_model dailyLowStringF:j],
-                [i_model dailyPOPString:j]]];
+        UILabel *dayLabel = (UILabel *)[i_view getSubviewFromPage:3 withTag:(310 + (j+1))];
+        UILabel *tempLabel = (UILabel *)[i_view getSubviewFromPage:3 withTag:(320 + (j+1))];
+        [dayLabel setText:[i_model dailyDayShortString:j]];
+        [tempLabel setText:[NSString stringWithFormat:@"%@/%@ (%@)",
+            [i_model dailyHighStringF:j],[i_model dailyLowStringF:j],
+            [i_model dailyPOPString:j]]];
 
         remoteIconName = [i_model dailyConditionsIconName:j];
         localIconInfo = [i_iconMap objectForKey:remoteIconName];
@@ -443,7 +456,7 @@
             [_ammNCWundergroundWeeAppBundle pathForResource:
                 [NSString stringWithFormat:
                     @"icons/%@",localIcon] ofType:@"png"]];
-        [[i_view getSubviewFromPage:3 withTag:(330 + (j+1))] setImage:
+        [(UIImageView *)[i_view getSubviewFromPage:3 withTag:(330 + (j+1))] setImage:
             weatherIcon];
     }
 }

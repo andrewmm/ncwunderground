@@ -43,6 +43,8 @@ root
 
 */
 
+#import <CoreLocation/CoreLocation.h>
+
 @class AMMNCWundergroundController;
 
 @interface AMMNCWundergroundModel: NSObject <CLLocationManagerDelegate> {
@@ -88,6 +90,7 @@ root
 - (NSString *)dailyConditionsIconName:(int)forecastIndex;
 
 - (BOOL)loadSaveData:(NSString *)saveFile;
+- (void)saveData:(NSString *)saveFile;
 - (void)startURLRequest;
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations;
 
