@@ -35,7 +35,7 @@
 }
 
 - (id)init {
-    return [self initWithPages:1 width:320 height:71];
+    return [self initWithPages:1 atPage:0 width:320 height:71];
 }
 
 - (void)dealloc {
