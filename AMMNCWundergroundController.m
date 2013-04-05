@@ -69,14 +69,15 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 - (void)loadFullView {
     if (i_currentWidth != i_baseWidth) {
-        NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] 
-            persistentDomainForName:@"com.amm.ncwunderground"];
+        NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
         int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
         // We store it as -2 so 0 corresponds to default
 
         [i_view release];
         i_view = [[AMMNCWundergroundView alloc] initWithPages:4
-            atPage:cur_page width:i_currentWidth height:i_viewHeight];
+                                                       atPage:cur_page
+                                                        width:i_currentWidth
+                                                       height:i_viewHeight];
     }
     [self addSubviewsToView];
     [self loadData:nil];
@@ -90,20 +91,18 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
     i_currentWidth = i_baseWidth;
     i_view = [[AMMNCWundergroundView alloc] initWithPages:4
-            atPage:cur_page width:i_currentWidth height:i_viewHeight];
+                                                   atPage:cur_page
+                                                    width:i_currentWidth
+                                                   height:i_viewHeight];
 }
 
 - (void)unloadView {
-    NSDictionary *oldDefaultsDom = [[NSUserDefaults standardUserDefaults] 
-        persistentDomainForName:@"com.amm.ncwunderground"];
-    NSMutableDictionary *newDefaultsDom = [NSMutableDictionary dictionaryWithDictionary:
-        oldDefaultsDom];
-    [newDefaultsDom setObject:
-        [NSNumber numberWithFloat:
-            ([i_view contentOffset].x / i_currentWidth - 2)] forKey:
-        @"cur_page"]; // We store it as +1 so that 0 corresponds to not set
-    [[NSUserDefaults standardUserDefaults] setPersistentDomain:
-        newDefaultsDom forName:@"com.amm.ncwunderground"];
+    NSDictionary *oldDefaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    NSMutableDictionary *newDefaultsDom = [NSMutableDictionary dictionaryWithDictionary:oldDefaultsDom];
+    [newDefaultsDom setObject:[NSNumber numberWithFloat:([i_view contentOffset].x / i_currentWidth - 2)]
+                                                 forKey:@"cur_page"]; // We store it as -2 so that 0 corresponds to main page
+    [[NSUserDefaults standardUserDefaults] setPersistentDomain:newDefaultsDom
+                                                       forName:@"com.amm.ncwunderground"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
     [i_view release];
@@ -313,7 +312,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 // Does: tells the model to reload the data
 - (void)loadData:(id)caller {
     NSLog(@"NCWunderground: Loading data.");
-    [[i_view getSubviewFromPage:0 withTag:4] setHidden:YES]; // hide the refresh button
+    //[[i_view getSubviewFromPage:0 withTag:4] setHidden:YES]; // hide the refresh button
     [i_view setLoading:YES];
 
     // Try to load in save data
@@ -324,8 +323,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
         // If caller==nil, check update delay preferences
         if (!caller) {
-            NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:
-                @"com.amm.ncwunderground"];
+            NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
             NSNumber *updateSeconds = [defaultsDom objectForKey:@"updateSeconds"];
             int updateLength;
             if (updateSeconds) {
@@ -338,7 +336,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
             if ([[NSDate date] timeIntervalSince1970] - [i_model lastRequestInt] <= updateLength) {
                 NSLog(@"NCWunderground: Too soon to download data again. Done updating.");
-                [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // hide the refresh button
+                //[[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // hide the refresh button
                 [i_view setLoading:NO];
                 return;
             }
@@ -358,7 +356,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [i_model saveDataToFile:i_saveFile];
     if (i_view) {
         [self associateModelToView];
-        [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
+        //[[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
         [i_view setLoading:NO];
     }
     else {
@@ -367,7 +365,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)dataDownloadFailed {
-    [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
+    //[[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
     [i_view setLoading:NO];
 }
 
