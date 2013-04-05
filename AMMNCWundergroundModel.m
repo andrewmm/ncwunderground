@@ -328,33 +328,32 @@
                     delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alert show];
                 [alert release];
+                [i_controller dataDownloadFailed];
             });
-            [i_controller dataDownloadFailed];
             return;
         }
 
         if ([jsonDict isKindOfClass:[NSDictionary class]]) {
-            NSLog(@"NCWunderground: Data download succeeded. Parsing.");
-            // update last-request time
-            [i_saveData setObject:[NSNumber numberWithInteger:
-                [[NSDate date] timeIntervalSince1970]] forKey:@"last_request"];
+            dispatch_async(dispatch_get_main_queue(),^(void) { // We're changing a lot of things. Let's do it in the main thread for safety
+                NSLog(@"NCWunderground: Data download succeeded. Parsing.");
+                // update last-request time
+                [i_saveData setObject:[NSNumber numberWithInteger:
+                    [[NSDate date] timeIntervalSince1970]] forKey:@"last_request"];
 
-            // convenience pointers
-            NSDictionary *currentObservation = [jsonDict objectForKey:
-                @"current_observation"];
-            NSDictionary *dailyForecast = [[jsonDict objectForKey:
-                @"forecast"] objectForKey:@"simpleforecast"];
+                // convenience pointers
+                NSDictionary *currentObservation = [jsonDict objectForKey:
+                    @"current_observation"];
+                NSDictionary *dailyForecast = [[jsonDict objectForKey:
+                    @"forecast"] objectForKey:@"simpleforecast"];
 
-            // import current observations, daily forecast, and hourly forecast
-            [i_saveData setObject:currentObservation forKey:
-                @"current_observation"];
-            [i_saveData setObject:[dailyForecast objectForKey:
-                @"forecastday"] forKey:@"forecastday"];
-            [i_saveData setObject:[jsonDict objectForKey:
-                @"hourly_forecast"] forKey:@"hourly_forecast"];
+                // import current observations, daily forecast, and hourly forecast
+                [i_saveData setObject:currentObservation forKey:
+                    @"current_observation"];
+                [i_saveData setObject:[dailyForecast objectForKey:
+                    @"forecastday"] forKey:@"forecastday"];
+                [i_saveData setObject:[jsonDict objectForKey:
+                    @"hourly_forecast"] forKey:@"hourly_forecast"];
 
-            // Tell the controller that the data has been updated
-            dispatch_async(dispatch_get_main_queue(),^(void) {
                 [i_controller dataDownloaded];
             });
         }
