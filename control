@@ -1,7 +1,7 @@
 Package: com.amm.ncwunderground
 Name: WeatherUnderground for Notification Center
 Depends: firmware (>= 6.1), com.saurik.substrate.safemode, com.chpwn.weeloader, com.arichardson.weepreferenceloader, mobilesubstrate
-Version: 1.0.0
+Version: 1.0.1
 Architecture: iphoneos-arm
 Description: Notification Center widget for Weather Underground.
  
@@ -9,22 +9,14 @@ Description: Notification Center widget for Weather Underground.
  
  To use the widget you will need your own API Key from Weather Underground (this ensures that the app can remain free.) Go to http://www.wunderground.com/weather/api/d/edit.html to create a FREE API Key. Select the "Anvil Plan" and the "Developer" option. Enter your API Key on the preferences page at Settings/Notifications/Weather Underground.
  
+ Version 1.0.1:
+ * Fixed a bug that would make the widget get stuck in loading mode. Now you can always force a manual reload if it gets stuck in autoreload mode.
+ * Fixed some thread-safing issues that had the potential to cause a crash.
+ 
  Version 1.0.0:
  * Stable release version.
  * Tapping the current conditions icon will open the detailed Weather Underground forecast page for your location in your default web browser.
  * Contact <drewmm@gmail.com> with feature requests.
- 
- Version 0.2.0:
- * Better failure modes for various cases.
- * Shorter timeout on data download.
- 
- Version 0.1.1:
- * On first open, defaults to current conditions page.
- * Thereafter, opens to last open page.
- 
- Version 0.1.0:
- * Complete code rewrite for easier maintainability.
- * WARNING: This has been tested, but there may be undiscovered problems. Use at your own risk, and let me know if there are issues.
 Maintainer: Andrew MacKie-Mason <drewmm@gmail.com>
 Author: Andrew MacKie-Mason <drewmm@gmail.com>
 Section: Addons (NotificationCenter)
