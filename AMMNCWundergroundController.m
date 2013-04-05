@@ -312,7 +312,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 // Does: tells the model to reload the data
 - (void)loadData:(id)caller {
     NSLog(@"NCWunderground: Loading data.");
-    [[i_view getSubviewFromPage:0 withTag:4] setHidden:YES]; // hide the refresh button
+    //[[i_view getSubviewFromPage:0 withTag:4] setHidden:YES]; // hide the refresh button
     [i_view setLoading:YES];
 
     // Try to load in save data
@@ -336,7 +336,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
             if ([[NSDate date] timeIntervalSince1970] - [i_model lastRequestInt] <= updateLength) {
                 NSLog(@"NCWunderground: Too soon to download data again. Done updating.");
-                [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // hide the refresh button
+                //[[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // hide the refresh button
                 [i_view setLoading:NO];
                 return;
             }
@@ -356,7 +356,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [i_model saveDataToFile:i_saveFile];
     if (i_view) {
         [self associateModelToView];
-        [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
+        //[[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
         [i_view setLoading:NO];
     }
     else {
@@ -365,7 +365,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)dataDownloadFailed {
-    [[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
+    //[[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
     [i_view setLoading:NO];
 }
 
