@@ -272,10 +272,10 @@
         [i_controller dataDownloadFailed];
         return;
     }
-    NSString *urlString = [NSString stringWithFormat:
-        @"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/q/%@,%@.json",
-        apiKey,[i_saveData objectForKey:@"latitude"],
-        [i_saveData objectForKey:@"longitude"]];
+    NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/q/%@,%@.json",
+                                                        apiKey,
+                                                        [i_saveData objectForKey:@"latitude"],
+                                                        [i_saveData objectForKey:@"longitude"]];
     [request setURL:[NSURL URLWithString:urlString]];
     [request setHTTPMethod:@"GET"];
     [request setTimeoutInterval:10];
