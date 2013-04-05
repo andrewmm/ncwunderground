@@ -269,7 +269,6 @@
             [i_controller dataDownloadFailed];
         });
         [request release];
-        [i_controller dataDownloadFailed];
         return;
     }
     NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/q/%@,%@.json",
@@ -309,8 +308,8 @@
                     nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alert show];
                 [alert release];
+                [i_controller dataDownloadFailed];
             });
-            [i_controller dataDownloadFailed];
             return;
         }
 
@@ -368,8 +367,8 @@
                     nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alert show];
                 [alert release];
+                [i_controller dataDownloadFailed];
             });
-            [i_controller dataDownloadFailed];
             return;
         }
     }
@@ -382,8 +381,8 @@
                 nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
             [alert release];
+            [i_controller dataDownloadFailed];
         });
-        [i_controller dataDownloadFailed];
         return;
     }
 }
