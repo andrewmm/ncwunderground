@@ -1,7 +1,10 @@
 #import "AMMNCWundergroundModel.h"
 #import "AMMNCWundergroundController.h"
+#import "AMMNCWundergroundView.h"
 
 @implementation AMMNCWundergroundModel
+
+@synthesize controller = i_controller;
 
 - (id)initWithController:(AMMNCWundergroundController *)controller {
     if ((self = [super init])) {
@@ -412,6 +415,23 @@
         }
     }
 }
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    NSLog(@"NCWunderground: location manager failed with error %@",error);
+    if (error.code == kCLErrorDenied) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Location Denied"
+                                                        message:[error localizedDescription]
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
+        [alert release];
+        [self.controller.view setLoading:NO];
+        [self.controller.locationManager stopUpdatingLocation];
+    }
+}
+
+
 
 
 // save data to disk for later use

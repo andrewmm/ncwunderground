@@ -50,8 +50,10 @@ root
 @interface AMMNCWundergroundModel: NSObject <CLLocationManagerDelegate> {
     NSMutableDictionary *i_saveData;
     dispatch_queue_t backgroundQueue;
-    AMMNCWundergroundController *i_controller;
+    AMMNCWundergroundController *i_controller; // TODO DANGER when we go to ARC, this needs to be weak
 }
+
+@property (nonatomic, assign) AMMNCWundergroundController *controller;
 
 - (id)initWithController:(AMMNCWundergroundController *)controller;
 - (void)dealloc;
