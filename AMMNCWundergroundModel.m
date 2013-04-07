@@ -3,6 +3,8 @@
 
 @implementation AMMNCWundergroundModel
 
+@synthesize controller = i_controller;
+
 - (id)initWithController:(AMMNCWundergroundController *)controller {
     if ((self = [super init])) {
         i_saveData = [[NSMutableDictionary alloc] init];
