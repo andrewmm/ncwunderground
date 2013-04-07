@@ -15,4 +15,4 @@ AWESOME_REPO_PATH=/Library/WebServer/Documents/repo
 distribute: package
 	ssh box@awesome.cs.uchicago.edu "rm $(AWESOME_REPO_PATH)/deb/$(THEOS_PACKAGE_NAME)*"
 	scp "$(THEOS_PACKAGE_DIR)/$(THEOS_PACKAGE_FILENAME).deb" "box@awesome.cs.uchicago.edu:$(AWESOME_REPO_PATH)/deb/"
-	ssh box@awesome.cs.uchicago.edu "PATH=\$(PATH):/sw/bin ; cd $(AWESOME_REPO_PATH) ; dpkg-scanpackages -m deb /dev/null > Packages ; sed -f fix_double_slash.sed < Packages > Packages.tmp ; mv Packages.tmp Packages ; bzip2 -fks Packages"
+	ssh box@awesome.cs.uchicago.edu 'PATH=$$PATH:/sw/bin ; cd $(AWESOME_REPO_PATH) ; dpkg-scanpackages -m deb /dev/null > Packages ; sed -f fix_double_slash.sed < Packages > Packages.tmp ; mv Packages.tmp Packages ; bzip2 -fks Packages'
