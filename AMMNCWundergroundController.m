@@ -346,10 +346,16 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         NSLog(@"NCWunderground: No save file found.");
     }
 
-    i_locationManager.delegate = i_model;
-    i_locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-    i_locationUpdated = NO;
-    [i_locationManager startUpdatingLocation];
+    NSLog(@"NCWunderground: starting location updates");
+
+    if (i_locationManager) {
+        [i_locationManager release];
+    }
+    i_locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = i_model;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    self.locationUpdated = NO;
+    [self.locationManager startUpdatingLocation];
 }
 
 - (void)dataDownloaded {
