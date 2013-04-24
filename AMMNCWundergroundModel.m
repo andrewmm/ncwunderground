@@ -185,11 +185,12 @@
 
 // Takes: path to the save file
 // Returns: YES if it was able to load data, NO otherwise
-- (BOOL)loadSaveData:(NSString *)saveFile {
+- (BOOL)loadSaveData:(NSString *)saveFile inDirectory:(NSString *)saveDirectory {
     NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *fullPath = [saveDirectory stringByAppendingString:saveFile];
 
-    if ([fileManager fileExistsAtPath:saveFile]) {
-        NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] initWithContentsOfFile:saveFile];
+    if ([fileManager fileExistsAtPath:fullPath]) {
+        NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] initWithContentsOfFile:fullPath];
         self.saveData = tempDict;
         if ([self.saveData objectForKey:@"last_request"] == nil) {
             NSLog(@"NCWunderground: save file exists, but appears corrupted.");

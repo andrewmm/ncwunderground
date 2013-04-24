@@ -314,7 +314,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [self.view setLoading:YES];
 
     // Try to load in save data
-    if ([self.model loadSaveData:self.saveFile]) {
+    if ([self.model loadSaveData:self.saveFile inDirectory:self.saveDirectory]) {
         // loading the save file succeeded
         NSLog(@"NCWunderground: Save file loaded, updating views.");
         [self associateModelToView];
