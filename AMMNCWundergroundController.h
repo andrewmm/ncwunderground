@@ -1,10 +1,4 @@
-#import "BBWeeAppController-Protocol.h"
-#import <CoreLocation/CoreLocation.h>
-#import <UIKit/UITableView.h>
-#import "ASBSparkLineView.h"
-#import "AMMNCWundergroundView.h"
-#import "AMMNCWundergroundModel.h"
-#import <dispatch/dispatch.h>
+@class CLLocationManager;
 
 @interface AMMNCWundergroundController: NSObject <BBWeeAppController>
 
