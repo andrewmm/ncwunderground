@@ -6,28 +6,17 @@
 #import "AMMNCWundergroundModel.h"
 #import <dispatch/dispatch.h>
 
-@interface AMMNCWundergroundController: NSObject <BBWeeAppController> {
-    // view and model
-    AMMNCWundergroundView *i_view;
-    AMMNCWundergroundModel *i_model;
+@interface AMMNCWundergroundController: NSObject <BBWeeAppController>
 
-    // other things
-    NSString *i_saveFile;
-    CLLocationManager *i_locationManager;
-    BOOL i_locationUpdated; // prevent location from updating more than once per refresh
-    float i_baseWidth; // width our views are based on (min width it should ever display at)
-    float i_currentWidth; // current width of the screen, orientation dependent
-    NSDictionary *i_iconMap;
-    float i_viewHeight;
-}
-
-@property (readonly) AMMNCWundergroundView *view;
+@property (nonatomic, readonly) AMMNCWundergroundView *view;
+@property (nonatomic, readonly) AMMNCWundergroundModel *model;
 @property (nonatomic, readonly) NSString *saveFile;
-@property (readonly) CLLocationManager *locationManager;
-@property (assign) BOOL locationUpdated;
+@property (atomic, readonly) CLLocationManager *locationManager;
+@property (atomic, readonly) BOOL locationUpdated;
 @property (nonatomic, readonly) float baseWidth;
 @property (nonatomic, readonly) float currentWidth;
 @property (nonatomic, readonly) float viewHeight;
+@property (nonatomic, readonly) NSDictionary *iconMap;
 
 + (void)initialize;
 - (id)init;
