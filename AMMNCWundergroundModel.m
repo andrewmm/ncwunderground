@@ -11,7 +11,7 @@
 - (id)initWithController:(AMMNCWundergroundController *)controller {
     if ((self = [super init])) {
         i_saveData = [[NSMutableDictionary alloc] init];
-        backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.backgroundqueue", NULL);
+        i_backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.backgroundqueue", NULL);
         i_controller = controller;
     }
     return self;
@@ -204,7 +204,7 @@
 
 - (void)saveDataToFile:(NSString *)saveFile inDirectory:(NSString *)saveDirectory {
     NSError *error;
-    BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:self.saveDirectory
+    BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:saveDirectory
                                              withIntermediateDirectories:YES
                                                               attributes:nil
                                                                    error:&error];
@@ -212,7 +212,7 @@
         NSLog(@"NCWunderground: Could not save to disk because directory could not be created. Error: %@",[error localizedDescription]);
         return;
     }
-    [self.saveData writeToFile:saveFile atomically:YES];
+    [self.saveData writeToFile:[saveDirectory stringByAppendingString:saveFile] atomically:YES];
 }
 
 // This should only ever run inside the backgroundQueue
@@ -280,7 +280,7 @@
                     [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"],
                     [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]);
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSString stringWithFormat:@"Server Error (%@)",[[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"]
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Server Error (%@)",[[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"]]
                                                                                           message:[NSString stringWithFormat:@"The weather server returned an error: %@.",[[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]]
                                                                                          delegate:nil
                                                                                 cancelButtonTitle:@"OK"
@@ -358,7 +358,7 @@
             self.saveData = workingDict;
 
             // start a URL request in the backgroundQueue
-            dispatch_async(backgroundQueue, ^(void) {
+            dispatch_async(self.backgroundQueue, ^(void) {
                 [self startURLRequest];
             });
         }

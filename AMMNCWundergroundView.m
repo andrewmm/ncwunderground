@@ -66,7 +66,7 @@
 
     // set up background views
     // preserve old ones, if they exist
-    workingArray = [[NSMutableArray alloc] init];
+    NSMutableArray *workingArray = [[NSMutableArray alloc] init];
     for (int i = 0; i < self.pages; ++i) {
         // set up the background views
         UIImageView *newBackgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg];
@@ -80,7 +80,7 @@
 
     // set up subview containers
     // preserve old ones
-    NSMutableArray *old_subviewContainers;
+    NSArray *old_subviewContainers;
     if (self.subviewContainers) {
         old_subviewContainers = self.subviewContainers;
     }

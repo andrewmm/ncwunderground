@@ -9,7 +9,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @property (nonatomic, copy) NSString *saveDirectory;
 @property (nonatomic, copy) NSString *saveFile;
 @property (atomic, strong) CLLocationManager *locationManager;
-@property (atomic, assign) BOOL locationUpdated;
 @property (nonatomic, assign) float baseWidth;
 @property (nonatomic, assign) float currentWidth;
 @property (nonatomic, assign) float viewHeight;
@@ -41,8 +40,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
         i_model = [[AMMNCWundergroundModel alloc] initWithController:self];
 
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                             NSUserDomainMask, YES);
         i_saveDirectory = @"/var/mobile/Library/Application Support/NCWunderground/";
         i_saveFile = @"weather.save.plist";
 
@@ -382,8 +379,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                                                           longitude:[self.model longitudeDouble]];
     CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[self.model obsLatitudeDouble]
                                                              longitude:[self.model obsLongitudeDouble]];
-    UILabel *distanceLabel = (UILabel *)[self.view getSubviewFromPage:0 withTag:2]
-    distanceLabel.text = [NSString stringWithFormat:@"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:userLocation] / 1609.344)]];
+    UILabel *distanceLabel = (UILabel *)[self.view getSubviewFromPage:0 withTag:2];
+    distanceLabel.text = [NSString stringWithFormat:@"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:userLocation] / 1609.344)];
 
     // -- hourly forecast page -- //
     int intervalLength = [self hourlyForecastLength];
@@ -399,16 +396,16 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [realTempSparkView setDataValues:realTempSparkData];
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
     
-    NSArray *page1TextArray = @[[self.model hourlyTime12HrString:0],
-                                [NSString stringWithFormat:@"%d hr",intervalLength],
-                                [self.model hourlyTime12HrString:(intervalLength - 1)],
-                                @"High",@"Low",@"Temp",[self.model hourlyTempStringF:0],
-                                [self.model hourlyTempStringF:(intervalLength-1)],
-                                [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMaximum] stringValue]],
-                                [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMinimum] stringValue]],
-                                @"Like",[self.model hourlyFeelsStringF:0],[self.model hourlyFeelsStringF:(intervalLength-1)],
-                                [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMaximum] stringValue]],
-                                [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMinimum] stringValue]]];
+    NSArray *page1TextArray = [NSArray arrayWithObjects:[self.model hourlyTime12HrString:0],
+                                                        [NSString stringWithFormat:@"%d hr",intervalLength],
+                                                        [self.model hourlyTime12HrString:(intervalLength - 1)],
+                                                        @"High",@"Low",@"Temp",[self.model hourlyTempStringF:0],
+                                                        [self.model hourlyTempStringF:(intervalLength-1)],
+                                                        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMaximum] stringValue]],
+                                                        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMinimum] stringValue]],
+                                                        @"Like",[self.model hourlyFeelsStringF:0],[self.model hourlyFeelsStringF:(intervalLength-1)],
+                                                        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMaximum] stringValue]],
+                                                        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMinimum] stringValue]],nil];
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 5; ++j) {
@@ -420,11 +417,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
     // -- current conditions page -- //
 
-    NSArray *page2TextArray = @[[self.model currentTempStringF],[self.model currentLocationString],
-                                [NSString stringWithFormat:@"Feels Like %@",[self.model currentFeelsStringF]],
-                                [NSString stringWithFormat:@"Humidity: %@",[self.model currentHumidityString]],
-                                [self.model currentConditionsString],[NSString stringWithFormat:@"Wind: %@",
-                                [self.model currentWindMPHString]]];
+    NSArray *page2TextArray = [NSArray arrayWithObjects:[self.model currentTempStringF],[self.model currentLocationString],
+                                                        [NSString stringWithFormat:@"Feels Like %@",[self.model currentFeelsStringF]],
+                                                        [NSString stringWithFormat:@"Humidity: %@",[self.model currentHumidityString]],
+                                                        [self.model currentConditionsString],[NSString stringWithFormat:@"Wind: %@",
+                                                        [self.model currentWindMPHString]],nil];
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 2; ++j) {
