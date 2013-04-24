@@ -193,6 +193,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [sparkView setPenColor:[UIColor whiteColor]];
             [sparkView setBackgroundColor:[UIColor clearColor]];
             [sparkView setShowCurrentValue:NO];
+            sparkView.labelText = @"";
 
             float x = colBuffer * 3 + labelWidth * 2;
             [sparkView setFrame:CGRectMake(x,y,sparkWidth,rowHeight)];
