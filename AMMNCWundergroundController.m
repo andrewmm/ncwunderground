@@ -2,18 +2,34 @@
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
+@interface AMMNCWundergroundController ()
+
+@property (nonatomic, strong) AMMNCWundergroundView *view;
+@property (nonatomic, strong) AMMNCWundergroundModel *model;
+@property (nonatomic, copy) NSString *saveFile;
+@property (atomic, strong) CLLocationManager *locationManager;
+@property (atomic, assign) BOOL locationUpdated;
+@property (nonatomic, assign) float baseWidth;
+@property (nonatomic, assign) float currentWidth;
+@property (nonatomic, assign) float viewHeight;
+@property (nonatomic, copy) NSDictionary *iconMap;
+
+@end
+
 @implementation AMMNCWundergroundController
 
 @synthesize view=i_view;
+@synthesize model=i_model;
 @synthesize saveFile=i_saveFile;
 @synthesize locationManager=i_locationManager;
 @synthesize locationUpdated=i_locationUpdated;
 @synthesize baseWidth=i_baseWidth;
 @synthesize currentWidth=i_currentWidth;
 @synthesize viewHeight=i_viewHeight;
+@synthesize iconMap=i_iconMap;
 
 + (void)initialize {
-    _ammNCWundergroundWeeAppBundle = [[NSBundle bundleForClass:[self class]] retain];
+    _ammNCWundergroundWeeAppBundle = [NSBundle bundleForClass:[self class]];
 }
 
 - (id)init {
@@ -25,92 +41,68 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                              NSUserDomainMask, YES);
-        i_saveFile = [[NSString alloc] initWithString:
-            [[paths objectAtIndex:0] stringByAppendingString:
-                @"/com.amm.ncwunderground.save.plist"]];
+        i_saveFile = [[NSString alloc] initWithString:[[paths objectAtIndex:0] stringByAppendingString:@"/com.amm.ncwunderground.save.plist"]];
 
         i_locationManager = [[CLLocationManager alloc] init];
         i_locationUpdated = NO;
 
-        i_iconMap = [[NSDictionary alloc] initWithContentsOfFile:
-            [_ammNCWundergroundWeeAppBundle pathForResource:
-                @"icons/com.amm.ncwunderground.iconmap" ofType:@"plist"]];
+        i_iconMap = [[NSDictionary alloc] initWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"icons/com.amm.ncwunderground.iconmap"
+                                                                                                          ofType:@"plist"]];
     }
     return self;
 }
 
-- (void)dealloc {
-    [i_view release];
-    i_view = nil;
-
-    [i_model release];
-    i_model = nil;
-
-    [i_saveFile release];
-    i_saveFile = nil;
-
-    [i_locationManager release];
-    i_locationManager = nil;
-
-    [i_iconMap release];
-    i_iconMap = nil;
-
-    [super dealloc];
-}
-
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-        [i_view setScreenWidth:[UIScreen mainScreen].bounds.size.height];
+        [self.view setScreenWidth:[UIScreen mainScreen].bounds.size.height];
     }
     else {
-        [i_view setScreenWidth:[UIScreen mainScreen].bounds.size.width];
+        [self.view setScreenWidth:[UIScreen mainScreen].bounds.size.width];
     }
 }
 
 - (void)loadFullView {
-    if (i_currentWidth != i_baseWidth) {
+    if (self.currentWidth != self.baseWidth) {
         NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
         int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
+        NSLog(@"NCWunderground: current page is %d",cur_page);
         // We store it as -2 so 0 corresponds to default
 
-        [i_view release];
-        i_view = [[AMMNCWundergroundView alloc] initWithPages:4
-                                                       atPage:cur_page
-                                                        width:i_currentWidth
-                                                       height:i_viewHeight];
+        self.view = [[AMMNCWundergroundView alloc] initWithPages:4
+                                                          atPage:cur_page
+                                                           width:self.currentWidth
+                                                          height:self.viewHeight];
     }
     [self addSubviewsToView];
     [self loadData:nil];
 }
 
 - (void)loadPlaceholderView {
-    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] 
-        persistentDomainForName:@"com.amm.ncwunderground"];
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
+    NSLog(@"NCWunderground: current page is %d",cur_page);
     // We store it as -2 so 0 corresponds to default
 
-    i_currentWidth = i_baseWidth;
-    i_view = [[AMMNCWundergroundView alloc] initWithPages:4
-                                                   atPage:cur_page
-                                                    width:i_currentWidth
-                                                   height:i_viewHeight];
+    self.currentWidth = self.baseWidth;
+    self.view = [[AMMNCWundergroundView alloc] initWithPages:4
+                                                      atPage:cur_page
+                                                       width:self.currentWidth
+                                                      height:self.viewHeight];
 }
 
 - (void)unloadView {
     NSDictionary *oldDefaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     NSMutableDictionary *newDefaultsDom = [NSMutableDictionary dictionaryWithDictionary:oldDefaultsDom];
-    [newDefaultsDom setObject:[NSNumber numberWithFloat:([i_view contentOffset].x / i_currentWidth - 2)]
+    [newDefaultsDom setObject:[NSNumber numberWithFloat:([self.view contentOffset].x / self.currentWidth - 2)]
                                                  forKey:@"cur_page"]; // We store it as -2 so that 0 corresponds to main page
     [[NSUserDefaults standardUserDefaults] setPersistentDomain:newDefaultsDom
                                                        forName:@"com.amm.ncwunderground"];
     [[NSUserDefaults standardUserDefaults] synchronize];
-
-    [i_view release];
-    i_view = nil;
+    self.view = nil;
 }
 
-/* Does: adds all the specific subviews to i_view
-         hooks subview values up to i_model */
+/* Does: adds all the specific subviews to self.view
+         hooks subview values up to self.model */
 - (void)addSubviewsToView {
     // -- details page -- //
 
@@ -121,35 +113,32 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [newLabel setTextColor:[UIColor whiteColor]];
         [newLabel setFont:[UIFont systemFontOfSize:14]];
         [newLabel setTextAlignment:NSTextAlignmentCenter];
-        [newLabel setFrame:CGRectMake(0.1875*[self baseWidth],5+23*i,
-            0.625*[self baseWidth],15)];
+        [newLabel setFrame:CGRectMake(0.1875*self.baseWidth,5+23*i,0.625*self.baseWidth,15)];
         if (i == 2) {
             [newLabel setText:@"Configure options in Settings."];
         }
-        [i_view addSubview:newLabel toPage:0 withTag:(i+1) manualRefresh:NO];
-        [newLabel release];
+        [self.view addSubview:newLabel toPage:0 withTag:(i+1) manualRefresh:NO];
     }
 
     // refresh button
     UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIImage *refreshImage = [UIImage imageWithContentsOfFile:
-        [_ammNCWundergroundWeeAppBundle pathForResource:
-                @"refresh" ofType:@"png"]];
+        [_ammNCWundergroundWeeAppBundle pathForResource:@"refresh"
+                                                 ofType:@"png"]];
     [refreshButton setBackgroundImage:refreshImage forState:UIControlStateNormal];
-    [refreshButton addTarget:self action:@selector(loadData:) 
-        forControlEvents:UIControlEventTouchUpInside];
-    [refreshButton setFrame:CGRectMake(0.859375*[self baseWidth],
-        ([self viewHeight] - 0.1*[self baseWidth])/2,
-        0.09375*[self baseWidth],0.09375*[self baseWidth])];
-    [i_view addSubview:refreshButton toPage:0 withTag:4 manualRefresh:NO];
-    // don't need to release refresh button
+    [refreshButton addTarget:self
+                      action:@selector(loadData:) 
+            forControlEvents:UIControlEventTouchUpInside];
+    [refreshButton setFrame:CGRectMake(0.859375*self.baseWidth, (self.viewHeight - 0.1*self.baseWidth)/2,
+                                       0.09375*self.baseWidth,0.09375*self.baseWidth)];
+    [self.view addSubview:refreshButton toPage:0 withTag:4 manualRefresh:NO];
 
     // -- hourly forecast / sparklines page -- //
 
     // useful formatting constants
-    float labelWidth = 0.14 * [self baseWidth];
-    float colBuffer = 0.00625 * [self baseWidth];
-    float sparkWidth = [self baseWidth] - labelWidth * 5 - colBuffer * 7;
+    float labelWidth = 0.14 * self.baseWidth;
+    float colBuffer = 0.00625 * self.baseWidth;
+    float sparkWidth = self.baseWidth - labelWidth * 5 - colBuffer * 7;
     float rowHeight = 15;
     float rowFirstBuffer = 5;
     float rowBuffer = 8;
@@ -187,8 +176,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                 [newLabel setFrame:CGRectMake(x,y,labelWidth,rowHeight)];
             }
 
-            [i_view addSubview:newLabel toPage:1 withTag:tag manualRefresh:NO];
-            [newLabel release];
+            [self.view addSubview:newLabel
+                           toPage:1
+                          withTag:tag
+                    manualRefresh:NO];
         }
 
         //sparkviews
@@ -201,9 +192,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             float x = colBuffer * 3 + labelWidth * 2;
             [sparkView setFrame:CGRectMake(x,y,sparkWidth,rowHeight)];
 
-            [i_view addSubview:sparkView toPage:1 withTag:(100 + (i+1)*10)
-                manualRefresh:YES];
-            [sparkView release];
+            [self.view addSubview:sparkView
+                           toPage:1
+                          withTag:(100 + (i+1)*10)
+                    manualRefresh:YES];
         }
         
     }
@@ -213,11 +205,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     rowFirstBuffer = 2;
     rowBuffer = 3;
 
-    labelWidth = ([self baseWidth] - 4 - 4 * colBuffer - [self viewHeight]) / 2;
-    float leftHeight = ([self viewHeight] - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
+    labelWidth = (self.baseWidth - 4 - 4 * colBuffer - self.viewHeight) / 2;
+    float leftHeight = (self.viewHeight - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
     float rightHeight = leftHeight * 4 / 3;
 
-    float xArray[] = {colBuffer,colBuffer * 3 + labelWidth + [self viewHeight]};
+    float xArray[] = {colBuffer,colBuffer * 3 + labelWidth + self.viewHeight};
     float heightArray [3][2] = {{leftHeight * 2, rightHeight},
         {leftHeight,rightHeight},{leftHeight,rightHeight}};
     float yArray[3][2] = {{rowFirstBuffer,rowFirstBuffer},
@@ -239,41 +231,40 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [newLabel setFrame:CGRectMake(xArray[j],yArray[i][j],
                 labelWidth,heightArray[i][j])];
 
-            [i_view addSubview:newLabel toPage:2 withTag:
-                (200 + (i+1)*10 + (j+1)) manualRefresh:NO];
-            [newLabel release];
+            [self.view addSubview:newLabel
+                        toPage:2
+                       withTag:(200 + (i+1)*10 + (j+1))
+                 manualRefresh:NO];
         }
     }
 
     CGRect iconRect = CGRectMake(colBuffer * 2 + labelWidth,rowFirstBuffer,
-        [self viewHeight],[self viewHeight]);
+                                 self.viewHeight,self.viewHeight);
 
     UIImageView *iconBackView = [[UIImageView alloc] init];
     [iconBackView setFrame:iconRect];
-    [i_view addSubview:iconBackView toPage:2 withTag:200 manualRefresh:YES];
-    [iconBackView release];
+    [self.view addSubview:iconBackView toPage:2 withTag:200 manualRefresh:YES];
 
     UIImageView *iconFrontView = [[UIImageView alloc] init];
     [iconFrontView setFrame:iconRect];
-    [i_view addSubview:iconFrontView toPage:2 withTag:201 manualRefresh:YES];
-    [iconFrontView release];
+    [self.view addSubview:iconFrontView toPage:2 withTag:201 manualRefresh:YES];
 
     // put a transparent button on top of the icon to open the url
     UIButton *urlButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [urlButton addTarget:self action:@selector(openForecastURL)
+    [urlButton addTarget:self
+                  action:@selector(openForecastURL)
         forControlEvents:UIControlEventTouchUpInside];
     [urlButton setFrame:iconRect];
-    [i_view addSubview:urlButton toPage:2 withTag:202 manualRefresh:NO];
-    // don't need to release the button
+    [self.view addSubview:urlButton toPage:2 withTag:202 manualRefresh:NO];
 
     // -- daily forecast page -- //
 
-    float dayWidth = ([self baseWidth] - 4 - colBuffer * ((float)[self numberOfDays] + 1)) / (float)[self numberOfDays];
+    float dayWidth = (self.baseWidth - 4 - colBuffer * ((float)[self numberOfDays] + 1)) / (float)[self numberOfDays];
     rowBuffer = 3;
-    float iconDims = [self viewHeight] - 15 * 2 - rowBuffer * 4;
+    float iconDims = self.viewHeight - 15 * 2 - rowBuffer * 4;
     if (dayWidth < iconDims)
         iconDims = dayWidth;
-    float iconY = 15 * 2 + rowBuffer * 3 + ([self viewHeight] - 15 * 2 - rowBuffer * 4 - iconDims) / 2;
+    float iconY = 15 * 2 + rowBuffer * 3 + (self.viewHeight - 15 * 2 - rowBuffer * 4 - iconDims) / 2;
 
     for (int j = 0; j < [self numberOfDays]; ++j) { // columns
         for (int i = 0; i < 2; ++i) { // rows
@@ -287,9 +278,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [newLabel setTextAlignment:NSTextAlignmentCenter];
             [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth),
                 rowBuffer + (rowBuffer + 15) * i, dayWidth, 15)];
-            [i_view addSubview:newLabel toPage:3 withTag:
-                (300 + (i+1)*10 + (j+1)) manualRefresh:NO];
-            [newLabel release];
+            [self.view addSubview:newLabel
+                           toPage:3
+                          withTag:(300 + (i+1)*10 + (j+1))
+                    manualRefresh:NO];
         }
 
         CGRect iconRect = CGRectMake(colBuffer + j * (colBuffer + dayWidth) + (dayWidth - iconDims) / 2,
@@ -298,12 +290,14 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         UIImageView *dayIconView = [[UIImageView alloc] init];
         UIImageView *dayIconViewBack = [[UIImageView alloc] init];
         [dayIconView setFrame:iconRect];
-        [i_view addSubview:dayIconViewBack toPage:3 withTag:
-            (330 + (j+1)) manualRefresh:YES];
-        [i_view addSubview:dayIconView toPage:3 withTag:
-            (340 + (j+1)) manualRefresh:YES];
-        [dayIconView release];
-        [dayIconViewBack release];
+        [self.view addSubview:dayIconViewBack
+                       toPage:3
+                      withTag:(330 + (j+1))
+                manualRefresh:YES];
+        [self.view addSubview:dayIconView
+                       toPage:3
+                      withTag:(340 + (j+1))
+                manualRefresh:YES];
     }
 }
 
@@ -312,11 +306,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 // Does: tells the model to reload the data
 - (void)loadData:(id)caller {
     NSLog(@"NCWunderground: Loading data.");
-    //[[i_view getSubviewFromPage:0 withTag:4] setHidden:YES]; // hide the refresh button
-    [i_view setLoading:YES];
+    [self.view setLoading:YES];
 
     // Try to load in save data
-    if ([i_model loadSaveData:i_saveFile]) {
+    if ([self.model loadSaveData:self.saveFile]) {
         // loading the save file succeeded
         NSLog(@"NCWunderground: Save file loaded, updating views.");
         [self associateModelToView];
@@ -334,10 +327,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                 updateLength = 300; // default to 5 minutes
             }
 
-            if ([[NSDate date] timeIntervalSince1970] - [i_model lastRequestInt] <= updateLength) {
+            if ([[NSDate date] timeIntervalSince1970] - [self.model lastRequestInt] <= updateLength) {
                 NSLog(@"NCWunderground: Too soon to download data again. Done updating.");
-                //[[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // hide the refresh button
-                [i_view setLoading:NO];
+                [self.view setLoading:NO];
                 return;
             }
         }
@@ -347,23 +339,18 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     }
 
     NSLog(@"NCWunderground: starting location updates");
-
-    if (i_locationManager) {
-        [i_locationManager release];
-    }
-    i_locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = i_model;
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self.model;
     self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
     self.locationUpdated = NO;
     [self.locationManager startUpdatingLocation];
 }
 
 - (void)dataDownloaded {
-    [i_model saveDataToFile:i_saveFile];
-    if (i_view) {
+    [self.model saveDataToFile:self.saveFile];
+    if (self.view) {
         [self associateModelToView];
-        //[[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
-        [i_view setLoading:NO];
+        [self.view setLoading:NO];
     }
     else {
         NSLog(@"NCWunderground: didn't update view, because it no longer exists.");
@@ -371,8 +358,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)dataDownloadFailed {
-    //[[i_view getSubviewFromPage:0 withTag:4] setHidden:NO]; // reveal the refresh button
-    [i_view setLoading:NO];
+    NSLog(@"NCWunderground: dataDownloadFailed");
+    [self.view setLoading:NO];
 }
 
 // Does: after data model has been updated, loads data into views
@@ -380,131 +367,101 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     // -- details page -- //
 
     // "Last Refreshed"
-    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:
-        [i_model lastRequestInt]];
+    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[self.model lastRequestInt]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"h:mm:ss a"];
-    UILabel *lastRefreshedLabel = (UILabel *)[i_view getSubviewFromPage:
-        0 withTag:1];
-    [lastRefreshedLabel setText:[NSString stringWithFormat:
-        @"Last Refreshed: %@",[dateFormatter stringFromDate:lastRefreshedDate]]];
-    [dateFormatter release];
+    UILabel *lastRefreshedLabel = (UILabel *)[self.view getSubviewFromPage:0
+                                                                   withTag:1];
+    lastRefreshedLabel.text = [NSString stringWithFormat:@"Last Refreshed: %@",[dateFormatter stringFromDate:lastRefreshedDate]];
 
     // "Distance From Station"
-    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:
-        [i_model latitudeDouble] longitude:[i_model longitudeDouble]];
-    CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:
-        [i_model obsLatitudeDouble] longitude:[i_model obsLongitudeDouble]];
-    [(UILabel *)[i_view getSubviewFromPage:0 withTag:2] setText:
-        [NSString stringWithFormat:@"Distance From Station: %.2lf mi",
-            ([stationLocation distanceFromLocation:userLocation] / 1609.344)]];
-    [userLocation release];
-    [stationLocation release];
+    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[self.model latitudeDouble]
+                                                          longitude:[self.model longitudeDouble]];
+    CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[self.model obsLatitudeDouble]
+                                                             longitude:[self.model obsLongitudeDouble]];
+    UILabel *distanceLabel = (UILabel *)[self.view getSubviewFromPage:0 withTag:2]
+    distanceLabel.text = [NSString stringWithFormat:@"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:userLocation] / 1609.344)]];
 
     // -- hourly forecast page -- //
     int intervalLength = [self hourlyForecastLength];
 
-    NSMutableArray *realTempSparkData = [i_model hourlyTempNumberArrayF:
-        0 length:intervalLength];
-    NSMutableArray *feelsLikeSparkData = [i_model hourlyFeelsNumberArrayF:
-        0 length:intervalLength];
+    NSMutableArray *realTempSparkData = [self.model hourlyTempNumberArrayF:0
+                                                                    length:intervalLength];
+    NSMutableArray *feelsLikeSparkData = [self.model hourlyFeelsNumberArrayF:0
+                                                                      length:intervalLength];
 
-    ASBSparkLineView *realTempSparkView = (ASBSparkLineView *)[i_view getSubviewFromPage:1 withTag:120];
-    ASBSparkLineView *feelsLikeSparkView = (ASBSparkLineView *)[i_view getSubviewFromPage:1 withTag:130];
+    ASBSparkLineView *realTempSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:120];
+    ASBSparkLineView *feelsLikeSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:130];
 
     [realTempSparkView setDataValues:realTempSparkData];
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
     
-    NSArray *page1TextArray = [NSArray arrayWithObjects:
-        [i_model hourlyTime12HrString:0],
-        [NSString stringWithFormat:@"%d hr",intervalLength],
-        [i_model hourlyTime12HrString:(intervalLength - 1)],
-        @"High",@"Low",@"Temp",[i_model hourlyTempStringF:0],
-        [i_model hourlyTempStringF:(intervalLength-1)],
-        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMaximum] stringValue]],
-        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMinimum] stringValue]],
-        @"Like",[i_model hourlyFeelsStringF:0],
-        [i_model hourlyFeelsStringF:(intervalLength-1)],
-        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMaximum] stringValue]],
-        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMinimum] stringValue]],
-        nil];
+    NSArray *page1TextArray = @[[self.model hourlyTime12HrString:0],
+                                [NSString stringWithFormat:@"%d hr",intervalLength],
+                                [self.model hourlyTime12HrString:(intervalLength - 1)],
+                                @"High",@"Low",@"Temp",[self.model hourlyTempStringF:0],
+                                [self.model hourlyTempStringF:(intervalLength-1)],
+                                [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMaximum] stringValue]],
+                                [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMinimum] stringValue]],
+                                @"Like",[self.model hourlyFeelsStringF:0],[self.model hourlyFeelsStringF:(intervalLength-1)],
+                                [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMaximum] stringValue]],
+                                [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMinimum] stringValue]]];
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 5; ++j) {
-            UILabel *label = (UILabel *)[i_view getSubviewFromPage:
-                1 withTag:(100 + 10 * (i+1) + (j+1))];
+            UILabel *label = (UILabel *)[self.view getSubviewFromPage:1
+                                                              withTag:(100 + 10 * (i+1) + (j+1))];
             [label setText:[page1TextArray objectAtIndex:(i * 5 + j)]];
         }
     }
 
     // -- current conditions page -- //
 
-    NSArray *page2TextArray = [NSArray arrayWithObjects:
-        [i_model currentTempStringF],[i_model currentLocationString],
-        [NSString stringWithFormat:@"Feels Like %@",
-            [i_model currentFeelsStringF]],
-        [NSString stringWithFormat:@"Humidity: %@",
-            [i_model currentHumidityString]],
-        [i_model currentConditionsString],
-        [NSString stringWithFormat:@"Wind: %@",
-            [i_model currentWindMPHString]],nil];
-
-    if ([page2TextArray count] != 6) {
-        NSLog(@"NCWunderground: page2TextArray not the right length. BAD.");
-        return;
-    }
+    NSArray *page2TextArray = @[[self.model currentTempStringF],[self.model currentLocationString],
+                                [NSString stringWithFormat:@"Feels Like %@",[self.model currentFeelsStringF]],
+                                [NSString stringWithFormat:@"Humidity: %@",[self.model currentHumidityString]],
+                                [self.model currentConditionsString],[NSString stringWithFormat:@"Wind: %@",
+                                [self.model currentWindMPHString]]];
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 2; ++j) {
-            UILabel *label = (UILabel *)[i_view getSubviewFromPage:
-                2 withTag:(200 + 10 * (i+1) + (j+1))];
+            UILabel *label = (UILabel *)[self.view getSubviewFromPage:2
+                                                              withTag:(200 + 10 * (i+1) + (j+1))];
             [label setText:[page2TextArray objectAtIndex:(i*2+j)]];
 
         }
     }
 
-    NSString *remoteIconName = [i_model currentConditionsIconName];
-    NSDictionary *localIconInfo = [i_iconMap objectForKey:remoteIconName];
+    NSString *remoteIconName = [self.model currentConditionsIconName];
+    NSDictionary *localIconInfo = [self.iconMap objectForKey:remoteIconName];
     UIImage *weatherIconBack;
     UIImage *weatherIconFront;
 
-    weatherIconBack = [UIImage imageWithContentsOfFile:
-        [_ammNCWundergroundWeeAppBundle pathForResource:
-            [NSString stringWithFormat:@"icons/%@",
-                [localIconInfo objectForKey:@"back"]] ofType:@"png"]];
-    weatherIconFront = [UIImage imageWithContentsOfFile:
-        [_ammNCWundergroundWeeAppBundle pathForResource:
-            [NSString stringWithFormat:@"icons/%@",
-                [localIconInfo objectForKey:@"front"]] ofType:@"png"]];
-    [(UIImageView *)[i_view getSubviewFromPage:2 withTag:200] setImage:
-        weatherIconBack];
-    [(UIImageView *)[i_view getSubviewFromPage:2 withTag:201] setImage:
-        weatherIconFront];
+    weatherIconBack = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"back"]]
+                                                                                                ofType:@"png"]];
+    weatherIconFront = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"front"]]
+                                                                                                 ofType:@"png"]];
+    [(UIImageView *)[self.view getSubviewFromPage:2 withTag:200] setImage:weatherIconBack];
+    [(UIImageView *)[self.view getSubviewFromPage:2 withTag:201] setImage:weatherIconFront];
 
     // -- daily forecast page -- //
 
     for (int j = 0; j < [self numberOfDays]; ++j) {
-        UILabel *dayLabel = (UILabel *)[i_view getSubviewFromPage:3 withTag:(310 + (j+1))];
-        UILabel *tempLabel = (UILabel *)[i_view getSubviewFromPage:3 withTag:(320 + (j+1))];
-        [dayLabel setText:[i_model dailyDayShortString:j]];
-        [tempLabel setText:[NSString stringWithFormat:@"%@/%@ (%@)",
-            [i_model dailyHighStringF:j],[i_model dailyLowStringF:j],
-            [i_model dailyPOPString:j]]];
+        UILabel *dayLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:(310 + (j+1))];
+        UILabel *tempLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:(320 + (j+1))];
+        [dayLabel setText:[self.model dailyDayShortString:j]];
+        [tempLabel setText:[NSString stringWithFormat:@"%@/%@ (%@)",[self.model dailyHighStringF:j],
+                                                                    [self.model dailyLowStringF:j],
+                                                                    [self.model dailyPOPString:j]]];
 
-        remoteIconName = [i_model dailyConditionsIconName:j];
-        localIconInfo = [i_iconMap objectForKey:remoteIconName];
-        weatherIconBack = [UIImage imageWithContentsOfFile:
-        [_ammNCWundergroundWeeAppBundle pathForResource:
-            [NSString stringWithFormat:@"icons/%@",
-                [localIconInfo objectForKey:@"back"]] ofType:@"png"]];
-        weatherIconFront = [UIImage imageWithContentsOfFile:
-            [_ammNCWundergroundWeeAppBundle pathForResource:
-                [NSString stringWithFormat:@"icons/%@",
-                    [localIconInfo objectForKey:@"front"]] ofType:@"png"]];
-        [(UIImageView *)[i_view getSubviewFromPage:3 withTag:
-            (330 + (j+1))] setImage:weatherIconBack];
-        [(UIImageView *)[i_view getSubviewFromPage:3 withTag:
-            (340 + (j+1))] setImage:weatherIconFront];
+        remoteIconName = [self.model dailyConditionsIconName:j];
+        localIconInfo = [self.iconMap objectForKey:remoteIconName];
+        weatherIconBack = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"back"]]
+                                                                                                    ofType:@"png"]];
+        weatherIconFront = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"front"]]
+                                                                                                     ofType:@"png"]];
+        [(UIImageView *)[self.view getSubviewFromPage:3 withTag:(330 + (j+1))] setImage:weatherIconBack];
+        [(UIImageView *)[self.view getSubviewFromPage:3 withTag:(340 + (j+1))] setImage:weatherIconFront];
     }
 
 }
@@ -516,8 +473,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 // Returns: user preferences for number of hours to display
 - (int)hourlyForecastLength {
-    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] 
-        persistentDomainForName:@"com.amm.ncwunderground"];
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     NSNumber *hourlyLength = [defaultsDom objectForKey:@"hourlyLength"];
     if (hourlyLength) {
         return [hourlyLength integerValue];
@@ -529,8 +485,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)openForecastURL {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:
-        [i_model currentConditionsURL]]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[self.model currentConditionsURL]]];
 }
 
 @end
