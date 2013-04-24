@@ -1,4 +1,3 @@
-#import "BBWeeAppController-Protocol.h"
 #import <CoreLocation/CoreLocation.h>
 #import "Sparklines/Sparklines/ASBSparkLineView.h"
 #import "AMMNCWundergroundView.h"

@@ -1,4 +1,7 @@
+#import "BBWeeAppController-Protocol.h"
 @class CLLocationManager;
+@class AMMNCWundergroundView;
+@class AMMNCWundergroundModel;
 
 @interface AMMNCWundergroundController: NSObject <BBWeeAppController>
 
