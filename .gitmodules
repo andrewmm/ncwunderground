@@ -1,0 +1,3 @@
+[submodule "Sparklines"]
+	path = Sparklines
+	url = git://github.com/abelsey/Sparklines.git
