@@ -1,20 +1,13 @@
-@interface AMMNCWundergroundView: UIScrollView {
-	int i_pages; // number of pages in the scroll view
-	float i_baseWidth; // screen width we design layout around (min)
-	float i_screenWidth; // current screen width
-	float i_viewHeight;
-	NSMutableArray *i_backgroundViews; // array of pages
-	NSMutableArray *i_subviewContainers; // one for each page
-	NSMutableArray *i_spinners; // loading spinner for each page
- 
-	NSMutableArray *i_refreshNeeded;
-}
+@interface AMMNCWundergroundView: UIScrollView
 
 @property (nonatomic, assign) int pages;
-@property (nonatomic, readonly) float baseWidth;
+@property (nonatomic, readonly, assign) float baseWidth;
 @property (nonatomic, assign) float screenWidth;
 @property (nonatomic, assign) float viewHeight;
-@property (nonatomic, readonly) NSMutableArray *backgroundViews;
+@property (nonatomic, readonly, copy) NSArray *backgroundViews;
+@property (nonatomic, readonly, copy) NSArray *subviewContainers;
+@property (nonatomic, readonly, copy) NSArray *spinners;
+@property (nonatomic, readonly, copy) NSArray *refreshNeeded;
 
 
 // Takes: number of pages, base width, view height
