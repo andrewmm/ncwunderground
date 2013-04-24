@@ -1,3 +1,9 @@
+#import "BBWeeAppController-Protocol.h"
+#import <CoreLocation/CoreLocation.h>
+#import "Sparklines/Sparklines/ASBSparkLineView.h"
+#import "AMMNCWundergroundView.h"
+#import "AMMNCWundergroundModel.h"
+#import <dispatch/dispatch.h>
 #import "AMMNCWundergroundController.h"
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
