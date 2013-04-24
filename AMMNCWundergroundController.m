@@ -110,6 +110,14 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)addSubviewsToView {
     // -- details page -- //
 
+    UIImage *wundergroundLogo = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"wundergroundLogo_white"
+                                                                                                          ofType:@"png"]];
+    wundergroundLogo = [wundergroundLogo resizableImageWithCapInsets:UIEdgeInsetsZero resizingMode:UIImageResizingModeStretch];
+    UIImageView *wundergroundLogoView = [[UIImageView alloc] initWithImage:wundergroundLogo];
+    wundergroundLogoView.contentMode = UIViewContentModeScaleAspectFit;
+    wundergroundLogoView.frame = CGRectMake((0.1875*self.baseWidth - 54) / 2, (self.viewHeight - 32.16)/2, 54, 32.16);
+    [self.view addSubview:wundergroundLogoView toPage:0 withTag:0 manualRefresh:NO];
+
     // labels
     for (int i=0; i < 3; ++i) {
         UILabel *newLabel = [[UILabel alloc] init];
