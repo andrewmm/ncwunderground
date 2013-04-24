@@ -1,5 +1,15 @@
 #import "AMMNCWundergroundView.h"
 
+@interface AMMNCWundergroundView ()
+
+@property (nonatomic, assign) float baseWidth;
+@property (nonatomic, copy) NSArray *backgroundViews;
+@property (nonatomic, copy) NSArray *subviewContainers;
+@property (nonatomic, copy) NSArray *spinners;
+@property (nonatomic, copy) NSArray *refreshNeeded;
+
+@end
+
 @implementation AMMNCWundergroundView
 
 @synthesize pages=i_pages;
@@ -7,6 +17,9 @@
 @synthesize screenWidth=i_screenWidth;
 @synthesize viewHeight=i_viewHeight;
 @synthesize backgroundViews=i_backgroundViews;
+@synthesize subviewContainers=i_subviewContainers;
+@synthesize spinners=i_spinners;
+@synthesize refreshNeeded=i_refreshNeeded;
 
 // Takes: number of pages, base width, view height
 // Does: initializes
@@ -27,23 +40,12 @@
 
         // set up pages
         [self setPages:n_pages];
-
-        // alloc i_refreshNeeded for later use
-        i_refreshNeeded = [[NSMutableArray alloc] init];
     }
     return self;
 }
 
 - (id)init {
     return [self initWithPages:1 atPage:0 width:320 height:71];
-}
-
-- (void)dealloc {
-    [i_backgroundViews release];
-    [i_subviewContainers release];
-    [i_spinners release];
-    [i_refreshNeeded release];
-    [super dealloc];
 }
 
 // Override pages setter
@@ -57,45 +59,38 @@
     // remove old background views from self
     [[self subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
 
+
     // images for background views
-    UIImage *bgImg = [UIImage imageWithContentsOfFile:
-        @"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
-    UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:
-        floorf(bgImg.size.width / 2) topCapHeight:
-        floorf(bgImg.size.height / 2)];
+    UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
+    UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2)
+                                                           topCapHeight:floorf(bgImg.size.height / 2)];
 
     // set up background views
     // preserve old ones, if they exist
-    if (i_backgroundViews) {
-        [i_backgroundViews release];
-    }
-    i_backgroundViews = [[NSMutableArray alloc] init];
-    for (int i = 0; i < i_pages; ++i) {
+    NSMutableArray *workingArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < self.pages; ++i) {
         // set up the background views
         UIImageView *newBackgroundView = [[UIImageView alloc] initWithImage:stretchableBgImg];
         [newBackgroundView setUserInteractionEnabled:YES]; // allow buttons to be pressed
-        [i_backgroundViews addObject:newBackgroundView];
-        [newBackgroundView setFrame:
-            CGRectMake([self screenWidth]*i+2,0,[self screenWidth]-4,[self viewHeight])];
+        [workingArray addObject:newBackgroundView];
+        [newBackgroundView setFrame:CGRectMake([self screenWidth]*i+2,0,[self screenWidth]-4,[self viewHeight])];
         [newBackgroundView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
         [self addSubview:newBackgroundView];
-
-        [newBackgroundView release];
     }
+    self.backgroundViews = workingArray;
 
     // set up subview containers
     // preserve old ones
-    NSMutableArray *old_subviewContainers;
-    if (i_subviewContainers) {
-        old_subviewContainers = i_subviewContainers;
+    NSArray *old_subviewContainers;
+    if (self.subviewContainers) {
+        old_subviewContainers = self.subviewContainers;
     }
-    i_subviewContainers = [[NSMutableArray alloc] init];
-    for (int i = 0; i < i_pages; ++i) {
+    workingArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < self.pages; ++i) {
         UIView *newSubviewContainer = [[UIView alloc] init];
-        [i_subviewContainers addObject:newSubviewContainer];
-        [newSubviewContainer setFrame:
-            CGRectMake(0,0,[self screenWidth]-4,[self viewHeight])];
-        [[i_backgroundViews objectAtIndex:i] addSubview:newSubviewContainer];
+        [workingArray addObject:newSubviewContainer];
+        [newSubviewContainer setFrame:CGRectMake(0,0,[self screenWidth]-4,[self viewHeight])];
+        [[self.backgroundViews objectAtIndex:i] addSubview:newSubviewContainer];
 
         // add the subviews, if they exist
         if (old_subviewContainers) {
@@ -103,27 +98,18 @@
                 [newSubviewContainer addSubview:subview];
             }
         }
-        [newSubviewContainer release];
     }
-
-    if (old_subviewContainers) {
-        [old_subviewContainers release];
-    }
+    self.subviewContainers = workingArray;
 
     // set up spinners
-    if (i_spinners) {
-        [i_spinners release];
-    }
-    i_spinners = [[NSMutableArray alloc] init];
-    for (int i = 0; i < i_pages; ++i) {
-        UIActivityIndicatorView *newSpinner = 
-            [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
-                UIActivityIndicatorViewStyleWhiteLarge];
-        [i_spinners addObject:newSpinner];
+    workingArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < self.pages; ++i) {
+        UIActivityIndicatorView *newSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        [workingArray addObject:newSpinner];
         [newSpinner setCenter:CGPointMake(([self screenWidth]-4)/2,[self viewHeight]/2)];
-        [[i_subviewContainers objectAtIndex:i] addSubview:newSpinner];
-        [newSpinner release];
+        [[self.subviewContainers objectAtIndex:i] addSubview:newSpinner];
     }
+    self.spinners = workingArray;
 }
 
 // Override screenWidth setter
@@ -132,7 +118,7 @@
          calls setPages */
 - (void)setScreenWidth:(float)width {
     i_screenWidth = width;
-    [self setPages:i_pages];
+    [self setPages:self.pages];
 }
 
 // Takes: BOOL indicating whether we're loading or now
@@ -140,40 +126,41 @@
 - (void)setLoading:(BOOL)status {
     if(status) {
         NSLog(@"NCWunderground: starting loading indicators");
-        for(int i = 0; i < i_pages; ++i) {
-            UIActivityIndicatorView *spinner = [i_spinners objectAtIndex:i];
-            [[i_subviewContainers objectAtIndex:i] bringSubviewToFront:spinner];
+        for(int i = 0; i < self.pages; ++i) {
+            UIActivityIndicatorView *spinner = [self.spinners objectAtIndex:i];
+            [[self.subviewContainers objectAtIndex:i] bringSubviewToFront:spinner];
             [spinner startAnimating];
         }
     }
     else {
         NSLog(@"NCWunderground: stopping loading indicators");
-        for(UIActivityIndicatorView *spinner in i_spinners) {
+        for(UIActivityIndicatorView *spinner in self.spinners) {
             [spinner stopAnimating];
         }
     }
 }
 
 // Takes: subview to add, page to add it to, (optional: tag, default 0) whether it needs manual refresh
-/* Does: retains subview
-         adds it to appropriate array in i_subviews
+/* Does: adds subview to appropriate array in self.subviews
          adds it as a subview to the right subview container
          marks it as refresh needed, if necessary */
 // Returns: YES if successful, NO otherwise
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page withTag:(int)tag manualRefresh:(BOOL)refresh {
     // lots of error checking
-    UIImageView *t_backgroundView = [i_backgroundViews objectAtIndex:page];
+    UIImageView *t_backgroundView = [self.backgroundViews objectAtIndex:page];
     if (!t_backgroundView) {
         return NO;
     }
-    UIView *t_subviewContainer = [i_subviewContainers objectAtIndex:page];
+    UIView *t_subviewContainer = [self.subviewContainers objectAtIndex:page];
     if (!t_subviewContainer) {
         return NO;
     }
 
     [t_subviewContainer addSubview:subview];
     if(refresh) {
-        [i_refreshNeeded addObject:subview];
+        NSMutableArray *workingArray = [NSMutableArray arrayWithArray:self.refreshNeeded];
+        [workingArray addObject:subview];
+        self.refreshNeeded = workingArray;
     }
     [subview setTag:tag];
 
@@ -187,7 +174,7 @@
 // Returns: subview
 - (UIView *)getSubviewFromPage:(int)page withTag:(int)tag {
 
-    UIView *subviewContainer = [i_subviewContainers objectAtIndex:page];
+    UIView *subviewContainer = [self.subviewContainers objectAtIndex:page];
     if (subviewContainer) {
         UIView *subview = [subviewContainer viewWithTag:tag];
         if (subview) {
@@ -204,9 +191,9 @@
     }
 }
 
-// Does: sets needsDisplay:YES on everything in i_refreshNeeded
+// Does: sets needsDisplay:YES on everything in self.refreshNeeded
 - (void)refreshViews {
-    for (UIView *view in i_refreshNeeded) {
+    for (UIView *view in self.refreshNeeded) {
         [view setNeedsDisplay];
     }
 }
