@@ -90,7 +90,7 @@ root
 - (NSString *)dailyPOPString:(int)forecastIndex; // includes %
 - (NSString *)dailyConditionsIconName:(int)forecastIndex;
 
-- (BOOL)loadSaveData:(NSString *)saveFile;
+- (BOOL)loadSaveData:(NSString *)saveFile inDirectory:(NSString *)saveDirectory;
 - (void)saveDataToFile:(NSString *)saveFile inDirectory:(NSString *)saveDirectory;
 - (void)startURLRequest;
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations;
