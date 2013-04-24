@@ -4,6 +4,7 @@
 #import "AMMNCWundergroundView.h"
 #import "AMMNCWundergroundModel.h"
 #import <dispatch/dispatch.h>
+
 #import "AMMNCWundergroundController.h"
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
@@ -71,7 +72,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     if (self.currentWidth != self.baseWidth) {
         NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
         int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
-        NSLog(@"NCWunderground: current page is %d",cur_page);
         // We store it as -2 so 0 corresponds to default
 
         self.view = [[AMMNCWundergroundView alloc] initWithPages:4
@@ -86,7 +86,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)loadPlaceholderView {
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
-    NSLog(@"NCWunderground: current page is %d",cur_page);
     // We store it as -2 so 0 corresponds to default
 
     self.currentWidth = self.baseWidth;
@@ -344,7 +343,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         NSLog(@"NCWunderground: No save file found.");
     }
 
-    NSLog(@"NCWunderground: starting location updates");
+    NSLog(@"NCWunderground: Starting location updates.");
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self.model;
     self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
@@ -359,7 +358,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [self.view setLoading:NO];
     }
     else {
-        NSLog(@"NCWunderground: didn't update view, because it no longer exists.");
+        NSLog(@"NCWunderground: Didn't update view, because it no longer exists.");
     }
 }
 
