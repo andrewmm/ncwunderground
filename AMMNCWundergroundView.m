@@ -54,10 +54,11 @@
          removes current set of background views, if any
          creates new background views */
 - (void)setPages:(int)n_pages {
-    self.pages = n_pages;
+    i_pages = n_pages;
 
     // remove old background views from self
     [[self subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
+
 
     // images for background views
     UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
@@ -116,7 +117,7 @@
 /* Does: sets screenWidth
          calls setPages */
 - (void)setScreenWidth:(float)width {
-    self.screenWidth = width;
+    i_screenWidth = width;
     [self setPages:self.pages];
 }
 
