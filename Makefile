@@ -4,7 +4,7 @@ include theos/makefiles/common.mk
 
 TARGET_IPHONEOS_DEPLOYMENT_VERSION = 6.0
 BUNDLE_NAME = ammNCWunderground
-ammNCWunderground_FILES = AMMNCWundergroundController.m AMMNCWundergroundView.m AMMNCWundergroundModel.m ASBSparkLineView.m
+ammNCWunderground_FILES = AMMNCWundergroundController.m AMMNCWundergroundView.m AMMNCWundergroundModel.m Sparklines/Sparklines/ASBSparkLineView.m
 ammNCWunderground_INSTALL_PATH = /Library/WeeLoader/Plugins
 ammNCWunderground_FRAMEWORKS = UIKit CoreGraphics CoreLocation
 
