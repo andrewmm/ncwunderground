@@ -54,7 +54,6 @@ root
 @property (nonatomic, weak) AMMNCWundergroundController *controller;
 
 - (id)initWithController:(AMMNCWundergroundController *)controller;
-- (void)dealloc;
 
 // Returns: current latitude/longitude as a double
 - (double)latitudeDouble;

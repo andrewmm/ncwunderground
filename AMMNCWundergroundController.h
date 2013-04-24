@@ -8,19 +8,18 @@
 
 @interface AMMNCWundergroundController: NSObject <BBWeeAppController>
 
-@property (nonatomic, readonly) AMMNCWundergroundView *view;
-@property (nonatomic, readonly) AMMNCWundergroundModel *model;
-@property (nonatomic, readonly) NSString *saveFile;
-@property (atomic, readonly) CLLocationManager *locationManager;
-@property (atomic, readonly) BOOL locationUpdated;
-@property (nonatomic, readonly) float baseWidth;
-@property (nonatomic, readonly) float currentWidth;
-@property (nonatomic, readonly) float viewHeight;
-@property (nonatomic, readonly) NSDictionary *iconMap;
+@property (nonatomic, readonly, strong) AMMNCWundergroundView *view;
+@property (nonatomic, readonly, strong) AMMNCWundergroundModel *model;
+@property (nonatomic, readonly, copy) NSString *saveFile;
+@property (atomic, readonly, strong) CLLocationManager *locationManager;
+@property (atomic, assign) BOOL locationUpdated;
+@property (nonatomic, readonly, assign) float baseWidth;
+@property (nonatomic, readonly, assign) float currentWidth;
+@property (nonatomic, readonly, assign) float viewHeight;
+@property (nonatomic, readonly, copy) NSDictionary *iconMap;
 
 + (void)initialize;
 - (id)init;
-- (void)dealloc;
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)loadFullView;

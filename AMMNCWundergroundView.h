@@ -1,13 +1,13 @@
 @interface AMMNCWundergroundView: UIScrollView
 
 @property (nonatomic, assign) int pages;
-@property (nonatomic, readonly) float baseWidth;
+@property (nonatomic, readonly, assign) float baseWidth;
 @property (nonatomic, assign) float screenWidth;
 @property (nonatomic, assign) float viewHeight;
-@property (nonatomic, readonly) NSArray *backgroundViews;
-@property (nonatomic, readonly) NSArray *subviewContainers;
-@property (nonatomic, readonly) NSArray *spinners;
-@property (nonatomic, readonly) NSArray *refreshNeeded;
+@property (nonatomic, readonly, copy) NSArray *backgroundViews;
+@property (nonatomic, readonly, copy) NSArray *subviewContainers;
+@property (nonatomic, readonly, copy) NSArray *spinners;
+@property (nonatomic, readonly, copy) NSArray *refreshNeeded;
 
 
 // Takes: number of pages, base width, view height
