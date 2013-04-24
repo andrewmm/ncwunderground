@@ -6,6 +6,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 @property (nonatomic, strong) AMMNCWundergroundView *view;
 @property (nonatomic, strong) AMMNCWundergroundModel *model;
+@property (nonatomic, copy) NSString *saveDirectory;
 @property (nonatomic, copy) NSString *saveFile;
 @property (atomic, strong) CLLocationManager *locationManager;
 @property (atomic, assign) BOOL locationUpdated;
@@ -20,6 +21,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
 @synthesize view=i_view;
 @synthesize model=i_model;
+@synthesize saveDirectory = i_saveDirectory;
 @synthesize saveFile=i_saveFile;
 @synthesize locationManager=i_locationManager;
 @synthesize locationUpdated=i_locationUpdated;
@@ -41,7 +43,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                              NSUserDomainMask, YES);
-        i_saveFile = [[NSString alloc] initWithString:[[paths objectAtIndex:0] stringByAppendingString:@"/com.amm.ncwunderground.save.plist"]];
+        i_saveDirectory = @"/var/mobile/Library/Application Support/NCWunderground/";
+        i_saveFile = @"weather.save.plist";
 
         i_locationManager = [[CLLocationManager alloc] init];
         i_locationUpdated = NO;
@@ -347,7 +350,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)dataDownloaded {
-    [self.model saveDataToFile:self.saveFile];
+    [self.model saveDataToFile:self.saveFile inDirectory:self.saveDirectory];
     if (self.view) {
         [self associateModelToView];
         [self.view setLoading:NO];
