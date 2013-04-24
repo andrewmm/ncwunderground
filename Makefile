@@ -1,10 +1,16 @@
+export ARCHS = armv7
+
 include theos/makefiles/common.mk
 
-export ARCHS = armv7
+TARGET_IPHONEOS_DEPLOYMENT_VERSION = 6.0
 BUNDLE_NAME = ammNCWunderground
 ammNCWunderground_FILES = AMMNCWundergroundController.m AMMNCWundergroundView.m AMMNCWundergroundModel.m ASBSparkLineView.m
 ammNCWunderground_INSTALL_PATH = /Library/WeeLoader/Plugins
 ammNCWunderground_FRAMEWORKS = UIKit CoreGraphics CoreLocation
+
+TARGET_CC = xcrun -sdk iphoneos clang 
+TARGET_CXX = xcrun -sdk iphoneos clang++
+TARGET_LD = xcrun -sdk iphoneos clang++
 ADDITIONAL_OBJCFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/bundle.mk
