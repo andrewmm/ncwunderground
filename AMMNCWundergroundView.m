@@ -118,7 +118,13 @@
          calls setPages */
 - (void)setScreenWidth:(float)width {
     i_screenWidth = width;
+    self.contentSize = CGSizeMake(self.pages * width,self.viewHeight);
     [self setPages:self.pages];
+}
+
+- (void)setScreenWidth:(float)width withCurrentPage:(int)cur_page {
+    self.screenWidth = width;
+    self.contentOffset = CGPointMake(cur_page * width,0);
 }
 
 // Takes: BOOL indicating whether we're loading or now

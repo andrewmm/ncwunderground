@@ -25,6 +25,7 @@
 /* Does: sets screenWidth
 		 calls setPages */
 - (void)setScreenWidth:(float)width;
+- (void)setScreenWidth:(float)width withCurrentPage:(int)cur_page;
 
 // Takes: BOOL indicating whether we're loading or now
 // Does: activates or hides spinners

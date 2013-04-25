@@ -59,11 +59,13 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
     if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-        [self.view setScreenWidth:[UIScreen mainScreen].bounds.size.height];
+        [self.view setScreenWidth:[UIScreen mainScreen].bounds.size.height withCurrentPage:cur_page];
     }
     else {
-        [self.view setScreenWidth:[UIScreen mainScreen].bounds.size.width];
+        [self.view setScreenWidth:[UIScreen mainScreen].bounds.size.width withCurrentPage:cur_page];
     }
 }
 
