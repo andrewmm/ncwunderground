@@ -89,7 +89,7 @@
     for (int i = 0; i < self.pages; ++i) {
         UIView *newSubviewContainer = [[UIView alloc] init];
         [workingArray addObject:newSubviewContainer];
-        [newSubviewContainer setFrame:CGRectMake(0,0,[self screenWidth]-4,[self viewHeight])];
+        [newSubviewContainer setFrame:CGRectMake((self.screenWidth - self.baseWidth) / 2,0,self.baseWidth-4,self.viewHeight)];
         [[self.backgroundViews objectAtIndex:i] addSubview:newSubviewContainer];
 
         // add the subviews, if they exist
