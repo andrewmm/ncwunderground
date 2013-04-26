@@ -117,7 +117,7 @@
 
 // Returns: current temp string including °F
 - (NSString *)currentTempStringF {
-    return [NSString stringWithFormat:@"%@ °F",[[self.saveData objectForKey:@"current_observation"] objectForKey:@"temp_f"]];
+    return [NSString stringWithFormat:@"%.1f °F",[[[self.saveData objectForKey:@"current_observation"] objectForKey:@"temp_f"] floatValue]];
 }
 
 // Returns: current feels string including °F
