@@ -61,6 +61,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
+    NSLog(@"NCWunderground: will animate cur_page = %d",cur_page);
     if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
         [self.view setScreenWidth:[UIScreen mainScreen].bounds.size.height withCurrentPage:cur_page];
     }
@@ -97,14 +98,16 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)unloadView {
-    NSDictionary *oldDefaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
-    NSMutableDictionary *newDefaultsDom = [NSMutableDictionary dictionaryWithDictionary:oldDefaultsDom];
-    [newDefaultsDom setObject:[NSNumber numberWithFloat:([self.view contentOffset].x / self.currentWidth - 2)]
-                                                 forKey:@"cur_page"]; // We store it as -2 so that 0 corresponds to main page
-    [[NSUserDefaults standardUserDefaults] setPersistentDomain:newDefaultsDom
-                                                       forName:@"com.amm.ncwunderground"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    self.view = nil;
+    if (self.view) { // apparently unloadView can get called more than once without loadPlaceholderView or loadFullView being called again. Don't want that.
+        NSDictionary *oldDefaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+        NSMutableDictionary *newDefaultsDom = [NSMutableDictionary dictionaryWithDictionary:oldDefaultsDom];
+        [newDefaultsDom setObject:[NSNumber numberWithFloat:([self.view contentOffset].x / self.currentWidth - 2)]
+                                                     forKey:@"cur_page"]; // We store it as -2 so that 0 corresponds to main page
+        [[NSUserDefaults standardUserDefaults] setPersistentDomain:newDefaultsDom
+                                                           forName:@"com.amm.ncwunderground"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        self.view = nil;
+    }
 }
 
 /* Does: adds all the specific subviews to self.view
