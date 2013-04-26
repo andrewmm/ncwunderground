@@ -1,8 +1,7 @@
 obj/
 *.deb
-/theos
 /altresources/
 .DS_Store
 /.gitignore~
-/.theos/
 /_/
+.theos
