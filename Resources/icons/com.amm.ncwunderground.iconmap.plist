@@ -49,9 +49,7 @@
 	</dict>
 	<key>nt_mostlycloudy</key>
 	<dict>
-		<key>word</key>
-		<string>Mostly Cloudy</string>
-		<key>icon</key>
+		<key>front</key>
 		<string>29</string>
 	</dict>
 	<key>nt_hazy</key>
