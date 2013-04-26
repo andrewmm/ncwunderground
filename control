@@ -1,7 +1,7 @@
 Package: com.amm.ncwunderground
 Name: WeatherUnderground for Notification Center
 Depends: firmware (>= 6.1), com.saurik.substrate.safemode, com.chpwn.weeloader, com.arichardson.weepreferenceloader, mobilesubstrate
-Version: 1.1.0
+Version: 1.1.1
 Architecture: iphoneos-arm
 Description: Notification Center widget for Weather Underground.
  
@@ -10,6 +10,9 @@ Description: Notification Center widget for Weather Underground.
  To use the widget you will need your own API Key from Weather Underground (this ensures that the app can remain free.) Go to http://www.wunderground.com/weather/api/d/edit.html to create a free API Key. Select the "Anvil Plan" and the "Developer" option. Enter your API Key on the preferences page at Settings/Notifications/Weather Underground.
  
  NCWunderground is open source. You can find the GitHub repo (including more detailed installation instructions and the ability to submit bug reports) at https://github.com/andrewmm/ncwunderground.
+ 
+ Version 1.1.1:
+ * Fixed bug with page to open to.
  
  Version 1.1.0:
  * Public release version.
