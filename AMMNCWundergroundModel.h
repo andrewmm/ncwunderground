@@ -47,16 +47,13 @@ root
 
 @class AMMNCWundergroundController;
 
-@interface AMMNCWundergroundModel: NSObject <CLLocationManagerDelegate> {
-    NSMutableDictionary *i_saveData;
-    dispatch_queue_t backgroundQueue;
-    AMMNCWundergroundController *i_controller; // TODO DANGER when we go to ARC, this needs to be weak
-}
+@interface AMMNCWundergroundModel: NSObject <CLLocationManagerDelegate>
 
-@property (nonatomic, assign) AMMNCWundergroundController *controller;
+@property (nonatomic, copy) NSDictionary *saveData;
+@property (nonatomic, strong) dispatch_queue_t backgroundQueue;
+@property (nonatomic, weak) AMMNCWundergroundController *controller;
 
 - (id)initWithController:(AMMNCWundergroundController *)controller;
-- (void)dealloc;
 
 // Returns: current latitude/longitude as a double
 - (double)latitudeDouble;
@@ -93,8 +90,8 @@ root
 - (NSString *)dailyPOPString:(int)forecastIndex; // includes %
 - (NSString *)dailyConditionsIconName:(int)forecastIndex;
 
-- (BOOL)loadSaveData:(NSString *)saveFile;
-- (void)saveDataToFile:(NSString *)saveFile;
+- (BOOL)loadSaveData:(NSString *)saveFile inDirectory:(NSString *)saveDirectory;
+- (void)saveDataToFile:(NSString *)saveFile inDirectory:(NSString *)saveDirectory;
 - (void)startURLRequest;
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations;
 

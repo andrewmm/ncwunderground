@@ -1,0 +1,6 @@
+[submodule "Sparklines"]
+	path = Sparklines
+	url = git://github.com/abelsey/Sparklines.git
+[submodule "theos"]
+	path = theos
+	url = git://github.com/DHowett/theos.git
