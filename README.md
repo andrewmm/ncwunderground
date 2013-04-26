@@ -1,12 +1,54 @@
 NCWunderground
 ==============
 
-iPhone Notification Center Widget for Weather Underground
+iPhone Notification Center Widget for Weather Underground.
 
-NOTE: a symlink to a theos install is required in the project directory in order to compile. Once the symlink is added, compile with make, make package, or make package install.
+Requires jailbroken iOS 6.
+
+Add bug reports as issues on the GitHub repository, or email drewmm@gmail.com.
+
+Installation
+------------
+
+### Download and Installation
+
+There are two methods to install NCWunderground.
+
+#### 1. Download from Cydia
+
+Coming Soon.
+
+#### 2. Compile from Source
+
+Run the following commands on your command line to download the source:
+
+```
+git clone git://github.com/andrewmm/ncwunderground.git
+cd ncwunderground
+git submodule init
+```
+
+Then you can run `make` to compile the code or `make package` to compile and create a .deb package. You can also run:
+
+```
+export THEOS_DEVICE_IP=your.phone.ip.address
+make package install
+```
+
+This will compile the code, create a .deb, SSH it over to your phone (you will need to have SSH installed and enabled), and respring.
+
+### Enable and Configure
+
+Navigate to `Settings > Notifications > Weather Underground`. Turn on the Notification Center switch to enable the widget. On the `Settings > Notifications` screen you can also drag entries around to sort them.
+
+Configure the options. The widget will download data from the Weather Underground server whenever the Notification Center is opened, so long as it has not downloaded data in the last N minutes, where N is set by the Data Refresh Delay option.
+
+Hourly Forecast Length controls the number of hours that are included in the sparkline display and the min/max calculations on one of the pages.
+
+You will need to enter your own Weather Underground API key in order to use the widget. This enables me to release it for free. To get an API key, go to http://www.wunderground.com/weather/api/d/edit.html. Select the "Anvil Plan" and the "Developer" option. Then copy the API key into the relevant settings field.
 
 License
----------
+-------
 
 The MIT License (MIT) - http://opensource.org/licenses/MIT
 
