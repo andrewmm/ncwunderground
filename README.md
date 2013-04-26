@@ -58,10 +58,12 @@ It uses Sparklines by abelsey to display houly forecasts (https://github.com/abe
 
 The settings menu is created using WeePreferenceLoader by aricha (https://github.com/aricha/WeePreferenceLoader).
 
+Thanks to [maxps](https://github.com/maxps) and [newtux](https://github.com/newtux) for beta testing.
+
 License
 -------
 
-Note: licensing information for the Sparklines submodule is available in the source code for that module.
+### Main Widget Code
 
 The MIT License (MIT) - http://opensource.org/licenses/MIT
 
@@ -84,3 +86,40 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+### Icon Set
+
+The icon set distributed with this widget is available at http://weathericonsets.com/2011/05/28/droplets/. That site has the following to say about licensing:
+
+I have collected the iconsets over a number of years when I was developing a weather widget for the KDE desktop. I was authorised by the owners to distribute the iconsets for personal and non-commercial use. Accordingly, this is the basis on which I am hosting the iconsets on this site. 
+
+### Sparklines Submodule
+
+The Sparklines project is distrubted with the following license information, which is also available in the source code:
+
+Copyright (c) 2011 A. Belsey. All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+
+* Neither the name of the author nor the names of its contributors may be used
+to endorse or promote products derived from this software without specific
+prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
