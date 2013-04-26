@@ -47,8 +47,21 @@ Hourly Forecast Length controls the number of hours that are included in the spa
 
 You will need to enter your own Weather Underground API key in order to use the widget. This enables me to release it for free. To get an API key, go to http://www.wunderground.com/weather/api/d/edit.html. Select the "Anvil Plan" and the "Developer" option. Then copy the API key into the relevant settings field.
 
+Thanks
+------
+
+The widget is built on top of the BBWeeApp protocol.
+
+This project was built using the theos build system by DHowett (https://github.com/DHowett/theos).
+
+It uses Sparklines by abelsey to display houly forecasts (https://github.com/abelsey/Sparklines).
+
+The settings menu is created using WeePreferenceLoader by aricha (https://github.com/aricha/WeePreferenceLoader).
+
 License
 -------
+
+Note: licensing information for the Sparklines submodule is available in the source code for that module.
 
 The MIT License (MIT) - http://opensource.org/licenses/MIT
 
