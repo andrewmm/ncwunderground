@@ -4,3 +4,4 @@ obj/
 .DS_Store
 /.gitignore~
 /_/
+.theos
