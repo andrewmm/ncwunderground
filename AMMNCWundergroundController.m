@@ -112,6 +112,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)addSubviewsToView {
     // -- details page -- //
 
+    float rowFirstBuffer = 0.025 * self.baseWidth;
+    float rowBuffer = 0.0125 * self.baseWidth;
+    float rowHeight = (self.viewHeight - 2 * rowFirstBuffer - 2 * rowBuffer)/3;
+
     UIImage *wundergroundLogo = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"wundergroundLogo_white"
                                                                                                           ofType:@"png"]];
     wundergroundLogo = [wundergroundLogo resizableImageWithCapInsets:UIEdgeInsetsZero resizingMode:UIImageResizingModeStretch];
@@ -127,7 +131,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [newLabel setTextColor:[UIColor whiteColor]];
         [newLabel setFont:[UIFont systemFontOfSize:14]];
         [newLabel setTextAlignment:NSTextAlignmentCenter];
-        [newLabel setFrame:CGRectMake(0.1875*self.baseWidth,5+23*i,0.625*self.baseWidth,15)];
+        [newLabel setFrame:CGRectMake(0.1875*self.baseWidth,rowFirstBuffer + (rowHeight + rowBuffer)*i,0.625*self.baseWidth,rowHeight)];
         if (i == 2) {
             [newLabel setText:@"Configure options in Settings."];
         }
@@ -153,9 +157,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     float labelWidth = 0.14 * self.baseWidth;
     float colBuffer = 0.00625 * self.baseWidth;
     float sparkWidth = self.baseWidth - labelWidth * 5 - colBuffer * 7;
-    float rowHeight = 15;
-    float rowFirstBuffer = 5;
-    float rowBuffer = 8;
+    rowFirstBuffer = 0.025 * self.baseWidth;
+    rowBuffer = 0.0125 * self.baseWidth;
+    rowHeight = (self.viewHeight - 2 * rowFirstBuffer - 2 * rowBuffer)/3;
 
     for (int i=0; i < 3; ++i) { // rows
         float y = rowFirstBuffer + i * (rowHeight + rowBuffer);
@@ -166,7 +170,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             UILabel *newLabel = [[UILabel alloc] init];
             [newLabel setBackgroundColor:[UIColor clearColor]];
             [newLabel setTextColor:[UIColor whiteColor]];
-            [newLabel setFont:[UIFont systemFontOfSize:14]];
+            [newLabel setFont:[UIFont systemFontOfSize:13]];
             [newLabel setTextAlignment:NSTextAlignmentCenter];
 
             // calculate locations
@@ -216,15 +220,15 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     }
 
     // -- current conditions page -- //
-
-    rowFirstBuffer = 2;
+    float mainColBuffer = 0.025 * self.baseWidth;
+    rowFirstBuffer = 0.025 * self.baseWidth;
     rowBuffer = 3;
 
-    labelWidth = (self.baseWidth - 4 - 4 * colBuffer - self.viewHeight) / 2;
+    labelWidth = (self.baseWidth - 4 - 4 * mainColBuffer - self.viewHeight) / 2;
     float leftHeight = (self.viewHeight - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
     float rightHeight = leftHeight * 4 / 3;
 
-    float xArray[] = {colBuffer,colBuffer * 3 + labelWidth + self.viewHeight};
+    float xArray[] = {mainColBuffer,mainColBuffer * 3 + labelWidth + self.viewHeight};
     float heightArray [3][2] = {{leftHeight * 2, rightHeight},
         {leftHeight,rightHeight},{leftHeight,rightHeight}};
     float yArray[3][2] = {{rowFirstBuffer,rowFirstBuffer},
@@ -240,6 +244,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             if (j == 1) {
                 [newLabel setFont:[UIFont systemFontOfSize:14.f]];
                 [newLabel setTextAlignment:NSTextAlignmentRight];
+                newLabel.adjustsFontSizeToFitWidth = YES;
+                newLabel.minimumScaleFactor = 0.1;
             }
             else
                 [newLabel setFont:[UIFont systemFontOfSize:(heightArray[i][0]-0.5)]];
@@ -253,8 +259,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         }
     }
 
-    CGRect iconRect = CGRectMake(colBuffer * 2 + labelWidth,rowFirstBuffer,
-                                 self.viewHeight,self.viewHeight);
+    CGRect iconRect = CGRectMake(mainColBuffer * 2 + labelWidth,2,
+                                 self.viewHeight - 2 * 2,self.viewHeight - 2 * 2);
 
     UIImageView *iconBackView = [[UIImageView alloc] init];
     [iconBackView setFrame:iconRect];
@@ -275,11 +281,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     // -- daily forecast page -- //
 
     float dayWidth = (self.baseWidth - 4 - colBuffer * ((float)[self numberOfDays] + 1)) / (float)[self numberOfDays];
-    rowBuffer = 3;
-    float iconDims = self.viewHeight - 15 * 2 - rowBuffer * 4;
+    rowHeight = 13;
+    float iconDims = self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2;
     if (dayWidth < iconDims)
         iconDims = dayWidth;
-    float iconY = 15 * 2 + rowBuffer * 3 + (self.viewHeight - 15 * 2 - rowBuffer * 4 - iconDims) / 2;
+    float iconY = rowHeight * 2 + rowBuffer * 2 + rowFirstBuffer + (self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2 - iconDims) / 2;
 
     for (int j = 0; j < [self numberOfDays]; ++j) { // columns
         for (int i = 0; i < 2; ++i) { // rows
@@ -287,12 +293,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [newLabel setBackgroundColor:[UIColor clearColor]];
             [newLabel setTextColor:[UIColor whiteColor]];
             if (i == 0)
-                [newLabel setFont:[UIFont systemFontOfSize:14]];
+                [newLabel setFont:[UIFont systemFontOfSize:13]];
             else
-                [newLabel setFont:[UIFont systemFontOfSize:13.5]];
+                [newLabel setFont:[UIFont systemFontOfSize:13]];
             [newLabel setTextAlignment:NSTextAlignmentCenter];
-            [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth),
-                rowBuffer + (rowBuffer + 15) * i, dayWidth, 15)];
+            [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth), rowFirstBuffer + (rowBuffer + rowHeight) * i, dayWidth, rowHeight)];
             [self.view addSubview:newLabel
                            toPage:3
                           withTag:(300 + (i+1)*10 + (j+1))
@@ -433,10 +438,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     // -- current conditions page -- //
 
     NSArray *page2TextArray = [NSArray arrayWithObjects:[self.model currentTempStringF],[self.model currentLocationString],
-                                                        [NSString stringWithFormat:@"Feels Like %@",[self.model currentFeelsStringF]],
-                                                        [NSString stringWithFormat:@"Humidity: %@",[self.model currentHumidityString]],
-                                                        [self.model currentConditionsString],[NSString stringWithFormat:@"Wind: %@",
-                                                        [self.model currentWindMPHString]],nil];
+                                                        [NSString stringWithFormat:@"Like: %@",[self.model currentFeelsStringF]],
+                                                        [NSString stringWithFormat:@"Hum: %@",[self.model currentHumidityString]],
+                                                        [self.model currentConditionsString],[self.model currentWindMPHString],nil];
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 2; ++j) {
