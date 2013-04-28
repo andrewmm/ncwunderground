@@ -9,7 +9,7 @@ Description: Notification Center widget for Weather Underground.
  
  This is a Notification Center widget that displays weather information from Weather Underground. To enable the widget and set your preferences, go to Settings/Notifications/Weather Underground.
  
- To use the widget you will need your own API Key from Weather Underground (this ensures that the app can remain free.) Go to http://www.wunderground.com/weather/api/d/edit.html to create a free API Key. Select the "Anvil Plan" and the "Developer" option. Enter your API Key on the preferences page at Settings/Notifications/Weather Underground.
+ To use the widget you will need your own API Key from Weather Underground (this ensures that the app can remain free.) Go to http://www.wunderground.com/weather/api/d/edit.html to create a free API Key. Enter your information and select "Create a New Key." Then select the "Anvil Plan" and the "Developer" option. Enter your API Key on the preferences page at Settings/Notifications/Weather Underground.
  
  NCWunderground is open source. You can find the GitHub repo (including more detailed installation instructions and the ability to submit bug reports) at https://github.com/andrewmm/ncwunderground.
  
