@@ -42,7 +42,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (id)init {
     if ((self = [super init]) != nil) {
         i_viewHeight = 71;
-        i_baseWidth = [UIScreen mainScreen].bounds.size.width;
+        i_baseWidth = 320;
 
         i_model = [[AMMNCWundergroundModel alloc] initWithController:self];
 
@@ -61,17 +61,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
-    NSLog(@"NCWunderground: will animate cur_page = %d",cur_page);
-    if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-        [self.view setScreenWidth:[UIScreen mainScreen].bounds.size.height withCurrentPage:cur_page];
-    }
-    else {
-        [self.view setScreenWidth:[UIScreen mainScreen].bounds.size.width withCurrentPage:cur_page];
-    }
+    [self.view setScreenWidth:[self.view superview].frame.size.width withCurrentPage:cur_page];
 }
 
 - (void)loadFullView {
-    if (self.currentWidth != self.baseWidth) {
+    if (self.currentWidth != self.baseWidth) { // this can never happen?
         NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
         int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
         // We store it as -2 so 0 corresponds to default
