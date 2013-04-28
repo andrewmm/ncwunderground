@@ -1,5 +1,6 @@
 obj/
 *.deb
+*.deb.zip
 /altresources/
 .DS_Store
 /.gitignore~
