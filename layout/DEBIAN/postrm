@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "postrm" $1
+if [ $1 = "remove" ]; then
+  echo "deleting user data on uninstall"
+  /bin/rm -rf "/var/mobile/Library/Application Support/NCWunderground"
+fi
+
+exit 0
