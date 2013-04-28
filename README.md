@@ -3,6 +3,8 @@ NCWunderground
 
 iPhone Notification Center Widget for Weather Underground.
 
+NOTE: This tweak is not affiliated with, sponsored, or approved in any way by Weather Underground. I am an independent developer.
+
 Requires jailbroken iOS 6.
 
 Add bug reports as issues on the GitHub repository, or email drewmm@gmail.com.
