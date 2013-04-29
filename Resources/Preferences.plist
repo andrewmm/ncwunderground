@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>bundle</key>
+	<string>ncwundergroundprefs</string>
 	<key>items</key>
 	<array>
 		<dict>
@@ -86,6 +88,15 @@
 			<key>label</key>
 			<string>API Key</string>
 		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>Support through PayPal...</string>
+			<key>action</key>
+			<string>support</key>
+			<key>cellClass</key>
+			<string>AMMNCWundergroundPrefsPrincipal</string>
 	</array>
 	<key>title</key>
 	<string>NC Weather Underground</string>
