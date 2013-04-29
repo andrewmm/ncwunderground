@@ -130,7 +130,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [newLabel setTextAlignment:NSTextAlignmentCenter];
         [newLabel setFrame:CGRectMake(0.1875*self.baseWidth,rowFirstBuffer + (rowHeight + rowBuffer)*i,0.625*self.baseWidth,rowHeight)];
         if (i == 2) {
-            [newLabel setText:@"Configure options in Settings."];
+            [newLabel setText:NSLocalizedString(@"CONFIGURE_OPTIONS",@"Configure options in Settings.")];
         }
         [self.view addSubview:newLabel toPage:0 withTag:(i+1) manualRefresh:NO];
     }
@@ -389,7 +389,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [dateFormatter setDateFormat:@"h:mm:ss a"];
     UILabel *lastRefreshedLabel = (UILabel *)[self.view getSubviewFromPage:0
                                                                    withTag:1];
-    lastRefreshedLabel.text = [NSString stringWithFormat:@"Last Refreshed: %@",[dateFormatter stringFromDate:lastRefreshedDate]];
+    lastRefreshedLabel.text = [NSString stringWithFormat:@"%@: %@",NSLocalizedString(@"LAST_REFRESHED",@"Last Refreshed"),[dateFormatter stringFromDate:lastRefreshedDate]];
 
     // "Distance From Station"
     CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[self.model latitudeDouble]
@@ -397,7 +397,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[self.model obsLatitudeDouble]
                                                              longitude:[self.model obsLongitudeDouble]];
     UILabel *distanceLabel = (UILabel *)[self.view getSubviewFromPage:0 withTag:2];
-    distanceLabel.text = [NSString stringWithFormat:@"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:userLocation] / 1609.344)];
+    // TODO: mi versus km
+    distanceLabel.text = [NSString stringWithFormat:@"%@: %.2lf mi",NSLocalizedString(@"DISTANCE_FROM_STATION",@"Distance From Station"),([stationLocation distanceFromLocation:userLocation] / 1609.344)];
 
     // -- hourly forecast page -- //
     int intervalLength = [self hourlyForecastLength];
@@ -413,14 +414,15 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [realTempSparkView setDataValues:realTempSparkData];
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
     
+    // TODO celsius versus fahrenheit
     NSArray *page1TextArray = [NSArray arrayWithObjects:[self.model hourlyTime12HrString:0],
                                                         [NSString stringWithFormat:@"%d hr",intervalLength],
-                                                        [self.model hourlyTime12HrString:(intervalLength - 1)],
-                                                        @"High",@"Low",@"Temp",[self.model hourlyTempStringF:0],
+                                                        [self.model hourlyTime12HrString:(intervalLength - 1)], NSLocalizedString(@"HIGH",@"High"), NSLocalizedString(@"LOW",@"Low"), NSLocalizedString(@"TEMP",@"Temp"),
+                                                        [self.model hourlyTempStringF:0],
                                                         [self.model hourlyTempStringF:(intervalLength-1)],
                                                         [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMaximum] stringValue]],
-                                                        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMinimum] stringValue]],
-                                                        @"Like",[self.model hourlyFeelsStringF:0],[self.model hourlyFeelsStringF:(intervalLength-1)],
+                                                        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMinimum] stringValue]], NSLocalizedString(@"LIKE",@"Like"),
+                                                        [self.model hourlyFeelsStringF:0],[self.model hourlyFeelsStringF:(intervalLength-1)],
                                                         [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMaximum] stringValue]],
                                                         [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMinimum] stringValue]],nil];
 
@@ -435,9 +437,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     // -- current conditions page -- //
 
     NSArray *page2TextArray = [NSArray arrayWithObjects:[self.model currentTempStringF],[self.model currentLocationString],
-                                                        [NSString stringWithFormat:@"Like: %@",[self.model currentFeelsStringF]],
-                                                        [NSString stringWithFormat:@"Hum: %@",[self.model currentHumidityString]],
-                                                        [self.model currentConditionsString],[self.model currentWindMPHString],nil];
+                                                        [NSString stringWithFormat:@"%@: %@",NSLocalizedString(@"LIKE",@"Like"),[self.model currentFeelsStringF]],
+                                                        [NSString stringWithFormat:@"%@: %@",NSLocalizedString(@"HUM",@"Hum"),[self.model currentHumidityString]],
+                                                        [self.model currentConditionsString],[self.model currentWindMPHString],nil]; // TODO MPH versus KPH
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 2; ++j) {
