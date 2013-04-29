@@ -26,7 +26,7 @@ There are two methods to install NCWunderground.
 
 #### 1. Download from Cydia
 
-Coming Soon.
+NCWunderground is available from the BigBoss repository. Simply search Cydia for "WeatherUnderground for Notification Center."
 
 #### 2. Compile from Source
 
