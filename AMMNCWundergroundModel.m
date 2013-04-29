@@ -228,8 +228,8 @@
     if (apiKey == nil) {
         NSLog(@"NCWunderground: got null APIKey, not updating data.");
         dispatch_async(dispatch_get_main_queue(),^(void) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No API Key"
-                                                            message:@"Please enter a Weather Underground API Key in Settings/Notifications/Weather Underground."
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"NO_API_KEY",@"No API Key")
+                                                            message:NSLocalizedString(@"ENTER_API_KEY",@"Please enter a Weather Underground API Key in Settings/Notifications/Weather Underground Widget.")
                                                            delegate:nil
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil];
@@ -248,10 +248,10 @@
     if (!resultJSON) {
         NSLog(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
         dispatch_async(dispatch_get_main_queue(),^(void) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
-                                                            message:@"Weather widget failed to connect to server."
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"CONNECTION_FAILED",@"Connection Failed")
+                                                            message:NSLocalizedString(@"FAILED_TO_CONNECT",@"Weather widget failed to connect to server.")
                                                            delegate:nil
-                                                  cancelButtonTitle:@"OK"
+                                                  cancelButtonTitle:NSLocalizedString(@"OK",@"OK")
                                                   otherButtonTitles:nil];
             [alert show];
             [self.controller dataDownloadFailed];
@@ -265,10 +265,10 @@
         if (error) {
             NSLog(@"NCWunderground: JSON was malformed. Bad.");
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Data Corrupted"
-                                                                message:@"Weather widget received data from the server, but it was corrupted."
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"DATA_CORRUPTED",@"Data Corrupted")
+                                                                message:NSLocalizedString(@"DATA_CORRUPTED_LONG",@"Weather widget received data from the server, but it was corrupted.")
                                                                delegate:nil
-                                                      cancelButtonTitle:@"OK"
+                                                      cancelButtonTitle:NSLocalizedString(@"OK",@"OK")
                                                       otherButtonTitles:nil];
                 [alert show];
                 [self.controller dataDownloadFailed];
@@ -281,10 +281,10 @@
                     [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"],
                     [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]);
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Server Error (%@)",[[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"]]
-                                                                                          message:[NSString stringWithFormat:@"The weather server returned an error: %@.",[[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]]
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ (%@)",NSLocalizedString(@"SERVER_ERROR",@"Server Error"),[[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"]]
+                                                                                          message:[NSString stringWithFormat:@"%@: %@.",NSLocalizedString(@"SERVER_RETURNED_ERROR",@"The weather server returned an error"),[[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]]
                                                                                          delegate:nil
-                                                                                cancelButtonTitle:@"OK"
+                                                                                cancelButtonTitle:NSLocalizedString(@"OK",@"OK")
                                                                                 otherButtonTitles:nil];
                 [alert show];
                 [self.controller dataDownloadFailed];
@@ -317,8 +317,8 @@
         else {
             NSLog(@"NCWunderground: JSON was non-dict. Bad.");
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Data Corrupted"
-                                                                message:@"Weather widget received data from the server, but it was corrupted."
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"DATA_CORRUPTED",@"Data Corrupted")
+                                                                message:NSLocalizedString(@"DATA_CORRUPTED_LONG",@"Weather widget received data from the server, but it was corrupted.")
                                                                delegate:nil
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil];
@@ -331,10 +331,10 @@
     else {
         NSLog(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
         dispatch_async(dispatch_get_main_queue(),^(void) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Invalid iOS Version"
-                                                            message:@"Your version of iOS does not support NSJSONSerialization. Please contact the developer at <drewmm@gmail.com>."
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"INVALID_IOS",@"Invalid iOS Version")
+                                                            message:NSLocalizedString(@"DOES_NOT_SUPPORT",@"Your version of iOS does not support NSJSONSerialization. Please contact the developer at <drewmm@gmail.com>.")
                                                            delegate:nil
-                                                  cancelButtonTitle:@"OK"
+                                                  cancelButtonTitle:NSLocalizedString(@"OK",@"OK")
                                                   otherButtonTitles:nil];
             [alert show];
             [self.controller dataDownloadFailed];
@@ -372,10 +372,10 @@
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"NCWunderground: location manager failed with error %@",error);
     if (error.code == kCLErrorDenied) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Location Denied"
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"LOCATION_DENIED",@"Location Denied")
                                                         message:[error localizedDescription]
                                                        delegate:nil
-                                              cancelButtonTitle:@"OK"
+                                              cancelButtonTitle:NSLocalizedString(@"OK",@"OK")
                                               otherButtonTitles:nil];
         [alert show];
         [self.controller.view setLoading:NO];
