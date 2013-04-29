@@ -52,6 +52,7 @@ root
 @property (nonatomic, copy) NSDictionary *saveData;
 @property (nonatomic, strong) dispatch_queue_t backgroundQueue;
 @property (nonatomic, weak) AMMNCWundergroundController *controller;
+@property (nonatomic, weak) NSBundle *ammNCWundergroundWeeAppBundle;
 
 - (id)initWithController:(AMMNCWundergroundController *)controller;
 
