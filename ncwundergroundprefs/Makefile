@@ -6,6 +6,8 @@ ncwundergroundprefs_INSTALL_PATH = /Library/PreferenceBundles
 ncwundergroundprefs_FRAMEWORKS = UIKit
 ncwundergroundprefs_PRIVATE_FRAMEWORKS = Preferences
 
+ADDITIONAL_OBJCFLAGS = -fobjc-arc
+
 include $(THEOS_MAKE_PATH)/bundle.mk
 
 internal-stage::

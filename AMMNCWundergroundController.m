@@ -3,6 +3,7 @@
 #import "AMMNCWundergroundView.h"
 #import "AMMNCWundergroundModel.h"
 #import <dispatch/dispatch.h>
+#import <notify.h>
 
 #import "AMMNCWundergroundController.h"
 
@@ -14,7 +15,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @property (nonatomic, strong) AMMNCWundergroundModel *model;
 @property (nonatomic, copy) NSString *saveDirectory;
 @property (nonatomic, copy) NSString *saveFile;
-@property (atomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, assign) float baseWidth;
 @property (nonatomic, assign) float currentWidth;
 @property (nonatomic, assign) float viewHeight;
@@ -32,7 +32,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @synthesize model=i_model;
 @synthesize saveDirectory = i_saveDirectory;
 @synthesize saveFile=i_saveFile;
-@synthesize locationManager=i_locationManager;
 @synthesize locationUpdated=i_locationUpdated;
 @synthesize baseWidth=i_baseWidth;
 @synthesize currentWidth=i_currentWidth;
@@ -57,7 +56,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         i_saveDirectory = @"/var/mobile/Library/Application Support/NCWunderground/";
         i_saveFile = @"weather.save.plist";
 
-        i_locationManager = [[CLLocationManager alloc] init];
         i_locationUpdated = NO;
 
         i_iconMap = [[NSDictionary alloc] initWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"icons/com.amm.ncwunderground.iconmap"
@@ -113,7 +111,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [[NSUserDefaults standardUserDefaults] setPersistentDomain:newDefaultsDom
                                                            forName:@"com.amm.ncwunderground"];
         [[NSUserDefaults standardUserDefaults] synchronize];
-        self.locationManager = nil; // maybe this will help?
         self.view = nil;
     }
 }
@@ -372,11 +369,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     }
 
     NSLog(@"NCWunderground: Starting location updates.");
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self.model;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-    self.locationUpdated = NO;
-    [self.locationManager startUpdatingLocation];
+    notify_post("com.amm.ncwunderground.location_should_update");
 }
 
 - (void)dataDownloaded {

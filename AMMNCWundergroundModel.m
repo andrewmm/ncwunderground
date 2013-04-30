@@ -1,10 +1,16 @@
+#import <notify.h>
+
 #import "AMMNCWundergroundModel.h"
 #import "AMMNCWundergroundController.h"
 #import "AMMNCWundergroundView.h"
 
+int notifyToken,status;
+
 @implementation AMMNCWundergroundModel
 
 @synthesize saveData = i_saveData;
+@synthesize saveFile = i_saveFile;
+@synthesize saveDirectory = i_saveDirectory;
 @synthesize backgroundQueue = i_backgroundQueue;
 @synthesize controller = i_controller;
 @synthesize ammNCWundergroundWeeAppBundle = i_ammNCWundergroundWeeAppBundle;
@@ -12,9 +18,40 @@
 - (id)initWithController:(AMMNCWundergroundController *)controller {
     if ((self = [super init])) {
         i_saveData = [[NSMutableDictionary alloc] init];
+        i_saveDirectory = @"/var/mobile/Library/Application Support/NCWunderground/";
+        i_saveFile = @"weather.save.plist";
         i_backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.backgroundqueue", NULL);
         i_controller = controller;
         i_ammNCWundergroundWeeAppBundle = [NSBundle bundleForClass:[self class]];
+        status = notify_register_dispatch("com.amm.ncwunderground.location_updated",
+                                            &notifyToken,
+                                            dispatch_get_main_queue(), ^(int t) {
+                                                NSLog(@"NCWunderground: Location updated.");
+                                                if (![self loadSaveData:self.saveFile inDirectory:self.saveDirectory]) {
+                                                    NSLog(@"NCWunderground: Unable to load save file.");
+                                                }
+                                                dispatch_async(self.backgroundQueue, ^(void) {
+                                                    [self startURLRequest];
+                                                });
+                                            });
+        status = notify_register_dispatch("com.amm.ncwunderground.location_update_failed",
+                                            &notifyToken,
+                                            dispatch_get_main_queue(), ^(int t) {
+                                                NSLog(@"NCWunderground: Location failed to update.");
+                                                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_DENIED"
+                                                                                                                                                            value:@"Location Denied"
+                                                                                                                                                            table:nil]
+                                                                                                message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_DENIED_MESSAGE"
+                                                                                                                                                            value:@"Failed to update location."
+                                                                                                                                                            table:nil]
+                                                                                               delegate:nil
+                                                                                      cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                                                            value:@"OK"
+                                                                                                                                                            table:nil]
+                                                                                      otherButtonTitles:nil];
+                                                [alert show];
+                                                [self.controller dataDownloadFailed];
+                                            });
     }
     return self;
 }
@@ -521,50 +558,6 @@
             [self.controller dataDownloadFailed];
         });
         return;
-    }
-}
-
-// Does: Takes in updated location and sets it.
-//       Then starts the URL request on the background queue.
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    NSLog(@"NCWunderground: didUpdateToLocation: %@", [locations lastObject]);
-    if ([self.controller locationUpdated] == NO) {
-        if (locations != nil) {
-            [self.controller setLocationUpdated:YES];
-            [[self.controller locationManager] stopUpdatingLocation];
-            NSMutableDictionary *workingDict = [NSMutableDictionary dictionaryWithDictionary:self.saveData];
-            [workingDict setObject:[NSString stringWithFormat:@"%.8f", [[locations lastObject] coordinate].latitude]
-                            forKey:@"latitude"];
-            [workingDict setObject:[NSString stringWithFormat:@"%.8f", [[locations lastObject] coordinate].longitude]
-                            forKey:@"longitude"];
-            self.saveData = workingDict;
-
-            // start a URL request in the backgroundQueue
-            dispatch_async(self.backgroundQueue, ^(void) {
-                [self startURLRequest];
-            });
-        }
-        else {
-            NSLog(@"NCWunderground: didUpdateToLocation called but newLocation nil. Bad.");
-        }
-    }
-}
-
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"NCWunderground: location manager failed with error %@",error);
-    if (error.code == kCLErrorDenied) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_DENIED"
-                                                                                                                    value:@"Location Denied"
-                                                                                                                    table:nil]
-                                                        message:[error localizedDescription]
-                                                       delegate:nil
-                                              cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
-                                                                                                                    value:@"OK"
-                                                                                                                    table:nil]
-                                              otherButtonTitles:nil];
-        [alert show];
-        [self.controller.view setLoading:NO];
-        [self.controller.locationManager stopUpdatingLocation];
     }
 }
 

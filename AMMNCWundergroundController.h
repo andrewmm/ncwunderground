@@ -8,7 +8,6 @@
 @property (nonatomic, readonly, strong) AMMNCWundergroundView *view;
 @property (nonatomic, readonly, strong) AMMNCWundergroundModel *model;
 @property (nonatomic, readonly, copy) NSString *saveFile;
-@property (atomic, readonly, strong) CLLocationManager *locationManager;
 @property (atomic, assign) BOOL locationUpdated;
 @property (nonatomic, readonly, assign) float baseWidth;
 @property (nonatomic, readonly, assign) float currentWidth;
