@@ -281,7 +281,8 @@
 }
 
 - (NSString *)currentConditionsURL {
-    return [[self.saveData objectForKey:@"current_observation"] objectForKey:@"forecast_url"];
+    return [[[self.saveData objectForKey:@"current_observation"] objectForKey:@"forecast_url"] stringByReplacingOccurrencesOfString:@"www.wunderground.com"
+                                                                                                                         withString:@"i.wund.com"];
 }
 
 // Takes: index into daily forecast array
