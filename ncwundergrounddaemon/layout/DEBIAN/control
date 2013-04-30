@@ -1,0 +1,9 @@
+Package: com.amm.ncwundergrounddaemon
+Name: ncwundergrounddaemon
+Depends:
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Location Daemon for NCWundergroud
+Maintainer: Andrew MacKie-Mason
+Author: Andrew MacKie-Mason
+Section: System

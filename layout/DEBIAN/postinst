@@ -1,0 +1,3 @@
+#!/bin/sh
+chown root:wheel /Library/LaunchDaemons/com.amm.ncwundergrounddaemon.plist
+launchctl load /Library/LaunchDaemons/com.amm.ncwundergrounddaemon.plist
