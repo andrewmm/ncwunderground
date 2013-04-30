@@ -360,7 +360,7 @@
 }
 
 // This should only ever run inside the backgroundQueue
-- (void) startURLRequest {
+- (void) startURLRequestWithQuery:(NSString *)query {
     // get data from website by HTTP GET request
     NSHTTPURLResponse * response;
     NSError * error;
@@ -387,8 +387,13 @@
         });
         return;
     }
-    NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/q/%@,%@.json",
-                                                       apiKey,[self.saveData objectForKey:@"latitude"],[self.saveData objectForKey:@"longitude"]];
+    NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/q",apiKey];
+    if (query) {
+        urlString = [NSString stringWithFormat:@"%@/%@.json",urlString,query];
+    }
+    else {
+        urlString = [NSString stringWithFormat:@"%@/%@,%@.json",urlString,[self.saveData objectForKey:@"latitude"],[self.saveData objectForKey:@"longitude"]];
+    }
     [request setURL:[NSURL URLWithString:urlString]];
     [request setHTTPMethod:@"GET"];
     [request setTimeoutInterval:10];
@@ -541,7 +546,7 @@
 
             // start a URL request in the backgroundQueue
             dispatch_async(self.backgroundQueue, ^(void) {
-                [self startURLRequest];
+                [self startURLRequestWithQuery:nil];
             });
         }
         else {

@@ -23,6 +23,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @property (nonatomic, assign) int tempType;
 @property (nonatomic, assign) int distType;
 @property (nonatomic, assign) int windType;
+@property (nonatomic, assign) BOOL useCustomLocation;
+@property (nonatomic, copy) NSString *locationQuery;
 
 @end
 
@@ -42,6 +44,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @synthesize tempType = i_tempType;
 @synthesize distType = i_distType;
 @synthesize windType = i_windType;
+@synthesize useCustomLocation = i_useCustomLocation;
+@synthesize locationQuery = i_locationQuery;
 
 + (void)initialize {
     _ammNCWundergroundWeeAppBundle = [NSBundle bundleForClass:[self class]];
@@ -77,6 +81,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     self.tempType = [(NSNumber *)[defaultsDom objectForKey:@"tempType"] intValue];
     self.distType = [(NSNumber *)[defaultsDom objectForKey:@"distType"] intValue];
     self.windType = [(NSNumber *)[defaultsDom objectForKey:@"windType"] intValue];
+    self.useCustomLocation = [(NSNumber *)[defaultsDom objectForKey:@"useCustomLocation"] boolValue];
+    self.locationQuery = (NSString *)[defaultsDom objectForKey:@"locationQuery"];
     NSLog(@"NCWunderground: preferences = %d, %d, %d",self.tempType,self.distType,self.windType);
     if (self.currentWidth != self.baseWidth) { // this can never happen?
         int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
@@ -371,12 +377,34 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         NSLog(@"NCWunderground: No save file found.");
     }
 
-    NSLog(@"NCWunderground: Starting location updates.");
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self.model;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-    self.locationUpdated = NO;
-    [self.locationManager startUpdatingLocation];
+    if (!self.useCustomLocation) {
+        NSLog(@"NCWunderground: Starting location updates.");
+        self.locationManager = [[CLLocationManager alloc] init];
+        self.locationManager.delegate = self.model;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+        self.locationUpdated = NO;
+        [self.locationManager startUpdatingLocation];
+    }
+    else {
+        if (self.locationQuery && ![self.locationQuery isEqualToString:@""]) {
+            [self.model startURLRequestWithQuery:self.locationQuery];
+        }
+        else {
+            UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_LOCATION_ENTERED"
+                                                                                                                         value:@"No Location Entered"
+                                                                                                                         table:nil]
+                                                            message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"PLEASE_ENTER_LOCATION"
+                                                                                                                    value:@"Please turn off \"Use Custom Location\" or enter a location query in Settings."
+                                                                                                                    table:nil]
+                                                           delegate:nil
+                                                  cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                    value:@"OK"
+                                                                                                                    table:nil]
+                                                  otherButtonTitles:nil];
+            [errorAlert show];
+            [self.view setLoading:NO];
+        }
+    }
 }
 
 - (void)dataDownloaded {
@@ -411,28 +439,38 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                                                                    [dateFormatter stringFromDate:lastRefreshedDate]];
 
     // "Distance From Station"
-    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[self.model latitudeDouble]
-                                                          longitude:[self.model longitudeDouble]];
-    CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[self.model obsLatitudeDouble]
-                                                             longitude:[self.model obsLongitudeDouble]];
     UILabel *distanceLabel = (UILabel *)[self.view getSubviewFromPage:0 withTag:2];
-    // TODO: mi versus km
-    float distance = [stationLocation distanceFromLocation:userLocation]; // meters
-    NSString *distTypeString;
-    switch (self.distType) {
-        case AMMDistTypeM:
-            distance = distance / 1609.344;
-            distTypeString = @"mi";
-            break;
-        case AMMDistTypeK:
-            distance = distance / 1000;
-            distTypeString = @"km";
-            break;
+    if (!self.useCustomLocation) {
+        CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[self.model latitudeDouble]
+                                                              longitude:[self.model longitudeDouble]];
+        CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[self.model obsLatitudeDouble]
+                                                                 longitude:[self.model obsLongitudeDouble]];
+        // TODO: mi versus km
+        float distance = [stationLocation distanceFromLocation:userLocation]; // meters
+        NSString *distTypeString;
+        switch (self.distType) {
+            case AMMDistTypeM:
+                distance = distance / 1609.344;
+                distTypeString = @"mi";
+                break;
+            case AMMDistTypeK:
+                distance = distance / 1000;
+                distTypeString = @"km";
+                break;
+        }
+        distanceLabel.text = [NSString stringWithFormat:@"%@: %.2lf %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DISTANCE_FROM_STATION"
+                                                                                                                        value:@"Distance From Station"
+                                                                                                                        table:nil],
+                                                                        distance, distTypeString];
     }
-    distanceLabel.text = [NSString stringWithFormat:@"%@: %.2lf %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DISTANCE_FROM_STATION"
-                                                                                                                    value:@"Distance From Station"
-                                                                                                                    table:nil],
-                                                                    distance, distTypeString];
+    else {
+        distanceLabel.text = [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DISTANCE_FROM_STATION"
+                                                                                                                  value:@"Distance From Station"
+                                                                                                                  table:nil],
+                                                                  [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"N/A"
+                                                                                                                  value:@"N/A"
+                                                                                                                  table:nil]];
+    }
 
     // -- hourly forecast page -- //
     int intervalLength = [self hourlyForecastLength];

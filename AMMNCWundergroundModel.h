@@ -106,7 +106,7 @@ root
 
 - (BOOL)loadSaveData:(NSString *)saveFile inDirectory:(NSString *)saveDirectory;
 - (void)saveDataToFile:(NSString *)saveFile inDirectory:(NSString *)saveDirectory;
-- (void)startURLRequest;
+- (void)startURLRequestWithQuery:(NSString *)query;
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations;
 
 @end
