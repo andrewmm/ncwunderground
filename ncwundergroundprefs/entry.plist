@@ -1,0 +1,10 @@
+{
+    entry = {
+	bundle = ncwundergroundprefs;
+	cell = PSLinkCell;
+	detail = ncwundergroundprefsListController;
+	icon = ncwundergroundprefs.png;
+	isController = 1;
+	label = ncwundergroundprefs;
+    };
+}
