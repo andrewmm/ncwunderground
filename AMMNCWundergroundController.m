@@ -148,6 +148,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [newLabel setTextColor:[UIColor whiteColor]];
         [newLabel setFont:[UIFont systemFontOfSize:14]];
         [newLabel setTextAlignment:NSTextAlignmentCenter];
+        newLabel.adjustsFontSizeToFitWidth = YES;
+        newLabel.minimumScaleFactor = 0.1;
         [newLabel setFrame:CGRectMake(0.1875*self.baseWidth,rowFirstBuffer + (rowHeight + rowBuffer)*i,0.625*self.baseWidth,rowHeight)];
         if (i == 2) {
             [newLabel setText:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONFIGURE_OPTIONS"
@@ -190,6 +192,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [newLabel setBackgroundColor:[UIColor clearColor]];
             [newLabel setTextColor:[UIColor whiteColor]];
             [newLabel setFont:[UIFont systemFontOfSize:13]];
+            newLabel.adjustsFontSizeToFitWidth = YES;
+            newLabel.minimumScaleFactor = 0.1;
             [newLabel setTextAlignment:NSTextAlignmentCenter];
 
             // calculate locations
@@ -263,13 +267,12 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             if (j == 1) {
                 [newLabel setFont:[UIFont systemFontOfSize:14.f]];
                 [newLabel setTextAlignment:NSTextAlignmentRight];
-                newLabel.adjustsFontSizeToFitWidth = YES;
-                newLabel.minimumScaleFactor = 0.1;
             }
             else
                 [newLabel setFont:[UIFont systemFontOfSize:(heightArray[i][0]-0.5)]];
-            [newLabel setFrame:CGRectMake(xArray[j],yArray[i][j],
-                labelWidth,heightArray[i][j])];
+            newLabel.adjustsFontSizeToFitWidth = YES;
+            newLabel.minimumScaleFactor = 0.1;
+            [newLabel setFrame:CGRectMake(xArray[j],yArray[i][j],labelWidth,heightArray[i][j])];
 
             [self.view addSubview:newLabel
                         toPage:2
@@ -315,6 +318,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                 [newLabel setFont:[UIFont systemFontOfSize:13]];
             else
                 [newLabel setFont:[UIFont systemFontOfSize:13]];
+            newLabel.adjustsFontSizeToFitWidth = YES;
+            newLabel.minimumScaleFactor = 0.1;
             [newLabel setTextAlignment:NSTextAlignmentCenter];
             [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth), rowFirstBuffer + (rowBuffer + rowHeight) * i, dayWidth, rowHeight)];
             [self.view addSubview:newLabel
