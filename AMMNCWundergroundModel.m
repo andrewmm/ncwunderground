@@ -387,7 +387,10 @@
         });
         return;
     }
-    NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/q",apiKey];
+    NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/lang:%@/q",
+                                                     apiKey,[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"WU_LANG_CODE"
+                                                                                                                value:@"EN"
+                                                                                                                table:nil]];
     if (query) {
         urlString = [NSString stringWithFormat:@"%@/%@.json",urlString,query];
     }
