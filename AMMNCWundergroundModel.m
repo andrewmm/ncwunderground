@@ -245,15 +245,21 @@
     NSDictionary *curObs = (NSDictionary *)[self.saveData objectForKey:@"current_observation"];
     switch (type) {
         case AMMWindTypeM:
-            typeString = @"mph";
+            typeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"MPH"
+                                                                             value:@"MPH"
+                                                                             table:nil];
             speedString = [[curObs objectForKey:@"wind_mph"] stringValue];
             break;
         case AMMWindTypeK:
-            typeString = @"kph";
+            typeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"KPH"
+                                                                             value:@"KPH"
+                                                                             table:nil];
             speedString = [[curObs objectForKey:@"wind_kph"] stringValue];
             break;
         case AMMWindTypeKt:
-            typeString = @"kt";
+            typeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"kt"
+                                                                             value:@"kt"
+                                                                             table:nil];
             speedString = [NSString stringWithFormat:@"%.1f",([[curObs objectForKey:@"wind_kph"] floatValue] * 0.539957)];
             break;
     }

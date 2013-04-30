@@ -510,11 +510,15 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         switch (self.distType) {
             case AMMDistTypeM:
                 distance = distance / 1609.344;
-                distTypeString = @"mi";
+                distTypeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"mi"
+                                                                                     value:@"mi"
+                                                                                     table:nil];
                 break;
             case AMMDistTypeK:
                 distance = distance / 1000;
-                distTypeString = @"km";
+                distTypeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"km"
+                                                                                     value:@"km"
+                                                                                     table:nil];
                 break;
         }
         distanceLabel.text = [NSString stringWithFormat:@"%@: %.2lf %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DISTANCE_FROM_STATION"
