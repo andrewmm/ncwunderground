@@ -510,13 +510,13 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         switch (self.distType) {
             case AMMDistTypeM:
                 distance = distance / 1609.344;
-                distTypeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"mi"
+                distTypeString = [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"mi"
                                                                                      value:@"mi"
                                                                                      table:nil];
                 break;
             case AMMDistTypeK:
                 distance = distance / 1000;
-                distTypeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"km"
+                distTypeString = [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"km"
                                                                                      value:@"km"
                                                                                      table:nil];
                 break;
