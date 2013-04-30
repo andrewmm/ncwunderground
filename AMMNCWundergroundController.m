@@ -448,7 +448,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [realTempSparkView setDataValues:realTempSparkData];
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
     
-    // TODO celsius versus fahrenheit
     NSString *tempTypeString;
     switch (self.tempType) {
         case AMMTempTypeF:

@@ -136,7 +136,7 @@
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     for (int i = startIndex; i < startIndex + length; ++i) {
-        NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:startIndex] objectForKey:@"temp"];
+        NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:i] objectForKey:@"temp"];
         NSString *tempString;
         switch (type) {
             case AMMTempTypeF:
@@ -163,7 +163,7 @@
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     for (int i = startIndex; i < startIndex + length; ++i) {
-        NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:startIndex] objectForKey:@"feelslike"];
+        NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:i] objectForKey:@"feelslike"];
         NSString *tempString;
         switch (type) {
             case AMMTempTypeF:
