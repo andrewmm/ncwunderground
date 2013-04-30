@@ -28,6 +28,7 @@ Run the following commands on your command line to download the source:
 git clone git://github.com/andrewmm/ncwunderground.git
 cd ncwunderground
 git submodule init
+git submodule update
 ```
 
 Then you can run `make` to compile the code or `make package` to compile and create a .deb package. You can also run:
