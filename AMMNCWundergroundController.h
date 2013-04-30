@@ -15,6 +15,10 @@
 @property (nonatomic, readonly, assign) float viewHeight;
 @property (nonatomic, readonly, copy) NSDictionary *iconMap;
 
+@property (nonatomic, readonly, assign) int tempType;
+@property (nonatomic, readonly, assign) int distType;
+@property (nonatomic, readonly, assign) int windType;
+
 + (void)initialize;
 - (id)init;
 
