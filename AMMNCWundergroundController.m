@@ -104,6 +104,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)unloadView {
+    NSLog(@"NCWunderground: unloadView"); // debugging
     if (self.view) { // apparently unloadView can get called more than once without loadPlaceholderView or loadFullView being called again. Don't want that.
         NSDictionary *oldDefaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
         NSMutableDictionary *newDefaultsDom = [NSMutableDictionary dictionaryWithDictionary:oldDefaultsDom];
@@ -112,6 +113,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [[NSUserDefaults standardUserDefaults] setPersistentDomain:newDefaultsDom
                                                            forName:@"com.amm.ncwunderground"];
         [[NSUserDefaults standardUserDefaults] synchronize];
+        self.locationManager = nil; // maybe this will help?
         self.view = nil;
     }
 }
