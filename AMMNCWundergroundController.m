@@ -384,6 +384,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         self.locationUpdated = NO;
         [self.locationManager startUpdatingLocation];
+        [self performSelector:@selector(timeoutUpdate) withObject:nil afterDelay:10];
     }
     else {
         if (self.locationQuery && ![self.locationQuery isEqualToString:@""]) {
@@ -421,6 +422,59 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 - (void)dataDownloadFailed {
     NSLog(@"NCWunderground: dataDownloadFailed");
     [self.view setLoading:NO];
+}
+
+- (void)timeoutUpdate {
+    if (self.locationUpdated) {
+        return;
+    }
+    self.locationUpdated = YES;
+    NSLog(@"NCWunderground: Location update is timing out.");
+    if ([self.model latitudeDouble] && [self.model longitudeDouble]) {
+        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+                                                                                                                     value:@"Location Update Failed"
+                                                                                                                     table:nil]
+                                                             message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_USING_LAST"
+                                                                                                                     value:@"Unable to update to current location; using last known location."
+                                                                                                                     table:nil]
+                                                            delegate:nil
+                                                   cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                     value:@"OK"
+                                                                                                                     table:nil]
+                                                   otherButtonTitles:nil];
+        [errorAlert show];
+        [self.model startURLRequestWithQuery:nil];
+    }
+    else if (self.locationQuery && ![self.locationQuery isEqualToString:@""]) {
+        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+                                                                                                                     value:@"Location Update Failed"
+                                                                                                                     table:nil]
+                                                             message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_USING_QUERY"
+                                                                                                                     value:@"Unable to update to current location; using saved query."
+                                                                                                                     table:nil]
+                                                            delegate:nil
+                                                   cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                     value:@"OK"
+                                                                                                                     table:nil]
+                                                   otherButtonTitles:nil];
+        [errorAlert show];
+        [self.model startURLRequestWithQuery:self.locationQuery];
+    }
+    else {
+        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+                                                                                                                     value:@"Location Update Failed"
+                                                                                                                     table:nil]
+                                                             message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_NO_FALLBACK"
+                                                                                                                     value:@"Unable to update current location; no fallback options available."
+                                                                                                                     table:nil]
+                                                            delegate:nil
+                                                   cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                     value:@"OK"
+                                                                                                                     table:nil]
+                                                   otherButtonTitles:nil];
+        [errorAlert show];
+        [self.view setLoading:NO];
+    }
 }
 
 // Does: after data model has been updated, loads data into views
