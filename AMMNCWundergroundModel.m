@@ -7,12 +7,14 @@
 @synthesize saveData = i_saveData;
 @synthesize backgroundQueue = i_backgroundQueue;
 @synthesize controller = i_controller;
+@synthesize ammNCWundergroundWeeAppBundle = i_ammNCWundergroundWeeAppBundle;
 
 - (id)initWithController:(AMMNCWundergroundController *)controller {
     if ((self = [super init])) {
         i_saveData = [[NSMutableDictionary alloc] init];
         i_backgroundQueue = dispatch_queue_create("com.amm.ncwunderground.backgroundqueue", NULL);
         i_controller = controller;
+        i_ammNCWundergroundWeeAppBundle = [NSBundle bundleForClass:[self class]];
     }
     return self;
 }
@@ -69,20 +71,90 @@
 
 // Takes: index into hourly forecast array
 // Returns: Real temp string for that hour with °F
-- (NSString *)hourlyTempStringF:(int)forecastIndex {
-    return [NSString stringWithFormat:@"%@ °F",[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"temp"] objectForKey:@"english"]];
+- (NSString *)hourlyTempString:(int)forecastIndex ofType:(int)type {
+    NSString *typeString;
+    switch (type) {
+        case AMMTempTypeF:
+            typeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            typeString = @"°C";
+            break;
+        default:
+            typeString = @"";
+            break;
+    }
+    NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"temp"];
+    NSString *tempString;
+    switch (type) {
+        case AMMTempTypeF:
+            tempString = [temps objectForKey:@"english"];
+            break;
+        case AMMTempTypeC:
+            tempString = [temps objectForKey:@"metric"];
+            break;
+    }
+    return [NSString stringWithFormat:@"%@ %@",tempString,typeString];
 }
 
 // Takes: index into hourly forecast array
 // Returns: Feels like temp string for that hour with °F
-- (NSString *)hourlyFeelsStringF:(int)forecastIndex {
-    NSString *temp = [NSString stringWithFormat:@"%@ °F",[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"feelslike"] objectForKey:@"english"]];
-    return temp;
+- (NSString *)hourlyFeelsString:(int)forecastIndex ofType:(int)type{
+    NSString *typeString;
+    switch (type) {
+        case AMMTempTypeF:
+            typeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            typeString = @"°C";
+            break;
+        default:
+            typeString = @"";
+            break;
+    }
+    NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"feelslike"];
+    NSString *tempString;
+    switch (type) {
+        case AMMTempTypeF:
+            tempString = [temps objectForKey:@"english"];
+            break;
+        case AMMTempTypeC:
+            tempString = [temps objectForKey:@"metric"];
+            break;
+    }
+    return [NSString stringWithFormat:@"%@ %@",tempString,typeString];
 }
 
 // Takes: start index and length in hourly forecast array
 // Returns: array of temps as NSNumber's in that range
-- (NSMutableArray *)hourlyTempNumberArrayF:(int)startIndex length:(int)length {
+- (NSMutableArray *)hourlyTempNumberArray:(int)startIndex length:(int)length ofType:(int)type {
+    if (startIndex + length >= [[self.saveData objectForKey:@"hourly_forecast"] count]) {
+        NSLog(@"NCWunderground: hourlyTempNumberArray requested past hourly_forecast length. Bad.");
+        return nil;
+    }
+    NSMutableArray *theArray = [NSMutableArray array];
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    [f setNumberStyle:NSNumberFormatterDecimalStyle];
+    for (int i = startIndex; i < startIndex + length; ++i) {
+        NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:i] objectForKey:@"temp"];
+        NSString *tempString;
+        switch (type) {
+            case AMMTempTypeF:
+                tempString = [temps objectForKey:@"english"];
+                break;
+            case AMMTempTypeC:
+                tempString = [temps objectForKey:@"metric"];
+                break;
+        }
+        NSNumber *theNumber = [f numberFromString:tempString];
+        [theArray addObject:theNumber];
+    }
+    return theArray;
+}
+
+// Takes: start index and length in hourly forecast array
+// Returns: array of feelslike as NSNumber's in that range
+- (NSMutableArray *)hourlyFeelsNumberArray:(int)startIndex length:(int)length ofType:(int)type {
     if (startIndex + length >= [[self.saveData objectForKey:@"hourly_forecast"] count]) {
         NSLog(@"NCWunderground: hourlyTempNumberArrayF requested past hourly_forecast length. Bad.");
         return nil;
@@ -91,38 +163,74 @@
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     for (int i = startIndex; i < startIndex + length; ++i) {
-        NSNumber *theNumber = [f numberFromString:[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:i] objectForKey:@"temp"] objectForKey:@"english"]];
+        NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:i] objectForKey:@"feelslike"];
+        NSString *tempString;
+        switch (type) {
+            case AMMTempTypeF:
+                tempString = [temps objectForKey:@"english"];
+                break;
+            case AMMTempTypeC:
+                tempString = [temps objectForKey:@"metric"];
+                break;
+        }
+        NSNumber *theNumber = [f numberFromString:tempString];
         [theArray addObject:theNumber];
     }
     return theArray;
 }
 
-// Takes: start index and length in hourly forecast array
-// Returns: array of feelslike as NSNumber's in that range
-- (NSMutableArray *)hourlyFeelsNumberArrayF:(int)startIndex length:(int)length {
-    if (startIndex + length >= [[self.saveData objectForKey:
-        @"hourly_forecast"] count]) {
-        NSLog(@"NCWunderground: hourlyTempNumberArrayF requested past hourly_forecast length. Bad.");
-        return nil;
+// Returns: current temp string including type specifier
+- (NSString *)currentTempStringOfType:(int)type {
+    NSString *typeString;
+    switch (type) {
+        case AMMTempTypeF:
+            typeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            typeString = @"°C";
+            break;
+        default:
+            typeString = @"";
+            break;
     }
-    NSMutableArray *theArray = [NSMutableArray array];
-    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-    [f setNumberStyle:NSNumberFormatterDecimalStyle];
-    for (int i = startIndex; i < startIndex + length; ++i) {
-        NSNumber *theNumber = [f numberFromString:[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:i] objectForKey:@"feelslike"] objectForKey:@"english"]];
-        [theArray addObject:theNumber];
+    NSDictionary *curObs = (NSDictionary *)[self.saveData objectForKey:@"current_observation"];
+    float tempFloat = 0;
+    switch (type) {
+        case AMMTempTypeF:
+            tempFloat = [[curObs objectForKey:@"temp_f"] floatValue];
+            break;
+        case AMMTempTypeC:
+            tempFloat = [[curObs objectForKey:@"temp_c"] floatValue];
+            break; 
     }
-    return theArray;
+    return [NSString stringWithFormat:@"%.1f %@",tempFloat,typeString];
 }
 
-// Returns: current temp string including °F
-- (NSString *)currentTempStringF {
-    return [NSString stringWithFormat:@"%.1f °F",[[[self.saveData objectForKey:@"current_observation"] objectForKey:@"temp_f"] floatValue]];
-}
-
-// Returns: current feels string including °F
-- (NSString *)currentFeelsStringF {
-    return [NSString stringWithFormat:@"%@ °F",[[self.saveData objectForKey:@"current_observation"] objectForKey:@"feelslike_f"]];
+// Returns: current feels string including type specifier
+- (NSString *)currentFeelsStringOfType:(int)type {
+    NSString *typeString;
+    switch (type) {
+        case AMMTempTypeF:
+            typeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            typeString = @"°C";
+            break;
+        default:
+            typeString = @"";
+            break;
+    }
+    NSDictionary *curObs = (NSDictionary *)[self.saveData objectForKey:@"current_observation"];
+    float tempFloat = 0;
+    switch (type) {
+        case AMMTempTypeF:
+            tempFloat = [[curObs objectForKey:@"feelslike_f"] floatValue];
+            break;
+        case AMMTempTypeC:
+            tempFloat = [[curObs objectForKey:@"feelslike_c"] floatValue];
+            break; 
+    }
+    return [NSString stringWithFormat:@"%.1f %@",tempFloat,typeString];
 }
 
 // Returns: current humidity string, including %
@@ -131,8 +239,25 @@
 }
 
 // Returns: current wind speed, including mph
-- (NSString *)currentWindMPHString {
-    return [NSString stringWithFormat:@"%@ mph",[[[self.saveData objectForKey:@"current_observation"] objectForKey:@"wind_mph"] stringValue]];
+- (NSString *)currentWindStringOfType:(int)type {
+    NSString *typeString;
+    NSString *speedString;
+    NSDictionary *curObs = (NSDictionary *)[self.saveData objectForKey:@"current_observation"];
+    switch (type) {
+        case AMMWindTypeM:
+            typeString = @"mph";
+            speedString = [[curObs objectForKey:@"wind_mph"] stringValue];
+            break;
+        case AMMWindTypeK:
+            typeString = @"kph";
+            speedString = [[curObs objectForKey:@"wind_kph"] stringValue];
+            break;
+        case AMMWindTypeKt:
+            typeString = @"kt";
+            speedString = [NSString stringWithFormat:@"%.1f",([[curObs objectForKey:@"wind_kph"] floatValue] * 0.539957)];
+            break;
+    }
+    return [NSString stringWithFormat:@"%@ %@",speedString,typeString];
 }
 
 // Returns: current location (city, state)
@@ -155,20 +280,38 @@
 
 // Takes: index into daily forecast array
 // Returns: short name of the corresponding day (Mon, Tue, etc)
+// TODO localize
 - (NSString *)dailyDayShortString:(int)forecastIndex {
-    return [[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"date"] objectForKey:@"weekday_short"];
+    NSString *englishName = [[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"date"] objectForKey:@"weekday_short"];
+    return [self.ammNCWundergroundWeeAppBundle localizedStringForKey:englishName
+                                                               value:englishName
+                                                               table:nil];
 }
 
 // Takes: index into daily forecast array
 // Returns: high temperature for that day, NOT including °F
-- (NSString *)dailyHighStringF:(int)forecastIndex {
-    return [[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"high"] objectForKey:@"fahrenheit"];
+- (NSString *)dailyHighString:(int)forecastIndex ofType:(int)type {
+    NSDictionary *highDict = (NSDictionary *)[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"high"];
+    switch (type) {
+        case AMMTempTypeF:
+            return [highDict objectForKey:@"fahrenheit"];
+        case AMMTempTypeC:
+            return [highDict objectForKey:@"celsius"];
+    }
+    return @"";
 }
 
 // Takes: index into daily forecast array
 // Returns: low temperature for that day, NOT including °F
-- (NSString *)dailyLowStringF:(int)forecastIndex {
-    return [[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"low"] objectForKey:@"fahrenheit"];
+- (NSString *)dailyLowString:(int)forecastIndex ofType:(int)type{
+    NSDictionary *lowDict = (NSDictionary *)[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"low"];
+    switch (type) {
+        case AMMTempTypeF:
+            return [lowDict objectForKey:@"fahrenheit"];
+        case AMMTempTypeC:
+            return [lowDict objectForKey:@"celsius"];
+    }
+    return @"";
 }
 
 // Takes: index into daily forecast array
@@ -228,10 +371,16 @@
     if (apiKey == nil) {
         NSLog(@"NCWunderground: got null APIKey, not updating data.");
         dispatch_async(dispatch_get_main_queue(),^(void) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No API Key"
-                                                            message:@"Please enter a Weather Underground API Key in Settings/Notifications/Weather Underground."
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_API_KEY"
+                                                                                                                        value:@"No API Key"
+                                                                                                                        table:nil]
+                                                            message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"ENTER_API_KEY"
+                                                                                                                        value:@"Please enter a Weather Underground API Key in Settings/Notifications/Weather Underground Widget."
+                                                                                                                        table:nil]
                                                            delegate:nil
-                                                  cancelButtonTitle:@"OK"
+                                                  cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                        value:@"OK"
+                                                                                                                        table:nil]
                                                   otherButtonTitles:nil];
             [alert show];
             [self.controller dataDownloadFailed];
@@ -248,10 +397,16 @@
     if (!resultJSON) {
         NSLog(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
         dispatch_async(dispatch_get_main_queue(),^(void) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
-                                                            message:@"Weather widget failed to connect to server."
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONNECTION_FAILED"
+                                                                                                                        value:@"Connection Failed"
+                                                                                                                        table:nil]
+                                                            message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"FAILED_TO_CONNECT"
+                                                                                                                        value:@"Weather widget failed to connect to server."
+                                                                                                                        table:nil]
                                                            delegate:nil
-                                                  cancelButtonTitle:@"OK"
+                                                  cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                        value:@"OK"
+                                                                                                                        table:nil]
                                                   otherButtonTitles:nil];
             [alert show];
             [self.controller dataDownloadFailed];
@@ -265,10 +420,16 @@
         if (error) {
             NSLog(@"NCWunderground: JSON was malformed. Bad.");
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Data Corrupted"
-                                                                message:@"Weather widget received data from the server, but it was corrupted."
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
+                                                                                                                            value:@"Data Corrupted"
+                                                                                                                            table:nil]
+                                                                message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED_LONG"
+                                                                                                                            value:@"Weather widget received data from the server, but it was corrupted."
+                                                                                                                            table:nil]
                                                                delegate:nil
-                                                      cancelButtonTitle:@"OK"
+                                                      cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                            value:@"OK"
+                                                                                                                            table:nil]
                                                       otherButtonTitles:nil];
                 [alert show];
                 [self.controller dataDownloadFailed];
@@ -281,10 +442,18 @@
                     [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"],
                     [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]);
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Server Error (%@)",[[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"]]
-                                                                                          message:[NSString stringWithFormat:@"The weather server returned an error: %@.",[[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]]
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ (%@)",[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"SERVER_ERROR"
+                                                                                                                                                                  value:@"Server Error"
+                                                                                                                                                                  table:nil],
+                                                                                                              [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"]]
+                                                                                          message:[NSString stringWithFormat:@"%@: %@.",[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"SERVER_RETURNED_ERROR"
+                                                                                                                                                                                            value:@"The weather server returned an error"
+                                                                                                                                                                                            table:nil],
+                                                                                                                                        [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]]
                                                                                          delegate:nil
-                                                                                cancelButtonTitle:@"OK"
+                                                                                cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                                                      value:@"OK"
+                                                                                                                                                      table:nil]
                                                                                 otherButtonTitles:nil];
                 [alert show];
                 [self.controller dataDownloadFailed];
@@ -317,10 +486,16 @@
         else {
             NSLog(@"NCWunderground: JSON was non-dict. Bad.");
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Data Corrupted"
-                                                                message:@"Weather widget received data from the server, but it was corrupted."
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
+                                                                                                                            value:@"Data Corrupted"
+                                                                                                                            table:nil]
+                                                                message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED_LONG"
+                                                                                                                            value:@"Weather widget received data from the server, but it was corrupted."
+                                                                                                                            table:nil]
                                                                delegate:nil
-                                                      cancelButtonTitle:@"OK"
+                                                      cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                            value:@"OK"
+                                                                                                                            table:nil]
                                                       otherButtonTitles:nil];
                 [alert show];
                 [self.controller dataDownloadFailed];
@@ -331,10 +506,16 @@
     else {
         NSLog(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
         dispatch_async(dispatch_get_main_queue(),^(void) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Invalid iOS Version"
-                                                            message:@"Your version of iOS does not support NSJSONSerialization. Please contact the developer at <drewmm@gmail.com>."
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"INVALID_IOS"
+                                                                                                                        value:@"Invalid iOS Version"
+                                                                                                                        table:nil]
+                                                            message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DOES_NOT_SUPPORT"
+                                                                                                                        value:@"Your version of iOS does not support NSJSONSerialization. Please contact the developer at <drewmm@gmail.com>."
+                                                                                                                        table:nil]
                                                            delegate:nil
-                                                  cancelButtonTitle:@"OK"
+                                                  cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                        value:@"OK"
+                                                                                                                        table:nil]
                                                   otherButtonTitles:nil];
             [alert show];
             [self.controller dataDownloadFailed];
@@ -372,10 +553,14 @@
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"NCWunderground: location manager failed with error %@",error);
     if (error.code == kCLErrorDenied) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Location Denied"
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_DENIED"
+                                                                                                                    value:@"Location Denied"
+                                                                                                                    table:nil]
                                                         message:[error localizedDescription]
                                                        delegate:nil
-                                              cancelButtonTitle:@"OK"
+                                              cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                    value:@"OK"
+                                                                                                                    table:nil]
                                               otherButtonTitles:nil];
         [alert show];
         [self.controller.view setLoading:NO];
