@@ -384,10 +384,11 @@
         });
         return;
     }
-    NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/lang:%@/q",
+    NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/lang:%@/pws:%d/q",
                                                      apiKey,[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"WU_LANG_CODE"
                                                                                                                 value:@"EN"
-                                                                                                                table:nil]];
+                                                                                                                table:nil],
+                                                     [[defaultsDom objectForKey:@"allowPWS"] boolValue]];
     if (query) {
         urlString = [NSString stringWithFormat:@"%@/%@.json",urlString,query];
     }
