@@ -18,6 +18,8 @@
 @property (nonatomic, readonly, assign) int tempType;
 @property (nonatomic, readonly, assign) int distType;
 @property (nonatomic, readonly, assign) int windType;
+@property (nonatomic, readonly, assign) BOOL useCustomLocation;
+@property (nonatomic, readonly, copy) NSString *locationQuery;
 
 + (void)initialize;
 - (id)init;
