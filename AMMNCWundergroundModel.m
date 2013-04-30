@@ -282,10 +282,7 @@
 // Returns: short name of the corresponding day (Mon, Tue, etc)
 // TODO localize
 - (NSString *)dailyDayShortString:(int)forecastIndex {
-    NSString *englishName = [[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"date"] objectForKey:@"weekday_short"];
-    return [self.ammNCWundergroundWeeAppBundle localizedStringForKey:englishName
-                                                               value:englishName
-                                                               table:nil];
+    return [[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"date"] objectForKey:@"weekday_short"];
 }
 
 // Takes: index into daily forecast array
