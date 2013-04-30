@@ -40,6 +40,7 @@
 
 - (void)dataDownloaded;
 - (void)dataDownloadFailed;
+- (void)timeoutUpdate;
 
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView;
