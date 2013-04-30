@@ -49,6 +49,11 @@ Hourly Forecast Length controls the number of hours that are included in the spa
 
 You will need to enter your own Weather Underground API key in order to use the widget. This enables me to release it for free. To get an API key, go to http://www.wunderground.com/weather/api/d/edit.html. Select the "Anvil Plan" and the "Developer" option. Then copy the API key into the relevant settings field.
 
+Contributors
+------------
+
+* Thomas Chan (thomaschan47@live.hk) added Chinese localization.
+
 Thanks
 ------
 
