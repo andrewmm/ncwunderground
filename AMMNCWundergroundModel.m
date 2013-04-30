@@ -71,20 +71,90 @@
 
 // Takes: index into hourly forecast array
 // Returns: Real temp string for that hour with °F
-- (NSString *)hourlyTempStringF:(int)forecastIndex {
-    return [NSString stringWithFormat:@"%@ °F",[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"temp"] objectForKey:@"english"]];
+- (NSString *)hourlyTempString:(int)forecastIndex ofType:(int)type {
+    NSString *typeString;
+    switch (type) {
+        case AMMTempTypeF:
+            typeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            typeString = @"°C";
+            break;
+        default:
+            typeString = @"";
+            break;
+    }
+    NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"temp"];
+    NSString *tempString;
+    switch (type) {
+        case AMMTempTypeF:
+            tempString = [temps objectForKey:@"english"];
+            break;
+        case AMMTempTypeC:
+            tempString = [temps objectForKey:@"metric"];
+            break;
+    }
+    return [NSString stringWithFormat:@"%@ %@",tempString,typeString];
 }
 
 // Takes: index into hourly forecast array
 // Returns: Feels like temp string for that hour with °F
-- (NSString *)hourlyFeelsStringF:(int)forecastIndex {
-    NSString *temp = [NSString stringWithFormat:@"%@ °F",[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"feelslike"] objectForKey:@"english"]];
-    return temp;
+- (NSString *)hourlyFeelsString:(int)forecastIndex ofType:(int)type{
+    NSString *typeString;
+    switch (type) {
+        case AMMTempTypeF:
+            typeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            typeString = @"°C";
+            break;
+        default:
+            typeString = @"";
+            break;
+    }
+    NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"feelslike"];
+    NSString *tempString;
+    switch (type) {
+        case AMMTempTypeF:
+            tempString = [temps objectForKey:@"english"];
+            break;
+        case AMMTempTypeC:
+            tempString = [temps objectForKey:@"metric"];
+            break;
+    }
+    return [NSString stringWithFormat:@"%@ %@",tempString,typeString];
 }
 
 // Takes: start index and length in hourly forecast array
 // Returns: array of temps as NSNumber's in that range
-- (NSMutableArray *)hourlyTempNumberArrayF:(int)startIndex length:(int)length {
+- (NSMutableArray *)hourlyTempNumberArray:(int)startIndex length:(int)length ofType:(int)type {
+    if (startIndex + length >= [[self.saveData objectForKey:@"hourly_forecast"] count]) {
+        NSLog(@"NCWunderground: hourlyTempNumberArray requested past hourly_forecast length. Bad.");
+        return nil;
+    }
+    NSMutableArray *theArray = [NSMutableArray array];
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    [f setNumberStyle:NSNumberFormatterDecimalStyle];
+    for (int i = startIndex; i < startIndex + length; ++i) {
+        NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:startIndex] objectForKey:@"temp"];
+        NSString *tempString;
+        switch (type) {
+            case AMMTempTypeF:
+                tempString = [temps objectForKey:@"english"];
+                break;
+            case AMMTempTypeC:
+                tempString = [temps objectForKey:@"metric"];
+                break;
+        }
+        NSNumber *theNumber = [f numberFromString:tempString];
+        [theArray addObject:theNumber];
+    }
+    return theArray;
+}
+
+// Takes: start index and length in hourly forecast array
+// Returns: array of feelslike as NSNumber's in that range
+- (NSMutableArray *)hourlyFeelsNumberArray:(int)startIndex length:(int)length ofType:(int)type {
     if (startIndex + length >= [[self.saveData objectForKey:@"hourly_forecast"] count]) {
         NSLog(@"NCWunderground: hourlyTempNumberArrayF requested past hourly_forecast length. Bad.");
         return nil;
@@ -93,38 +163,74 @@
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     for (int i = startIndex; i < startIndex + length; ++i) {
-        NSNumber *theNumber = [f numberFromString:[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:i] objectForKey:@"temp"] objectForKey:@"english"]];
+        NSDictionary *temps = (NSDictionary *)[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:startIndex] objectForKey:@"feelslike"];
+        NSString *tempString;
+        switch (type) {
+            case AMMTempTypeF:
+                tempString = [temps objectForKey:@"english"];
+                break;
+            case AMMTempTypeC:
+                tempString = [temps objectForKey:@"metric"];
+                break;
+        }
+        NSNumber *theNumber = [f numberFromString:tempString];
         [theArray addObject:theNumber];
     }
     return theArray;
 }
 
-// Takes: start index and length in hourly forecast array
-// Returns: array of feelslike as NSNumber's in that range
-- (NSMutableArray *)hourlyFeelsNumberArrayF:(int)startIndex length:(int)length {
-    if (startIndex + length >= [[self.saveData objectForKey:
-        @"hourly_forecast"] count]) {
-        NSLog(@"NCWunderground: hourlyTempNumberArrayF requested past hourly_forecast length. Bad.");
-        return nil;
+// Returns: current temp string including type specifier
+- (NSString *)currentTempStringOfType:(int)type {
+    NSString *typeString;
+    switch (type) {
+        case AMMTempTypeF:
+            typeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            typeString = @"°C";
+            break;
+        default:
+            typeString = @"";
+            break;
     }
-    NSMutableArray *theArray = [NSMutableArray array];
-    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-    [f setNumberStyle:NSNumberFormatterDecimalStyle];
-    for (int i = startIndex; i < startIndex + length; ++i) {
-        NSNumber *theNumber = [f numberFromString:[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:i] objectForKey:@"feelslike"] objectForKey:@"english"]];
-        [theArray addObject:theNumber];
+    NSDictionary *curObs = (NSDictionary *)[self.saveData objectForKey:@"current_observation"];
+    float tempFloat = 0;
+    switch (type) {
+        case AMMTempTypeF:
+            tempFloat = [[curObs objectForKey:@"temp_f"] floatValue];
+            break;
+        case AMMTempTypeC:
+            tempFloat = [[curObs objectForKey:@"temp_c"] floatValue];
+            break; 
     }
-    return theArray;
+    return [NSString stringWithFormat:@"%.1f %@",tempFloat,typeString];
 }
 
-// Returns: current temp string including °F
-- (NSString *)currentTempStringF {
-    return [NSString stringWithFormat:@"%.1f °F",[[[self.saveData objectForKey:@"current_observation"] objectForKey:@"temp_f"] floatValue]];
-}
-
-// Returns: current feels string including °F
-- (NSString *)currentFeelsStringF {
-    return [NSString stringWithFormat:@"%@ °F",[[self.saveData objectForKey:@"current_observation"] objectForKey:@"feelslike_f"]];
+// Returns: current feels string including type specifier
+- (NSString *)currentFeelsStringOfType:(int)type {
+    NSString *typeString;
+    switch (type) {
+        case AMMTempTypeF:
+            typeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            typeString = @"°C";
+            break;
+        default:
+            typeString = @"";
+            break;
+    }
+    NSDictionary *curObs = (NSDictionary *)[self.saveData objectForKey:@"current_observation"];
+    float tempFloat = 0;
+    switch (type) {
+        case AMMTempTypeF:
+            tempFloat = [[curObs objectForKey:@"feelslike_f"] floatValue];
+            break;
+        case AMMTempTypeC:
+            tempFloat = [[curObs objectForKey:@"feelslike_c"] floatValue];
+            break; 
+    }
+    return [NSString stringWithFormat:@"%.1f %@",tempFloat,typeString];
 }
 
 // Returns: current humidity string, including %
@@ -133,8 +239,25 @@
 }
 
 // Returns: current wind speed, including mph
-- (NSString *)currentWindMPHString {
-    return [NSString stringWithFormat:@"%@ mph",[[[self.saveData objectForKey:@"current_observation"] objectForKey:@"wind_mph"] stringValue]];
+- (NSString *)currentWindStringOfType:(int)type {
+    NSString *typeString;
+    NSString *speedString;
+    NSDictionary *curObs = (NSDictionary *)[self.saveData objectForKey:@"current_observation"];
+    switch (type) {
+        case AMMWindTypeM:
+            typeString = @"mph";
+            speedString = [[curObs objectForKey:@"wind_mph"] stringValue];
+            break;
+        case AMMWindTypeK:
+            typeString = @"kph";
+            speedString = [[curObs objectForKey:@"wind_kph"] stringValue];
+            break;
+        case AMMWindTypeKt:
+            typeString = @"kt";
+            speedString = [NSString stringWithFormat:@"%.1f",([[curObs objectForKey:@"wind_kph"] floatValue] * 0.539957)];
+            break;
+    }
+    return [NSString stringWithFormat:@"%@ %@",speedString,typeString];
 }
 
 // Returns: current location (city, state)
@@ -157,20 +280,35 @@
 
 // Takes: index into daily forecast array
 // Returns: short name of the corresponding day (Mon, Tue, etc)
+// TODO localize
 - (NSString *)dailyDayShortString:(int)forecastIndex {
     return [[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"date"] objectForKey:@"weekday_short"];
 }
 
 // Takes: index into daily forecast array
 // Returns: high temperature for that day, NOT including °F
-- (NSString *)dailyHighStringF:(int)forecastIndex {
-    return [[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"high"] objectForKey:@"fahrenheit"];
+- (NSString *)dailyHighString:(int)forecastIndex ofType:(int)type {
+    NSDictionary *highDict = (NSDictionary *)[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"high"];
+    switch (type) {
+        case AMMTempTypeF:
+            return [highDict objectForKey:@"fahrenheit"];
+        case AMMTempTypeC:
+            return [highDict objectForKey:@"celsius"];
+    }
+    return @"";
 }
 
 // Takes: index into daily forecast array
 // Returns: low temperature for that day, NOT including °F
-- (NSString *)dailyLowStringF:(int)forecastIndex {
-    return [[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"low"] objectForKey:@"fahrenheit"];
+- (NSString *)dailyLowString:(int)forecastIndex ofType:(int)type{
+    NSDictionary *lowDict = (NSDictionary *)[[[self.saveData objectForKey:@"forecastday"] objectAtIndex:forecastIndex] objectForKey:@"low"];
+    switch (type) {
+        case AMMTempTypeF:
+            return [lowDict objectForKey:@"fahrenheit"];
+        case AMMTempTypeC:
+            return [lowDict objectForKey:@"celsius"];
+    }
+    return @"";
 }
 
 // Takes: index into daily forecast array

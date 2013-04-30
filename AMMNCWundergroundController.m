@@ -20,6 +20,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @property (nonatomic, assign) float viewHeight;
 @property (nonatomic, copy) NSDictionary *iconMap;
 
+@property (nonatomic, assign) int tempType;
+@property (nonatomic, assign) int distType;
+@property (nonatomic, assign) int windType;
+
 @end
 
 @implementation AMMNCWundergroundController
@@ -34,6 +38,10 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @synthesize currentWidth=i_currentWidth;
 @synthesize viewHeight=i_viewHeight;
 @synthesize iconMap=i_iconMap;
+
+@synthesize tempType = i_tempType;
+@synthesize distType = i_distType;
+@synthesize windType = i_windType;
 
 + (void)initialize {
     _ammNCWundergroundWeeAppBundle = [NSBundle bundleForClass:[self class]];
@@ -65,8 +73,12 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)loadFullView {
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    self.tempType = [(NSNumber *)[defaultsDom objectForKey:@"tempType"] intValue];
+    self.distType = [(NSNumber *)[defaultsDom objectForKey:@"distType"] intValue];
+    self.windType = [(NSNumber *)[defaultsDom objectForKey:@"windType"] intValue];
+    NSLog(@"NCWunderground: preferences = %d, %d, %d",self.tempType,self.distType,self.windType);
     if (self.currentWidth != self.baseWidth) { // this can never happen?
-        NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
         int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
         // We store it as -2 so 0 corresponds to default
 
@@ -403,18 +415,32 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                                                              longitude:[self.model obsLongitudeDouble]];
     UILabel *distanceLabel = (UILabel *)[self.view getSubviewFromPage:0 withTag:2];
     // TODO: mi versus km
-    distanceLabel.text = [NSString stringWithFormat:@"%@: %.2lf mi",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DISTANCE_FROM_STATION"
+    float distance = [stationLocation distanceFromLocation:userLocation]; // meters
+    NSString *distTypeString;
+    switch (self.distType) {
+        case AMMDistTypeM:
+            distance = distance / 1609.344;
+            distTypeString = @"mi";
+            break;
+        case AMMDistTypeK:
+            distance = distance / 1000;
+            distTypeString = @"km";
+            break;
+    }
+    distanceLabel.text = [NSString stringWithFormat:@"%@: %.2lf %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DISTANCE_FROM_STATION"
                                                                                                                     value:@"Distance From Station"
                                                                                                                     table:nil],
-                                                                    ([stationLocation distanceFromLocation:userLocation] / 1609.344)];
+                                                                    distance, distTypeString];
 
     // -- hourly forecast page -- //
     int intervalLength = [self hourlyForecastLength];
 
-    NSMutableArray *realTempSparkData = [self.model hourlyTempNumberArrayF:0
-                                                                    length:intervalLength];
-    NSMutableArray *feelsLikeSparkData = [self.model hourlyFeelsNumberArrayF:0
-                                                                      length:intervalLength];
+    NSMutableArray *realTempSparkData = [self.model hourlyTempNumberArray:0
+                                                                   length:intervalLength
+                                                                   ofType:self.tempType];
+    NSMutableArray *feelsLikeSparkData = [self.model hourlyFeelsNumberArray:0
+                                                                     length:intervalLength
+                                                                     ofType:self.tempType];
 
     ASBSparkLineView *realTempSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:120];
     ASBSparkLineView *feelsLikeSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:130];
@@ -423,6 +449,18 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
     
     // TODO celsius versus fahrenheit
+    NSString *tempTypeString;
+    switch (self.tempType) {
+        case AMMTempTypeF:
+            tempTypeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            tempTypeString = @"°C";
+            break;
+        default:
+            tempTypeString = @"";
+            break;
+    }
     NSArray *page1TextArray = [NSArray arrayWithObjects:[self.model hourlyTime12HrString:0],
                                                         [NSString stringWithFormat:@"%d hr",intervalLength],
                                                         [self.model hourlyTime12HrString:(intervalLength - 1)],
@@ -435,16 +473,17 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                                                         [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"TEMP"
                                                                                                         value:@"Temp"
                                                                                                         table:nil],
-                                                        [self.model hourlyTempStringF:0],
-                                                        [self.model hourlyTempStringF:(intervalLength-1)],
-                                                        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMaximum] stringValue]],
-                                                        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMinimum] stringValue]],
+                                                        [self.model hourlyTempString:0 ofType:self.tempType],
+                                                        [self.model hourlyTempString:(intervalLength-1) ofType:self.tempType],
+                                                        [NSString stringWithFormat:@"%@ %@",[[realTempSparkView dataMaximum] stringValue],tempTypeString],
+                                                        [NSString stringWithFormat:@"%@ %@",[[realTempSparkView dataMinimum] stringValue],tempTypeString],
                                                         [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LIKE"
                                                                                                         value:@"Like"
                                                                                                         table:nil],
-                                                        [self.model hourlyFeelsStringF:0],[self.model hourlyFeelsStringF:(intervalLength-1)],
-                                                        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMaximum] stringValue]],
-                                                        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMinimum] stringValue]],nil];
+                                                        [self.model hourlyFeelsString:0 ofType:self.tempType],
+                                                        [self.model hourlyFeelsString:(intervalLength-1) ofType:self.tempType],
+                                                        [NSString stringWithFormat:@"%@ %@",[[feelsLikeSparkView dataMaximum] stringValue],tempTypeString],
+                                                        [NSString stringWithFormat:@"%@ %@",[[feelsLikeSparkView dataMinimum] stringValue],tempTypeString],nil];
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 5; ++j) {
@@ -456,16 +495,16 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
     // -- current conditions page -- //
 
-    NSArray *page2TextArray = [NSArray arrayWithObjects:[self.model currentTempStringF],[self.model currentLocationString],
+    NSArray *page2TextArray = [NSArray arrayWithObjects:[self.model currentTempStringOfType:self.tempType],[self.model currentLocationString],
                                                         [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LIKE"
                                                                                                                                              value:@"Like"
                                                                                                                                              table:nil],
-                                                                                             [self.model currentFeelsStringF]],
+                                                                                             [self.model currentFeelsStringOfType:self.tempType]],
                                                         [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"HUM"
                                                                                                                                              value:@"Hum"
                                                                                                                                              table:nil],
                                                                                              [self.model currentHumidityString]],
-                                                        [self.model currentConditionsString],[self.model currentWindMPHString],nil]; // TODO MPH versus KPH
+                                                        [self.model currentConditionsString],[self.model currentWindStringOfType:self.windType],nil]; // TODO MPH versus KPH
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 2; ++j) {
@@ -494,8 +533,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         UILabel *dayLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:(310 + (j+1))];
         UILabel *tempLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:(320 + (j+1))];
         [dayLabel setText:[self.model dailyDayShortString:j]];
-        [tempLabel setText:[NSString stringWithFormat:@"%@/%@ (%@)",[self.model dailyHighStringF:j],
-                                                                    [self.model dailyLowStringF:j],
+        [tempLabel setText:[NSString stringWithFormat:@"%@/%@ (%@)",[self.model dailyHighString:j ofType:self.tempType],
+                                                                    [self.model dailyLowString:j ofType:self.tempType],
                                                                     [self.model dailyPOPString:j]]];
 
         remoteIconName = [self.model dailyConditionsIconName:j];
