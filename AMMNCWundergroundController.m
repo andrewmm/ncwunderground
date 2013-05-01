@@ -20,6 +20,12 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @property (nonatomic, assign) float viewHeight;
 @property (nonatomic, copy) NSDictionary *iconMap;
 
+@property (nonatomic, assign) int tempType;
+@property (nonatomic, assign) int distType;
+@property (nonatomic, assign) int windType;
+@property (nonatomic, assign) BOOL useCustomLocation;
+@property (nonatomic, copy) NSString *locationQuery;
+
 @end
 
 @implementation AMMNCWundergroundController
@@ -34,6 +40,12 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @synthesize currentWidth=i_currentWidth;
 @synthesize viewHeight=i_viewHeight;
 @synthesize iconMap=i_iconMap;
+
+@synthesize tempType = i_tempType;
+@synthesize distType = i_distType;
+@synthesize windType = i_windType;
+@synthesize useCustomLocation = i_useCustomLocation;
+@synthesize locationQuery = i_locationQuery;
 
 + (void)initialize {
     _ammNCWundergroundWeeAppBundle = [NSBundle bundleForClass:[self class]];
@@ -65,8 +77,14 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)loadFullView {
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    self.tempType = [(NSNumber *)[defaultsDom objectForKey:@"tempType"] intValue];
+    self.distType = [(NSNumber *)[defaultsDom objectForKey:@"distType"] intValue];
+    self.windType = [(NSNumber *)[defaultsDom objectForKey:@"windType"] intValue];
+    self.useCustomLocation = [(NSNumber *)[defaultsDom objectForKey:@"useCustomLocation"] boolValue];
+    self.locationQuery = (NSString *)[defaultsDom objectForKey:@"locationQuery"];
+    NSLog(@"NCWunderground: preferences = %d, %d, %d",self.tempType,self.distType,self.windType);
     if (self.currentWidth != self.baseWidth) { // this can never happen?
-        NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
         int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
         // We store it as -2 so 0 corresponds to default
 
@@ -92,6 +110,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)unloadView {
+    NSLog(@"NCWunderground: unloadView"); // debugging
     if (self.view) { // apparently unloadView can get called more than once without loadPlaceholderView or loadFullView being called again. Don't want that.
         NSDictionary *oldDefaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
         NSMutableDictionary *newDefaultsDom = [NSMutableDictionary dictionaryWithDictionary:oldDefaultsDom];
@@ -100,6 +119,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [[NSUserDefaults standardUserDefaults] setPersistentDomain:newDefaultsDom
                                                            forName:@"com.amm.ncwunderground"];
         [[NSUserDefaults standardUserDefaults] synchronize];
+        self.locationManager = nil; // maybe this will help?
         self.view = nil;
     }
 }
@@ -128,9 +148,13 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [newLabel setTextColor:[UIColor whiteColor]];
         [newLabel setFont:[UIFont systemFontOfSize:14]];
         [newLabel setTextAlignment:NSTextAlignmentCenter];
+        newLabel.adjustsFontSizeToFitWidth = YES;
+        newLabel.minimumScaleFactor = 0.1;
         [newLabel setFrame:CGRectMake(0.1875*self.baseWidth,rowFirstBuffer + (rowHeight + rowBuffer)*i,0.625*self.baseWidth,rowHeight)];
         if (i == 2) {
-            [newLabel setText:@"Configure options in Settings."];
+            [newLabel setText:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONFIGURE_OPTIONS"
+                                                                              value:@"Configure options in Settings."
+                                                                              table:nil]];
         }
         [self.view addSubview:newLabel toPage:0 withTag:(i+1) manualRefresh:NO];
     }
@@ -168,6 +192,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [newLabel setBackgroundColor:[UIColor clearColor]];
             [newLabel setTextColor:[UIColor whiteColor]];
             [newLabel setFont:[UIFont systemFontOfSize:13]];
+            newLabel.adjustsFontSizeToFitWidth = YES;
+            newLabel.minimumScaleFactor = 0.1;
             [newLabel setTextAlignment:NSTextAlignmentCenter];
 
             // calculate locations
@@ -241,13 +267,12 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             if (j == 1) {
                 [newLabel setFont:[UIFont systemFontOfSize:14.f]];
                 [newLabel setTextAlignment:NSTextAlignmentRight];
-                newLabel.adjustsFontSizeToFitWidth = YES;
-                newLabel.minimumScaleFactor = 0.1;
             }
             else
                 [newLabel setFont:[UIFont systemFontOfSize:(heightArray[i][0]-0.5)]];
-            [newLabel setFrame:CGRectMake(xArray[j],yArray[i][j],
-                labelWidth,heightArray[i][j])];
+            newLabel.adjustsFontSizeToFitWidth = YES;
+            newLabel.minimumScaleFactor = 0.1;
+            [newLabel setFrame:CGRectMake(xArray[j],yArray[i][j],labelWidth,heightArray[i][j])];
 
             [self.view addSubview:newLabel
                         toPage:2
@@ -293,6 +318,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                 [newLabel setFont:[UIFont systemFontOfSize:13]];
             else
                 [newLabel setFont:[UIFont systemFontOfSize:13]];
+            newLabel.adjustsFontSizeToFitWidth = YES;
+            newLabel.minimumScaleFactor = 0.1;
             [newLabel setTextAlignment:NSTextAlignmentCenter];
             [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth), rowFirstBuffer + (rowBuffer + rowHeight) * i, dayWidth, rowHeight)];
             [self.view addSubview:newLabel
@@ -355,12 +382,35 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         NSLog(@"NCWunderground: No save file found.");
     }
 
-    NSLog(@"NCWunderground: Starting location updates.");
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self.model;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-    self.locationUpdated = NO;
-    [self.locationManager startUpdatingLocation];
+    if (!self.useCustomLocation) {
+        NSLog(@"NCWunderground: Starting location updates.");
+        self.locationManager = [[CLLocationManager alloc] init];
+        self.locationManager.delegate = self.model;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+        self.locationUpdated = NO;
+        [self.locationManager startUpdatingLocation];
+        [self performSelector:@selector(timeoutUpdate) withObject:nil afterDelay:10];
+    }
+    else {
+        if (self.locationQuery && ![self.locationQuery isEqualToString:@""]) {
+            [self.model startURLRequestWithQuery:self.locationQuery];
+        }
+        else {
+            UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_LOCATION_ENTERED"
+                                                                                                                         value:@"No Location Entered"
+                                                                                                                         table:nil]
+                                                            message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"PLEASE_ENTER_LOCATION"
+                                                                                                                    value:@"Please turn off \"Use Custom Location\" or enter a location query in Settings."
+                                                                                                                    table:nil]
+                                                           delegate:nil
+                                                  cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                    value:@"OK"
+                                                                                                                    table:nil]
+                                                  otherButtonTitles:nil];
+            [errorAlert show];
+            [self.view setLoading:NO];
+        }
+    }
 }
 
 - (void)dataDownloaded {
@@ -379,6 +429,59 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [self.view setLoading:NO];
 }
 
+- (void)timeoutUpdate {
+    if (self.locationUpdated) {
+        return;
+    }
+    self.locationUpdated = YES;
+    NSLog(@"NCWunderground: Location update is timing out.");
+    if ([self.model latitudeDouble] && [self.model longitudeDouble]) {
+        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+                                                                                                                     value:@"Location Update Failed"
+                                                                                                                     table:nil]
+                                                             message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_USING_LAST"
+                                                                                                                     value:@"Unable to update to current location; using last known location."
+                                                                                                                     table:nil]
+                                                            delegate:nil
+                                                   cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                     value:@"OK"
+                                                                                                                     table:nil]
+                                                   otherButtonTitles:nil];
+        [errorAlert show];
+        [self.model startURLRequestWithQuery:nil];
+    }
+    else if (self.locationQuery && ![self.locationQuery isEqualToString:@""]) {
+        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+                                                                                                                     value:@"Location Update Failed"
+                                                                                                                     table:nil]
+                                                             message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_USING_QUERY"
+                                                                                                                     value:@"Unable to update to current location; using saved query."
+                                                                                                                     table:nil]
+                                                            delegate:nil
+                                                   cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                     value:@"OK"
+                                                                                                                     table:nil]
+                                                   otherButtonTitles:nil];
+        [errorAlert show];
+        [self.model startURLRequestWithQuery:self.locationQuery];
+    }
+    else {
+        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+                                                                                                                     value:@"Location Update Failed"
+                                                                                                                     table:nil]
+                                                             message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_NO_FALLBACK"
+                                                                                                                     value:@"Unable to update current location; no fallback options available."
+                                                                                                                     table:nil]
+                                                            delegate:nil
+                                                   cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                     value:@"OK"
+                                                                                                                     table:nil]
+                                                   otherButtonTitles:nil];
+        [errorAlert show];
+        [self.view setLoading:NO];
+    }
+}
+
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView {
     // -- details page -- //
@@ -389,23 +492,58 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [dateFormatter setDateFormat:@"h:mm:ss a"];
     UILabel *lastRefreshedLabel = (UILabel *)[self.view getSubviewFromPage:0
                                                                    withTag:1];
-    lastRefreshedLabel.text = [NSString stringWithFormat:@"Last Refreshed: %@",[dateFormatter stringFromDate:lastRefreshedDate]];
+    lastRefreshedLabel.text = [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LAST_REFRESHED"
+                                                                                                                   value:@"Last Refreshed"
+                                                                                                                   table:nil],
+                                                                   [dateFormatter stringFromDate:lastRefreshedDate]];
 
     // "Distance From Station"
-    CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[self.model latitudeDouble]
-                                                          longitude:[self.model longitudeDouble]];
-    CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[self.model obsLatitudeDouble]
-                                                             longitude:[self.model obsLongitudeDouble]];
     UILabel *distanceLabel = (UILabel *)[self.view getSubviewFromPage:0 withTag:2];
-    distanceLabel.text = [NSString stringWithFormat:@"Distance From Station: %.2lf mi",([stationLocation distanceFromLocation:userLocation] / 1609.344)];
+    if (!self.useCustomLocation) {
+        CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[self.model latitudeDouble]
+                                                              longitude:[self.model longitudeDouble]];
+        CLLocation *stationLocation = [[CLLocation alloc] initWithLatitude:[self.model obsLatitudeDouble]
+                                                                 longitude:[self.model obsLongitudeDouble]];
+        // TODO: mi versus km
+        float distance = [stationLocation distanceFromLocation:userLocation]; // meters
+        NSString *distTypeString;
+        switch (self.distType) {
+            case AMMDistTypeM:
+                distance = distance / 1609.344;
+                distTypeString = [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"mi"
+                                                                                     value:@"mi"
+                                                                                     table:nil];
+                break;
+            case AMMDistTypeK:
+                distance = distance / 1000;
+                distTypeString = [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"km"
+                                                                                     value:@"km"
+                                                                                     table:nil];
+                break;
+        }
+        distanceLabel.text = [NSString stringWithFormat:@"%@: %.2lf %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DISTANCE_FROM_STATION"
+                                                                                                                        value:@"Distance From Station"
+                                                                                                                        table:nil],
+                                                                        distance, distTypeString];
+    }
+    else {
+        distanceLabel.text = [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DISTANCE_FROM_STATION"
+                                                                                                                  value:@"Distance From Station"
+                                                                                                                  table:nil],
+                                                                  [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"N/A"
+                                                                                                                  value:@"N/A"
+                                                                                                                  table:nil]];
+    }
 
     // -- hourly forecast page -- //
     int intervalLength = [self hourlyForecastLength];
 
-    NSMutableArray *realTempSparkData = [self.model hourlyTempNumberArrayF:0
-                                                                    length:intervalLength];
-    NSMutableArray *feelsLikeSparkData = [self.model hourlyFeelsNumberArrayF:0
-                                                                      length:intervalLength];
+    NSMutableArray *realTempSparkData = [self.model hourlyTempNumberArray:0
+                                                                   length:intervalLength
+                                                                   ofType:self.tempType];
+    NSMutableArray *feelsLikeSparkData = [self.model hourlyFeelsNumberArray:0
+                                                                     length:intervalLength
+                                                                     ofType:self.tempType];
 
     ASBSparkLineView *realTempSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:120];
     ASBSparkLineView *feelsLikeSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:130];
@@ -413,16 +551,43 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     [realTempSparkView setDataValues:realTempSparkData];
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
     
+    NSString *tempTypeString;
+    switch (self.tempType) {
+        case AMMTempTypeF:
+            tempTypeString = @"°F";
+            break;
+        case AMMTempTypeC:
+            tempTypeString = @"°C";
+            break;
+        default:
+            tempTypeString = @"";
+            break;
+    }
     NSArray *page1TextArray = [NSArray arrayWithObjects:[self.model hourlyTime12HrString:0],
-                                                        [NSString stringWithFormat:@"%d hr",intervalLength],
+                                                        [_ammNCWundergroundWeeAppBundle localizedStringForKey:[NSString stringWithFormat:@"%d hr",intervalLength]
+                                                                                                        value:[NSString stringWithFormat:@"%d hr",intervalLength]
+                                                                                                        table:nil],
                                                         [self.model hourlyTime12HrString:(intervalLength - 1)],
-                                                        @"High",@"Low",@"Temp",[self.model hourlyTempStringF:0],
-                                                        [self.model hourlyTempStringF:(intervalLength-1)],
-                                                        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMaximum] stringValue]],
-                                                        [NSString stringWithFormat:@"%@ °F",[[realTempSparkView dataMinimum] stringValue]],
-                                                        @"Like",[self.model hourlyFeelsStringF:0],[self.model hourlyFeelsStringF:(intervalLength-1)],
-                                                        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMaximum] stringValue]],
-                                                        [NSString stringWithFormat:@"%@ °F",[[feelsLikeSparkView dataMinimum] stringValue]],nil];
+                                                        [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"HIGH"
+                                                                                                        value:@"High"
+                                                                                                        table:nil],
+                                                        [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOW"
+                                                                                                        value:@"Low"
+                                                                                                        table:nil],
+                                                        [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"TEMP"
+                                                                                                        value:@"Temp"
+                                                                                                        table:nil],
+                                                        [self.model hourlyTempString:0 ofType:self.tempType],
+                                                        [self.model hourlyTempString:(intervalLength-1) ofType:self.tempType],
+                                                        [NSString stringWithFormat:@"%@ %@",[[realTempSparkView dataMaximum] stringValue],tempTypeString],
+                                                        [NSString stringWithFormat:@"%@ %@",[[realTempSparkView dataMinimum] stringValue],tempTypeString],
+                                                        [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LIKE"
+                                                                                                        value:@"Like"
+                                                                                                        table:nil],
+                                                        [self.model hourlyFeelsString:0 ofType:self.tempType],
+                                                        [self.model hourlyFeelsString:(intervalLength-1) ofType:self.tempType],
+                                                        [NSString stringWithFormat:@"%@ %@",[[feelsLikeSparkView dataMaximum] stringValue],tempTypeString],
+                                                        [NSString stringWithFormat:@"%@ %@",[[feelsLikeSparkView dataMinimum] stringValue],tempTypeString],nil];
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 5; ++j) {
@@ -434,10 +599,16 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
     // -- current conditions page -- //
 
-    NSArray *page2TextArray = [NSArray arrayWithObjects:[self.model currentTempStringF],[self.model currentLocationString],
-                                                        [NSString stringWithFormat:@"Like: %@",[self.model currentFeelsStringF]],
-                                                        [NSString stringWithFormat:@"Hum: %@",[self.model currentHumidityString]],
-                                                        [self.model currentConditionsString],[self.model currentWindMPHString],nil];
+    NSArray *page2TextArray = [NSArray arrayWithObjects:[self.model currentTempStringOfType:self.tempType],[self.model currentLocationString],
+                                                        [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LIKE"
+                                                                                                                                             value:@"Like"
+                                                                                                                                             table:nil],
+                                                                                             [self.model currentFeelsStringOfType:self.tempType]],
+                                                        [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"HUM"
+                                                                                                                                             value:@"Hum"
+                                                                                                                                             table:nil],
+                                                                                             [self.model currentHumidityString]],
+                                                        [self.model currentConditionsString],[self.model currentWindStringOfType:self.windType],nil]; // TODO MPH versus KPH
 
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 2; ++j) {
@@ -466,8 +637,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         UILabel *dayLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:(310 + (j+1))];
         UILabel *tempLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:(320 + (j+1))];
         [dayLabel setText:[self.model dailyDayShortString:j]];
-        [tempLabel setText:[NSString stringWithFormat:@"%@/%@ (%@)",[self.model dailyHighStringF:j],
-                                                                    [self.model dailyLowStringF:j],
+        [tempLabel setText:[NSString stringWithFormat:@"%@/%@ (%@)",[self.model dailyHighString:j ofType:self.tempType],
+                                                                    [self.model dailyLowString:j ofType:self.tempType],
                                                                     [self.model dailyPOPString:j]]];
 
         remoteIconName = [self.model dailyConditionsIconName:j];

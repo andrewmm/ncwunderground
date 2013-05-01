@@ -15,6 +15,12 @@
 @property (nonatomic, readonly, assign) float viewHeight;
 @property (nonatomic, readonly, copy) NSDictionary *iconMap;
 
+@property (nonatomic, readonly, assign) int tempType;
+@property (nonatomic, readonly, assign) int distType;
+@property (nonatomic, readonly, assign) int windType;
+@property (nonatomic, readonly, assign) BOOL useCustomLocation;
+@property (nonatomic, readonly, copy) NSString *locationQuery;
+
 + (void)initialize;
 - (id)init;
 
@@ -34,6 +40,7 @@
 
 - (void)dataDownloaded;
 - (void)dataDownloadFailed;
+- (void)timeoutUpdate;
 
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView;
