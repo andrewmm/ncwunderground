@@ -1,0 +1,79 @@
+/* Settings pane */
+
+/* Data Refresh Delay */
+"Data Refresh Delay" = "數據更新延遲";
+
+/* Instant */
+"Instant" = "立即";
+
+/* 5 min */
+"5 min" = "5 分鐘";
+
+/* 10 min */
+"10 min" = "10 分鐘";
+
+/* 20 min */
+"20 min" = "20 分鐘";
+
+/* Hourly Forecast Length */
+"Hourly Forecast Length" = "預測時間(小時)";
+
+/* 3 hr */
+"3 hr" = "3 小時";
+
+/* 6 hr */
+"6 hr" = "6 小時";
+
+/* 12 hr */
+"12 hr" = "12 小時";
+
+/* 18 hr */
+"18 hr" = "18 小時";
+
+/* 36 hr */
+"36 hr" = "36 小時";
+
+/* API Key */
+"API Key" = "API 密鑰";
+
+/* Localization */
+"Localization" = "定位";
+
+/* Fahrenheit */
+"Fahrenheit" = "華氏";
+
+/* Celsius */
+"Celsius" = "攝氏";
+
+/* mi */
+"mi" = "英里";
+
+/* km */
+"km" = "公里";
+
+/* MPH */
+"MPH" = "英里/小時";
+
+/* KPH */
+"KPH" = "公里/小時";
+
+/* Knots */
+"Knots" = "海浬/小時";
+
+/* kt */
+"kt" = "海浬/小時";
+
+/* Use Custom Location */
+"Use Custom Location" = "使用自定義的位置";
+
+/* Personal Weather Stations */
+"Personal Stations" = "個人氣象站";
+
+/* Query */
+"Query" = "查詢";
+
+/* If 'Use Custom Location' is on, the query will be passed to the Weather Underground API. Do not include spaces. */
+"If 'Use Custom Location' is on, the query will be passed to the Weather Underground API. Do not include spaces." = "如果'使用自定義的位置'，這個位置將被傳遞到 Weather Underground API 作為查詢。不包含空格。";
+
+/* Ex: NY/New_York, England/London, 20001. Enter 'autoip' to have Weather Underground calculate your location based on your IP address. */
+"Ex: NY/New_York, England/London, 20001. Enter 'autoip' to have Weather Underground calculate your location based on your IP address." = "例：NY/New_York, England/London, 20001。輸入 'autoip' Weather Underground 會根據你的 IP address 算您的位置。";

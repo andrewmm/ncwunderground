@@ -36,6 +36,7 @@ Run the following commands on your command line to download the source:
 git clone git://github.com/andrewmm/ncwunderground.git
 cd ncwunderground
 git submodule init
+git submodule update
 ```
 
 Then you can run `make` to compile the code or `make package` to compile and create a .deb package. You can also run:
@@ -56,6 +57,11 @@ Configure the options. The widget will download data from the Weather Undergroun
 Hourly Forecast Length controls the number of hours that are included in the sparkline display and the min/max calculations on one of the pages.
 
 You will need to enter your own Weather Underground API key in order to use the widget. This enables me to release it for free. To get an API key, go to http://www.wunderground.com/weather/api/d/edit.html. Fill out a project name, website, etc and press "Create a New Key." Then select the "Anvil Plan" and the "Developer" option. Then copy the API key into the relevant settings field.
+
+Contributors
+------------
+
+* Thomas Chan (thomaschan47@live.hk) added Chinese localization.
 
 Thanks
 ------
