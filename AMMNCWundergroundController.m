@@ -564,7 +564,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             break;
     }
     NSArray *page1TextArray = [NSArray arrayWithObjects:[self.model hourlyTime12HrString:0],
-                                                        [NSString stringWithFormat:@"%d hr",intervalLength],
+                                                        [_ammNCWundergroundWeeAppBundle localizedStringForKey:[NSString stringWithFormat:@"%d hr",intervalLength]
+                                                                                                        value:[NSString stringWithFormat:@"%d hr",intervalLength]
+                                                                                                        table:nil],
                                                         [self.model hourlyTime12HrString:(intervalLength - 1)],
                                                         [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"HIGH"
                                                                                                         value:@"High"

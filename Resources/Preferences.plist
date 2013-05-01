@@ -214,7 +214,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>If "Use Custom Location" is on, the query will be passed to the Weather Underground API. Do not include spaces.</string>
+			<string>If 'Use Custom Location' is on, the query will be passed to the Weather Underground API. Do not include spaces.</string>
 		</dict>
 		<dict>
 			<key>cell</key>
