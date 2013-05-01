@@ -1,0 +1,79 @@
+/* Settings pane */
+
+/* Data Refresh Delay */
+"Data Refresh Delay" = "Delay Refresh Delay";
+
+/* Instant */
+"Instant" = "Instant";
+
+/* 5 min */
+"5 min" = "5 min";
+
+/* 10 min */
+"10 min" = "10 min";
+
+/* 20 min */
+"20 min" = "20 min";
+
+/* Hourly Forecast Length */
+"Hourly Forecast Length" = "Hourly Forecast Length";
+
+/* 3 hr */
+"3 hr" = "3 hr";
+
+/* 6 hr */
+"6 hr" = "6 hr";
+
+/* 12 hr */
+"12 hr" = "12 hr";
+
+/* 18 hr */
+"18 hr" = "18 hr";
+
+/* 36 hr */
+"36 hr" = "36 hr";
+
+/* API Key */
+"API Key" = "API Key";
+
+/* Localization */
+"Localization" = "Localization";
+
+/* Fahrenheit */
+"Fahrenheit" = "Fahrenheit";
+
+/* Celsius */
+"Celsius" = "Celsius";
+
+/* mi */
+"mi" = "mi";
+
+/* km */
+"km" = "km";
+
+/* MPH */
+"MPH" = "MPH";
+
+/* KPH */
+"KPH" = "KPH";
+
+/* Knots */
+"Knots" = "Knots";
+
+/* kt */
+"kt" = "kt";
+
+/* Use Custom Location */
+"Use Custom Location" = "Use Custom Location";
+
+/* Personal Weather Stations */
+"Personal Stations" = "Personal Stations";
+
+/* Query */
+"Query" = "Query";
+
+/* If 'Use Custom Location' is on, this string will be passed to the Weather Underground API as the query. Do not include spaces. */
+"If 'Use Custom Location' is on, this string will be passed to the Weather Underground API as the query. Do not include spaces." = "If 'Use Custom Location' is on, this string will be passed to the Weather Underground API as the query. Do not include spaces.";
+
+/* Ex: NY/New_York, England/London, 20001. Enter 'autoip' to have Weather Underground calculate your location based on your IP address. */
+"Ex: NY/New_York, England/London, 20001. Enter 'autoip' to have Weather Underground calculate your location based on your IP address." = "Ex: NY/New_York, England/London, 20001. Enter 'autoip' to have Weather Underground calculate your location based on your IP address.";
