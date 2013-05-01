@@ -1,7 +1,7 @@
 Package: com.amm.ncwunderground
 Name: WeatherUnderground for Notification Center
 Depends: firmware (>= 6.1), com.saurik.substrate.safemode, com.chpwn.weeloader, com.arichardson.weepreferenceloader, mobilesubstrate
-Version: 1.1.3
+Version: 1.2.0
 Architecture: iphoneos-arm
 Description: Notification Center widget for Weather Underground.
  
@@ -15,7 +15,7 @@ Description: Notification Center widget for Weather Underground.
  
  Version 1.2.0:
  * Support for various units (°F/°C, MPH/KPH/Knots, mi/km)
- * Chinese (Traditional and Simplified) localization thanks to Thomas Chan. If you would like to translate this app into your own language, get in touch with me!
+ * Chinese (Traditional and Simplified) localization thanks to Thomas Chan. If you would like to translate this widget into your own language, get in touch with me!
  * Added option to allow user to specify location rather than using current GPS location.
  * Added option to control whether Personal Weather Stations are included.
  * Tapping the main icon now opens the mobile Weather Underground website rather than the full site.
