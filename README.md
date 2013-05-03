@@ -62,6 +62,7 @@ Contributors
 ------------
 
 * Thomas Chan (thomaschan47@live.hk) added Chinese localization.
+* Daniel Borca [dborca](https://github.com/dborca) added Romanian localization.
 
 Thanks
 ------
