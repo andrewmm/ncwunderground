@@ -52,13 +52,13 @@
 "km" = "km";
 
 /* MPH */
-"MPH" = "MPH";
+"MPH" = "mph";
 
 /* KPH */
-"KPH" = "KPH";
+"KPH" = "km/h";
 
 /* Knots */
-"Knots" = "Knots";
+"Knots" = "knots";
 
 /* kt */
 "kt" = "kt";
