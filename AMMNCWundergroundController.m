@@ -74,6 +74,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
     [self.view setScreenWidth:[self.view superview].frame.size.width withCurrentPage:cur_page];
+    self.currentWidth = [self.view superview].frame.size.width;
 }
 
 - (void)loadFullView {
@@ -84,15 +85,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     self.useCustomLocation = [(NSNumber *)[defaultsDom objectForKey:@"useCustomLocation"] boolValue];
     self.locationQuery = (NSString *)[defaultsDom objectForKey:@"locationQuery"];
     NSLog(@"NCWunderground: preferences = %d, %d, %d",self.tempType,self.distType,self.windType);
-    if (self.currentWidth != self.baseWidth) { // this can never happen?
-        int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
-        // We store it as -2 so 0 corresponds to default
-
-        self.view = [[AMMNCWundergroundView alloc] initWithPages:4
-                                                          atPage:cur_page
-                                                           width:self.currentWidth
-                                                          height:self.viewHeight];
-    }
     [self addSubviewsToView];
     [self loadData:nil];
 }

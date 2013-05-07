@@ -106,7 +106,7 @@
     for (int i = 0; i < self.pages; ++i) {
         UIActivityIndicatorView *newSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
         [workingArray addObject:newSpinner];
-        [newSpinner setCenter:CGPointMake(([self screenWidth]-4)/2,[self viewHeight]/2)];
+        [newSpinner setCenter:CGPointMake((self.baseWidth-4)/2,self.viewHeight/2)];
         [[self.subviewContainers objectAtIndex:i] addSubview:newSpinner];
     }
     self.spinners = workingArray;
