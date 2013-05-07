@@ -4,3 +4,6 @@
 [submodule "theos"]
 	path = theos
 	url = git://github.com/DHowett/theos.git
+[submodule "CocoaLumberjack"]
+	path = CocoaLumberjack
+	url = git://github.com/robbiehanson/CocoaLumberjack.git
