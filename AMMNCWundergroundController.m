@@ -379,11 +379,20 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         self.locationManager = [[CLLocationManager alloc] init];
         CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
         if (status != kCLAuthorizationStatusAuthorized) {
-            UIAlertView *permissionRequest = [[UIAlertView alloc] initWithTitle:@"Allow SpringBoard Widgets To Access Your Location?"
-                                                                        message:@"This will apply to any tweak that runs inside of SpringBoard. You may undo this action by turning off Location Access in the Weather Underground Widget settings, and then attempting to update the widget's data again."
+            UIAlertView *permissionRequest = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"ALLOW_LOCATION"
+                                                                                                                                value:@"Allow SpringBoard Widgets To Access Your Location?"
+                                                                                                                                table:nil]
+                                                                        message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"ALLOW_LOCATION_MESSAGE"
+                                                                                                                                value:@"This will apply to any tweak that runs inside of SpringBoard. You may undo this action by turning off Location Access in the Weather Underground Widget settings, and then attempting to update the widget's data again."
+                                                                                                                                table:nil]
+                                                                        
                                                                        delegate:self
-                                                              cancelButtonTitle:@"Allow"
-                                                              otherButtonTitles:@"Don't Allow",nil];
+                                                              cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"ALLOW"
+                                                                                                                                value:@"Allow"
+                                                                                                                                table:nil]
+                                                              otherButtonTitles:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DONT_ALLOW"
+                                                                                                                                value:@"Don't Allow"
+                                                                                                                                table:nil],nil];
             [permissionRequest show];
         }
         else {
