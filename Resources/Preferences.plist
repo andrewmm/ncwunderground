@@ -232,6 +232,20 @@
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
+			<string>Clear Location Permissions</string>
+			<key>action</key>
+			<string>clearLocationPermissions</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
 			<string>Support through PayPal...</string>
 			<key>action</key>
 			<string>support</string>
