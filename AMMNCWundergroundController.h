@@ -3,7 +3,7 @@
 @class AMMNCWundergroundView;
 @class AMMNCWundergroundModel;
 
-@interface AMMNCWundergroundController: NSObject <BBWeeAppController>
+@interface AMMNCWundergroundController: NSObject <BBWeeAppController, UIAlertViewDelegate>
 
 @property (nonatomic, readonly, strong) AMMNCWundergroundView *view;
 @property (nonatomic, readonly, strong) AMMNCWundergroundModel *model;
@@ -37,6 +37,11 @@
           SPECIAL: iff caller==nil, this will respect user's preferences re: delay on reloading data */
 // Does: tells the model to reload the data
 - (void)loadData:(id)caller;
+
+// UIAlertViewDelegate method:
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex;
+
+- (void)startLocationUpdates;
 
 - (void)dataDownloaded;
 - (void)dataDownloadFailed;

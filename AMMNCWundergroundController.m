@@ -375,13 +375,20 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     }
 
     if (!self.useCustomLocation) {
-        NSLog(@"NCWunderground: Starting location updates.");
+        NSLog(@"NCWunderground: Attempting to start location updates.");
         self.locationManager = [[CLLocationManager alloc] init];
-        self.locationManager.delegate = self.model;
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-        self.locationUpdated = NO;
-        [self.locationManager startUpdatingLocation];
-        [self performSelector:@selector(timeoutUpdate) withObject:nil afterDelay:10];
+        CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+        if (status != kCLAuthorizationStatusAuthorized) {
+            UIAlertView *permissionRequest = [[UIAlertView alloc] initWithTitle:@"Allow SpringBoard Widgets To Access Your Location?"
+                                                                        message:@"This will apply to any tweak that runs inside of SpringBoard. You may undo this action by turning off Location Access in the Weather Underground Widget settings, and then attempting to update the widget's data again."
+                                                                       delegate:self
+                                                              cancelButtonTitle:@"Allow"
+                                                              otherButtonTitles:@"Don't Allow",nil];
+            [permissionRequest show];
+        }
+        else {
+            [self startLocationUpdates];
+        }
     }
     else {
         if (self.locationQuery && ![self.locationQuery isEqualToString:@""]) {
@@ -403,6 +410,20 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [self.view setLoading:NO];
         }
     }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0)
+        [CLLocationManager setAuthorizationStatus:YES forBundleIdentifier:@"com.apple.springboard"];
+    [self startLocationUpdates];
+}
+
+- (void)startLocationUpdates {
+    self.locationManager.delegate = self.model;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    self.locationUpdated = NO;
+    [self.locationManager startUpdatingLocation];
+    [self performSelector:@selector(timeoutUpdate) withObject:nil afterDelay:10];
 }
 
 - (void)dataDownloaded {
