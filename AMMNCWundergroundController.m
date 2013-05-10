@@ -11,6 +11,7 @@
 #import "CocoaLumberjack/Lumberjack/DDTTYLogger.h"
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
+static int ddLogLevel = LOG_LEVEL_OFF;
 
 @interface AMMNCWundergroundController ()
 
@@ -50,8 +51,6 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 @synthesize windType = i_windType;
 @synthesize useCustomLocation = i_useCustomLocation;
 @synthesize locationQuery = i_locationQuery;
-
-static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
 + (void)initialize {
     _ammNCWundergroundWeeAppBundle = [NSBundle bundleForClass:[self class]];
@@ -102,6 +101,26 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
 - (void)loadPlaceholderView {
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    int debugPref = [(NSNumber *)[defaultsDom objectForKey:@"debugLevel"] intValue];
+    switch (debugPref) {
+        case 1:
+            ddLogLevel = LOG_LEVEL_ERROR;
+            break;
+        case 2:
+            ddLogLevel = LOG_LEVEL_WARN;
+            break;
+        case 3:
+            ddLogLevel = LOG_LEVEL_INFO;
+            break;
+        case 4:
+            ddLogLevel = LOG_LEVEL_VERBOSE;
+            break;
+        default:
+            ddLogLevel = LOG_LEVEL_OFF;
+            break;
+    }
+    [self.model setLogLevel:ddLogLevel];
+    [self.view setLogLevel:ddLogLevel];
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
     // We store it as -2 so 0 corresponds to default
 

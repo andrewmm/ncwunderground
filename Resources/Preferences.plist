@@ -116,6 +116,14 @@
             <key>cell</key>
             <string>PSLinkCell</string>
             <key>label</key>
+            <string>Debugging</string>
+            <key>detail</key>
+            <string>MyListController</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSLinkCell</string>
+            <key>label</key>
             <string>About</string>
             <key>detail</key>
             <string>MyListController</string>

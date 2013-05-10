@@ -9,6 +9,8 @@
 @property (nonatomic, readonly, copy) NSArray *spinners;
 @property (nonatomic, readonly, copy) NSArray *refreshNeeded;
 
+- (void)setLogLevel:(int)level;
+
 
 // Takes: number of pages, base width, view height
 // Does: initializes (calls setPages)

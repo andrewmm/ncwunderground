@@ -22,7 +22,11 @@
 @synthesize spinners=i_spinners;
 @synthesize refreshNeeded=i_refreshNeeded;
 
-static const int ddLogLevel = LOG_LEVEL_VERBOSE;
+static int ddLogLevel = LOG_LEVEL_OFF;
+
+- (void)setLogLevel:(int)level {
+    ddLogLevel = level;
+}
 
 // Takes: number of pages, base width, view height
 // Does: initializes

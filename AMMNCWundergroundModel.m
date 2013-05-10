@@ -10,7 +10,7 @@
 @synthesize controller = i_controller;
 @synthesize ammNCWundergroundWeeAppBundle = i_ammNCWundergroundWeeAppBundle;
 
-static const int ddLogLevel = LOG_LEVEL_VERBOSE;
+static int ddLogLevel = LOG_LEVEL_OFF;
 
 - (id)initWithController:(AMMNCWundergroundController *)controller {
     if ((self = [super init])) {
@@ -32,6 +32,10 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 - (BOOL)haveLocationPermissions {
     NSNumber *authorizationValue = [self.saveData objectForKey:@"locationPermissions"];
     return [authorizationValue boolValue];
+}
+
+- (void)setLogLevel:(int)level {
+    ddLogLevel = level;
 }
 
 // Returns: current latitude as a double

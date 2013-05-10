@@ -72,6 +72,8 @@ root
 - (void)setLocationPermissions:(BOOL)value;
 - (BOOL)haveLocationPermissions;
 
+- (void)setLogLevel:(int)level;
+
 // Returns: current latitude/longitude as a double
 - (double)latitudeDouble;
 - (double)longitudeDouble;
