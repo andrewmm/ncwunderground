@@ -363,7 +363,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                 updateLength = 300; // default to 5 minutes
             }
 
-            if ([[NSDate date] timeIntervalSince1970] - [self.model lastRequestInt] <= updateLength) {
+            // 9999 is a special value that indicates that we never automatically refresh the data
+            if ([[NSDate date] timeIntervalSince1970] - [self.model lastRequestInt] <= updateLength || updateLength == 9999) {
                 NSLog(@"NCWunderground: Too soon to download data again. Done updating.");
                 [self.view setLoading:NO];
                 return;
