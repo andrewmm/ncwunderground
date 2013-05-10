@@ -377,8 +377,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     if (!self.useCustomLocation) {
         NSLog(@"NCWunderground: Attempting to start location updates.");
         self.locationManager = [[CLLocationManager alloc] init];
-        CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-        if (status != kCLAuthorizationStatusAuthorized) {
+        BOOL authorized = [self.model haveLocationPermissions];
+        if (authorized != YES) {
             UIAlertView *permissionRequest = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"ALLOW_LOCATION"
                                                                                                                                 value:@"Allow SpringBoard Widgets To Access Your Location?"
                                                                                                                                 table:nil]
@@ -396,6 +396,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
             [permissionRequest show];
         }
         else {
+            [CLLocationManager setAuthorizationStatus:YES forBundleIdentifier:@"com.apple.springboard"];
             [self startLocationUpdates];
         }
     }
@@ -422,8 +423,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 0)
+    if (buttonIndex == 0) {
+        NSLog(@"NCWunderground: Setting location authorization status to YES.");
+        [self.model setLocationPermissions:YES];
         [CLLocationManager setAuthorizationStatus:YES forBundleIdentifier:@"com.apple.springboard"];
+    }
     [self startLocationUpdates];
 }
 

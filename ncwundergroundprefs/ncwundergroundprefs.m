@@ -18,17 +18,21 @@
 
 - (void)clearLocationPermissions {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *path = @"/var/root/Library/Caches/locationd/clients.plist";
+    NSString *path = @"/var/mobile/Library/Application Support/NCWunderground/weather.save.plist";
     if ([fileManager fileExistsAtPath:path]) {
-        NSMutableDictionary *permissionsDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-        [permissionsDictionary removeObjectForKey:@"com.apple.springboard"];
-        [permissionsDictionary writeToFile:path atomically:YES];
-        NSLog(@"NCWunderground: SpringBoard's location permissions have been cleared, restarting locationd.");
-        [NSTask launchedTaskWithLaunchPath:@"/usr/bin/killall" arguments:[NSArray arrayWithObjects:@"locationd",nil]];
+        NSMutableDictionary *saveFile = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+        [saveFile removeObjectForKey:@"locationPermissions"];
+        [saveFile writeToFile:path atomically:YES];
+        NSLog(@"NCWunderground: Location permissions cleared.");
     }
     else {
-        NSLog(@"NCWunderground: Asked to clear location permissions, but %@ does not exist. Ignoring.",path);
+        NSLog(@"NCWunderground: Asked to clear location permissions, but %@ does not exist.",path);
     }
 }
 
+@end
+
+@interface MyListController : PSListController {}
+@end
+@implementation MyListController
 @end

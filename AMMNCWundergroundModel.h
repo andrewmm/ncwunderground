@@ -69,6 +69,9 @@ root
 
 - (id)initWithController:(AMMNCWundergroundController *)controller;
 
+- (void)setLocationPermissions:(BOOL)value;
+- (BOOL)haveLocationPermissions;
+
 // Returns: current latitude/longitude as a double
 - (double)latitudeDouble;
 - (double)longitudeDouble;
