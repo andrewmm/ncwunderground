@@ -1,6 +1,7 @@
 #import "AMMNCWundergroundModel.h"
 #import "AMMNCWundergroundController.h"
 #import "AMMNCWundergroundView.h"
+#import "CocoaLumberjack/Lumberjack/DDLog.h"
 
 @implementation AMMNCWundergroundModel
 
@@ -8,6 +9,8 @@
 @synthesize backgroundQueue = i_backgroundQueue;
 @synthesize controller = i_controller;
 @synthesize ammNCWundergroundWeeAppBundle = i_ammNCWundergroundWeeAppBundle;
+
+static int ddLogLevel = LOG_LEVEL_OFF;
 
 - (id)initWithController:(AMMNCWundergroundController *)controller {
     if ((self = [super init])) {
@@ -29,6 +32,10 @@
 - (BOOL)haveLocationPermissions {
     NSNumber *authorizationValue = [self.saveData objectForKey:@"locationPermissions"];
     return [authorizationValue boolValue];
+}
+
+- (void)setLogLevel:(int)level {
+    ddLogLevel = level;
 }
 
 // Returns: current latitude as a double
@@ -141,7 +148,7 @@
 // Returns: array of temps as NSNumber's in that range
 - (NSMutableArray *)hourlyTempNumberArray:(int)startIndex length:(int)length ofType:(int)type {
     if (startIndex + length >= [[self.saveData objectForKey:@"hourly_forecast"] count]) {
-        NSLog(@"NCWunderground: hourlyTempNumberArray requested past hourly_forecast length. Bad.");
+        DDLogError(@"NCWunderground: hourlyTempNumberArray requested past hourly_forecast length. Bad.");
         return nil;
     }
     NSMutableArray *theArray = [NSMutableArray array];
@@ -168,7 +175,7 @@
 // Returns: array of feelslike as NSNumber's in that range
 - (NSMutableArray *)hourlyFeelsNumberArray:(int)startIndex length:(int)length ofType:(int)type {
     if (startIndex + length >= [[self.saveData objectForKey:@"hourly_forecast"] count]) {
-        NSLog(@"NCWunderground: hourlyTempNumberArrayF requested past hourly_forecast length. Bad.");
+        DDLogError(@"NCWunderground: hourlyTempNumberArrayF requested past hourly_forecast length. Bad.");
         return nil;
     }
     NSMutableArray *theArray = [NSMutableArray array];
@@ -352,7 +359,7 @@
         NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] initWithContentsOfFile:fullPath];
         self.saveData = tempDict;
         if ([self.saveData objectForKey:@"last_request"] == nil) {
-            NSLog(@"NCWunderground: save file exists, but appears corrupted.");
+            DDLogError(@"NCWunderground: save file exists, but appears corrupted.");
             return NO;
         }
         return YES;
@@ -369,7 +376,7 @@
                                                               attributes:nil
                                                                    error:&error];
     if (!success) {
-        NSLog(@"NCWunderground: Could not save to disk because directory could not be created. Error: %@",[error localizedDescription]);
+        DDLogError(@"NCWunderground: Could not save to disk because directory could not be created. Error: %@",[error localizedDescription]);
         return;
     }
     [self.saveData writeToFile:[saveDirectory stringByAppendingString:saveFile] atomically:YES];
@@ -385,7 +392,7 @@
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     NSString *apiKey = [defaultsDom objectForKey:@"APIKey"];
     if (apiKey == nil) {
-        NSLog(@"NCWunderground: got null APIKey, not updating data.");
+        DDLogError(@"NCWunderground: got null APIKey, not updating data.");
         dispatch_async(dispatch_get_main_queue(),^(void) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_API_KEY"
                                                                                                                         value:@"No API Key"
@@ -420,7 +427,7 @@
 
     NSData *resultJSON = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     if (!resultJSON) {
-        NSLog(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
+        DDLogWarn(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
         dispatch_async(dispatch_get_main_queue(),^(void) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONNECTION_FAILED"
                                                                                                                         value:@"Connection Failed"
@@ -443,7 +450,7 @@
         NSError *error = nil;
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:resultJSON options:0 error:&error];
         if (error) {
-            NSLog(@"NCWunderground: JSON was malformed. Bad.");
+            DDLogError(@"NCWunderground: JSON was malformed. Bad.");
             dispatch_async(dispatch_get_main_queue(),^(void) {
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
                                                                                                                             value:@"Data Corrupted"
@@ -463,7 +470,7 @@
         }
 
         if ([[jsonDict objectForKey:@"response"] objectForKey:@"error"]) {
-            NSLog(@"NCWunderground: We got a well-formed JSON, but it's an error: %@ / %@",
+            DDLogError(@"NCWunderground: We got a well-formed JSON, but it's an error: %@ / %@",
                     [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"],
                     [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]);
             dispatch_async(dispatch_get_main_queue(),^(void) {
@@ -488,7 +495,7 @@
 
         if ([jsonDict isKindOfClass:[NSDictionary class]]) {
             dispatch_async(dispatch_get_main_queue(),^(void) { // We're changing a lot of things. Let's do it in the main thread for safety
-                NSLog(@"NCWunderground: Data download succeeded. Parsing.");
+                DDLogInfo(@"NCWunderground: Data download succeeded. Parsing.");
                 // update last-request time
                 NSMutableDictionary *workingDict = [NSMutableDictionary dictionaryWithDictionary:self.saveData];
                 [workingDict setObject:[NSNumber numberWithInteger:[[NSDate date] timeIntervalSince1970]]
@@ -509,7 +516,7 @@
             });
         }
         else {
-            NSLog(@"NCWunderground: JSON was non-dict. Bad.");
+            DDLogError(@"NCWunderground: JSON was non-dict. Bad.");
             dispatch_async(dispatch_get_main_queue(),^(void) {
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
                                                                                                                             value:@"Data Corrupted"
@@ -529,7 +536,7 @@
         }
     }
     else {
-        NSLog(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
+        DDLogError(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
         dispatch_async(dispatch_get_main_queue(),^(void) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"INVALID_IOS"
                                                                                                                         value:@"Invalid iOS Version"
@@ -552,7 +559,7 @@
 // Does: Takes in updated location and sets it.
 //       Then starts the URL request on the background queue.
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    NSLog(@"NCWunderground: didUpdateToLocation: %@", [locations lastObject]);
+    DDLogVerbose(@"NCWunderground: didUpdateToLocation: %@", [locations lastObject]);
     if ([self.controller locationUpdated] == NO) {
         if (locations != nil) {
             [self.controller setLocationUpdated:YES];
@@ -570,13 +577,13 @@
             });
         }
         else {
-            NSLog(@"NCWunderground: didUpdateToLocation called but newLocation nil. Bad.");
+            DDLogError(@"NCWunderground: didUpdateToLocation called but newLocation nil. Bad.");
         }
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"NCWunderground: location manager failed with error %@",error);
+    DDLogError(@"NCWunderground: location manager failed with error %@",error);
     if (error.code == kCLErrorDenied) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_DENIED"
                                                                                                                     value:@"Location Denied"

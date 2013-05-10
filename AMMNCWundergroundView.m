@@ -1,4 +1,5 @@
 #import "AMMNCWundergroundView.h"
+#import "CocoaLumberjack/Lumberjack/DDLog.h"
 
 @interface AMMNCWundergroundView ()
 
@@ -20,6 +21,12 @@
 @synthesize subviewContainers=i_subviewContainers;
 @synthesize spinners=i_spinners;
 @synthesize refreshNeeded=i_refreshNeeded;
+
+static int ddLogLevel = LOG_LEVEL_OFF;
+
+- (void)setLogLevel:(int)level {
+    ddLogLevel = level;
+}
 
 // Takes: number of pages, base width, view height
 // Does: initializes
@@ -131,7 +138,7 @@
 // Does: activates or hides spinners
 - (void)setLoading:(BOOL)status {
     if(status) {
-        NSLog(@"NCWunderground: starting loading indicators");
+        DDLogInfo(@"NCWunderground: starting loading indicators");
         for(int i = 0; i < self.pages; ++i) {
             UIActivityIndicatorView *spinner = [self.spinners objectAtIndex:i];
             [[self.subviewContainers objectAtIndex:i] bringSubviewToFront:spinner];
@@ -139,7 +146,7 @@
         }
     }
     else {
-        NSLog(@"NCWunderground: stopping loading indicators");
+        DDLogInfo(@"NCWunderground: stopping loading indicators");
         for(UIActivityIndicatorView *spinner in self.spinners) {
             [spinner stopAnimating];
         }
@@ -187,12 +194,12 @@
             return subview;
         }
         else {
-            NSLog(@"NCWunderground: subview requested for non-existent tag; returning nil.");
+            DDLogError(@"NCWunderground: subview requested for non-existent tag; returning nil.");
             return nil;
         }
     }
     else {
-        NSLog(@"NCWunderground: subview requested for non-existent page; returning nil.");
+        DDLogError(@"NCWunderground: subview requested for non-existent page; returning nil.");
         return nil;
     }
 }

@@ -5,8 +5,13 @@
 #import <dispatch/dispatch.h>
 
 #import "AMMNCWundergroundController.h"
+#import "CocoaLumberjack/Lumberjack/DDLog.h"
+#import "CocoaLumberjack/Lumberjack/DDFileLogger.h"
+#import "CocoaLumberjack/Lumberjack/DDASLLogger.h"
+#import "CocoaLumberjack/Lumberjack/DDTTYLogger.h"
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
+static int ddLogLevel = LOG_LEVEL_OFF;
 
 @interface AMMNCWundergroundController ()
 
@@ -66,6 +71,11 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 
         i_iconMap = [[NSDictionary alloc] initWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"icons/com.amm.ncwunderground.iconmap"
                                                                                                           ofType:@"plist"]];
+        DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
+        fileLogger.rollingFrequency = 60 * 60 * 2; // 2 hour rolling
+        fileLogger.logFileManager.maximumNumberOfLogFiles = 2;
+        [DDLog addLogger:fileLogger];
+        NSLog(@"NCWunderground: DDLog files saved in %@",[fileLogger.logFileManager logsDirectory]);
     }
     return self;
 }
@@ -84,13 +94,33 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     self.windType = [(NSNumber *)[defaultsDom objectForKey:@"windType"] intValue];
     self.useCustomLocation = [(NSNumber *)[defaultsDom objectForKey:@"useCustomLocation"] boolValue];
     self.locationQuery = (NSString *)[defaultsDom objectForKey:@"locationQuery"];
-    NSLog(@"NCWunderground: preferences = %d, %d, %d",self.tempType,self.distType,self.windType);
+    DDLogVerbose(@"NCWunderground: preferences = %d, %d, %d",self.tempType,self.distType,self.windType);
     [self addSubviewsToView];
     [self loadData:nil];
 }
 
 - (void)loadPlaceholderView {
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    int debugPref = [(NSNumber *)[defaultsDom objectForKey:@"debugLevel"] intValue];
+    switch (debugPref) {
+        case 1:
+            ddLogLevel = LOG_LEVEL_ERROR;
+            break;
+        case 2:
+            ddLogLevel = LOG_LEVEL_WARN;
+            break;
+        case 3:
+            ddLogLevel = LOG_LEVEL_INFO;
+            break;
+        case 4:
+            ddLogLevel = LOG_LEVEL_VERBOSE;
+            break;
+        default:
+            ddLogLevel = LOG_LEVEL_OFF;
+            break;
+    }
+    [self.model setLogLevel:ddLogLevel];
+    [self.view setLogLevel:ddLogLevel];
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
     // We store it as -2 so 0 corresponds to default
 
@@ -102,7 +132,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 }
 
 - (void)unloadView {
-    NSLog(@"NCWunderground: unloadView"); // debugging
+    DDLogInfo(@"NCWunderground: unloadView"); // debugging
     if (self.view) { // apparently unloadView can get called more than once without loadPlaceholderView or loadFullView being called again. Don't want that.
         NSDictionary *oldDefaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
         NSMutableDictionary *newDefaultsDom = [NSMutableDictionary dictionaryWithDictionary:oldDefaultsDom];
@@ -341,13 +371,13 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
           SPECIAL: iff caller==nil, this will respect user's preferences re: delay on reloading data */
 // Does: tells the model to reload the data
 - (void)loadData:(id)caller {
-    NSLog(@"NCWunderground: Loading data.");
+    DDLogInfo(@"NCWunderground: Loading data.");
     [self.view setLoading:YES];
 
     // Try to load in save data
     if ([self.model loadSaveData:self.saveFile inDirectory:self.saveDirectory]) {
         // loading the save file succeeded
-        NSLog(@"NCWunderground: Save file loaded, updating views.");
+        DDLogInfo(@"NCWunderground: Save file loaded, updating views.");
         [self associateModelToView];
 
         // If caller==nil, check update delay preferences
@@ -359,24 +389,24 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                 updateLength = [updateSeconds integerValue];
             }
             else {
-                NSLog(@"NCWunderground: User's defaults contain no update delay. Defaulting to 5 minutes.");
+                DDLogWarn(@"NCWunderground: User's defaults contain no update delay. Defaulting to 5 minutes.");
                 updateLength = 300; // default to 5 minutes
             }
 
             // 9999 is a special value that indicates that we never automatically refresh the data
             if ([[NSDate date] timeIntervalSince1970] - [self.model lastRequestInt] <= updateLength || updateLength == 9999) {
-                NSLog(@"NCWunderground: Too soon to download data again. Done updating.");
+                DDLogInfo(@"NCWunderground: Too soon to download data again. Done updating.");
                 [self.view setLoading:NO];
                 return;
             }
         }
     }
     else {
-        NSLog(@"NCWunderground: No save file found.");
+        DDLogInfo(@"NCWunderground: No save file found.");
     }
 
     if (!self.useCustomLocation) {
-        NSLog(@"NCWunderground: Attempting to start location updates.");
+        DDLogInfo(@"NCWunderground: Attempting to start location updates.");
         self.locationManager = [[CLLocationManager alloc] init];
         BOOL authorized = [self.model haveLocationPermissions];
         if (authorized != YES) {
@@ -447,12 +477,12 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         [self.view setLoading:NO];
     }
     else {
-        NSLog(@"NCWunderground: Didn't update view, because it no longer exists.");
+        DDLogWarn(@"NCWunderground: Didn't update view, because it no longer exists.");
     }
 }
 
 - (void)dataDownloadFailed {
-    NSLog(@"NCWunderground: dataDownloadFailed");
+    DDLogWarn(@"NCWunderground: dataDownloadFailed");
     [self.view setLoading:NO];
 }
 
@@ -461,7 +491,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         return;
     }
     self.locationUpdated = YES;
-    NSLog(@"NCWunderground: Location update is timing out.");
+    DDLogWarn(@"NCWunderground: Location update is timing out.");
     if ([self.model latitudeDouble] && [self.model longitudeDouble]) {
         // TODO: come up with a way to display this other than a UIAlertView?
         /*UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
@@ -697,7 +727,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
         return [hourlyLength integerValue];
     }
     else {
-        NSLog(@"NCWunderground: user defaults contain no hourly forecast length field. Defaulting to 12 hours.");
+        DDLogWarn(@"NCWunderground: user defaults contain no hourly forecast length field. Defaulting to 12 hours.");
         return 12;
     }
 }
