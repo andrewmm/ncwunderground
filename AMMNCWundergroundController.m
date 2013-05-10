@@ -463,7 +463,8 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     self.locationUpdated = YES;
     NSLog(@"NCWunderground: Location update is timing out.");
     if ([self.model latitudeDouble] && [self.model longitudeDouble]) {
-        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+        // TODO: come up with a way to display this other than a UIAlertView?
+        /*UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
                                                                                                                      value:@"Location Update Failed"
                                                                                                                      table:nil]
                                                              message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_USING_LAST"
@@ -474,11 +475,12 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                                                                                                                      value:@"OK"
                                                                                                                      table:nil]
                                                    otherButtonTitles:nil];
-        [errorAlert show];
+        [errorAlert show];*/
         [self.model startURLRequestWithQuery:nil];
     }
     else if (self.locationQuery && ![self.locationQuery isEqualToString:@""]) {
-        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+        // TODO: Come up with a way to display this other than a UIAlertView?
+        /*UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
                                                                                                                      value:@"Location Update Failed"
                                                                                                                      table:nil]
                                                              message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_USING_QUERY"
@@ -489,7 +491,7 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
                                                                                                                      value:@"OK"
                                                                                                                      table:nil]
                                                    otherButtonTitles:nil];
-        [errorAlert show];
+        [errorAlert show];*/
         [self.model startURLRequestWithQuery:self.locationQuery];
     }
     else {
