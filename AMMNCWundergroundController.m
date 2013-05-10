@@ -518,7 +518,9 @@ static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
     // "Last Refreshed"
     NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[self.model lastRequestInt]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"h:mm:ss a"];
+    [dateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:@"h:mm:ss a"
+                                                                 options:0
+                                                                  locale:[NSLocale currentLocale]]];
     UILabel *lastRefreshedLabel = (UILabel *)[self.view getSubviewFromPage:0
                                                                    withTag:1];
     lastRefreshedLabel.text = [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LAST_REFRESHED"
