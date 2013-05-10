@@ -77,3 +77,24 @@
 
 /* Ex: NY/New_York, England/London, 20001. Enter 'autoip' to have Weather Underground calculate your location based on your IP address. */
 "Ex: NY/New_York, England/London, 20001. Enter 'autoip' to have Weather Underground calculate your location based on your IP address." = "例：NY/New_York, England/London, 20001。輸入 'autoip' Weather Underground 會根據你的 IP address 算您的位置。";
+
+/* Clear Location Permissions */
+"Clear Location Permissions" = "Clear Location Permissions";
+
+/* Location Settings */
+"Location Settings" = "Location Settings";
+
+/* About / Support */
+"About" = "About / Support";
+
+/* GitHub Repository */
+"GitHub Repository" = "GitHub Repository";
+
+/* Email Developer */
+"Email Developer" = "Email Developer";
+
+/* The MIT License */
+"The MIT License" = "The MIT License";
+
+/* Support through PayPal... */
+"Support through PayPal..." = "Support through PayPal...";

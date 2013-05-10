@@ -22,6 +22,18 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
     return self;
 }
 
+- (void)setLocationPermissions:(BOOL)value {
+    NSNumber *authorizationValue = [NSNumber numberWithBool:value];
+    NSMutableDictionary *workingDict = [NSMutableDictionary dictionaryWithDictionary:self.saveData];
+    [workingDict setObject:authorizationValue forKey:@"locationPermissions"];
+    self.saveData = workingDict;
+}
+
+- (BOOL)haveLocationPermissions {
+    NSNumber *authorizationValue = [self.saveData objectForKey:@"locationPermissions"];
+    return [authorizationValue boolValue];
+}
+
 // Returns: current latitude as a double
 - (double)latitudeDouble {
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];

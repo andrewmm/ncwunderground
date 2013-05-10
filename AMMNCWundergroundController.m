@@ -374,7 +374,8 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
                 updateLength = 300; // default to 5 minutes
             }
 
-            if ([[NSDate date] timeIntervalSince1970] - [self.model lastRequestInt] <= updateLength) {
+            // 9999 is a special value that indicates that we never automatically refresh the data
+            if ([[NSDate date] timeIntervalSince1970] - [self.model lastRequestInt] <= updateLength || updateLength == 9999) {
                 DDLogInfo(@"NCWunderground: Too soon to download data again. Done updating.");
                 [self.view setLoading:NO];
                 return;
@@ -386,13 +387,30 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
     }
 
     if (!self.useCustomLocation) {
-        DDLogInfo(@"NCWunderground: Starting location updates.");
+        DDLogInfo(@"NCWunderground: Attempting to start location updates.");
         self.locationManager = [[CLLocationManager alloc] init];
-        self.locationManager.delegate = self.model;
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-        self.locationUpdated = NO;
-        [self.locationManager startUpdatingLocation];
-        [self performSelector:@selector(timeoutUpdate) withObject:nil afterDelay:10];
+        BOOL authorized = [self.model haveLocationPermissions];
+        if (authorized != YES) {
+            UIAlertView *permissionRequest = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"ALLOW_LOCATION"
+                                                                                                                                value:@"Allow SpringBoard Widgets To Access Your Location?"
+                                                                                                                                table:nil]
+                                                                        message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"ALLOW_LOCATION_MESSAGE"
+                                                                                                                                value:@"This will apply to any tweak that runs inside of SpringBoard. You may undo this action by turning off Location Access in the Weather Underground Widget settings, and then attempting to update the widget's data again."
+                                                                                                                                table:nil]
+                                                                        
+                                                                       delegate:self
+                                                              cancelButtonTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"ALLOW"
+                                                                                                                                value:@"Allow"
+                                                                                                                                table:nil]
+                                                              otherButtonTitles:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"DONT_ALLOW"
+                                                                                                                                value:@"Don't Allow"
+                                                                                                                                table:nil],nil];
+            [permissionRequest show];
+        }
+        else {
+            [CLLocationManager setAuthorizationStatus:YES forBundleIdentifier:@"com.apple.springboard"];
+            [self startLocationUpdates];
+        }
     }
     else {
         if (self.locationQuery && ![self.locationQuery isEqualToString:@""]) {
@@ -414,6 +432,23 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
             [self.view setLoading:NO];
         }
     }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0) {
+        NSLog(@"NCWunderground: Setting location authorization status to YES.");
+        [self.model setLocationPermissions:YES];
+        [CLLocationManager setAuthorizationStatus:YES forBundleIdentifier:@"com.apple.springboard"];
+    }
+    [self startLocationUpdates];
+}
+
+- (void)startLocationUpdates {
+    self.locationManager.delegate = self.model;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    self.locationUpdated = NO;
+    [self.locationManager startUpdatingLocation];
+    [self performSelector:@selector(timeoutUpdate) withObject:nil afterDelay:10];
 }
 
 - (void)dataDownloaded {
@@ -439,7 +474,8 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
     self.locationUpdated = YES;
     DDLogWarn(@"NCWunderground: Location update is timing out.");
     if ([self.model latitudeDouble] && [self.model longitudeDouble]) {
-        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+        // TODO: come up with a way to display this other than a UIAlertView?
+        /*UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
                                                                                                                      value:@"Location Update Failed"
                                                                                                                      table:nil]
                                                              message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_USING_LAST"
@@ -450,11 +486,12 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
                                                                                                                      value:@"OK"
                                                                                                                      table:nil]
                                                    otherButtonTitles:nil];
-        [errorAlert show];
+        [errorAlert show];*/
         [self.model startURLRequestWithQuery:nil];
     }
     else if (self.locationQuery && ![self.locationQuery isEqualToString:@""]) {
-        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
+        // TODO: Come up with a way to display this other than a UIAlertView?
+        /*UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_UPDATE_FAILED"
                                                                                                                      value:@"Location Update Failed"
                                                                                                                      table:nil]
                                                              message:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_UPDATE_USING_QUERY"
@@ -465,7 +502,7 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
                                                                                                                      value:@"OK"
                                                                                                                      table:nil]
                                                    otherButtonTitles:nil];
-        [errorAlert show];
+        [errorAlert show];*/
         [self.model startURLRequestWithQuery:self.locationQuery];
     }
     else {
@@ -492,7 +529,9 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
     // "Last Refreshed"
     NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[self.model lastRequestInt]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"h:mm:ss a"];
+    [dateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:@"h:mm:ss a"
+                                                                 options:0
+                                                                  locale:[NSLocale currentLocale]]];
     UILabel *lastRefreshedLabel = (UILabel *)[self.view getSubviewFromPage:0
                                                                    withTag:1];
     lastRefreshedLabel.text = [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LAST_REFRESHED"
