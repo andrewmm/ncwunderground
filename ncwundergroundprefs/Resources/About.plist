@@ -10,6 +10,36 @@
             <key>cell</key>
             <string>PSButtonCell</string>
             <key>label</key>
+            <string>GitHub Repository</string>
+            <key>action</key>
+            <string>github</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSButtonCell</string>
+            <key>label</key>
+            <string>Email Developer</string>
+            <key>action</key>
+            <string>email</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSButtonCell</string>
+            <key>label</key>
+            <string>The MIT License</string>
+            <key>action</key>
+            <string>license</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string></string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSButtonCell</string>
+            <key>label</key>
             <string>Support through PayPal...</string>
             <key>action</key>
             <string>support</string>
