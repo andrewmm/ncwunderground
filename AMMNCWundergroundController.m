@@ -624,11 +624,11 @@ static int ddLogLevel = LOG_LEVEL_OFF;
             tempTypeString = @"";
             break;
     }
-    NSArray *page1TextArray = [NSArray arrayWithObjects:[self.model hourlyTime12HrString:0],
+    NSArray *page1TextArray = [NSArray arrayWithObjects:[self.model hourlyTimeLocalizedString:0],
                                                         [_ammNCWundergroundWeeAppBundle localizedStringForKey:[NSString stringWithFormat:@"%d hr",intervalLength]
                                                                                                         value:[NSString stringWithFormat:@"%d hr",intervalLength]
                                                                                                         table:nil],
-                                                        [self.model hourlyTime12HrString:(intervalLength - 1)],
+                                                        [self.model hourlyTimeLocalizedString:(intervalLength - 1)],
                                                         [_ammNCWundergroundWeeAppBundle localizedStringForKey:@"HIGH"
                                                                                                         value:@"High"
                                                                                                         table:nil],

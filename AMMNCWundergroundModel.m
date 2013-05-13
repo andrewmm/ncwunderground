@@ -77,15 +77,26 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
 // Takes: index into hourly forecast array
 // Returns: time for that hour in 12 hour format, string
-- (NSString *)hourlyTime12HrString:(int)forecastIndex {
+- (NSString *)hourlyTimeLocalizedString:(int)forecastIndex {
+    // http://stackoverflow.com/questions/1929958/how-can-i-determine-if-iphone-is-set-for-12-hour-or-24-hour-time-display
+    NSString *formatStringForHours = [NSDateFormatter dateFormatFromTemplate:@"j" options:0 locale:[NSLocale currentLocale]];
+    NSRange containsA = [formatStringForHours rangeOfString:@"a"];
+    BOOL hasAMPM = containsA.location != NSNotFound;
+
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     int hour = [[f numberFromString:[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"FCTTIME"] objectForKey:@"hour"]] intValue];
-    if (hour > 12)
-        hour -= 12;
-    if (hour == 0)
-        hour = 12;
-    return [NSString stringWithFormat:@"%d %@",hour,[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"FCTTIME"] objectForKey:@"ampm"]];
+    
+    if (hasAMPM) {
+        if (hour > 12)
+            hour -= 12;
+        if (hour == 0)
+            hour = 12;
+        return [NSString stringWithFormat:@"%d %@",hour,[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"FCTTIME"] objectForKey:@"ampm"]];
+    }
+    else {
+        return [NSString stringWithFormat:@"%d",hour];
+    }
 }
 
 // Takes: index into hourly forecast array

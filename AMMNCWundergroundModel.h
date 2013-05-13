@@ -87,7 +87,7 @@ root
 
 // Take: indices into hourly forecast arrays
 // Return: formatted information from those arrays 
-- (NSString *)hourlyTime12HrString:(int)forecastIndex;
+- (NSString *)hourlyTimeLocalizedString:(int)forecastIndex;
 - (NSString *)hourlyTempString:(int)forecastIndex ofType:(int)type;
 - (NSString *)hourlyFeelsString:(int)forecastIndex ofType:(int)type;
 - (NSMutableArray *)hourlyTempNumberArray:(int)startIndex length:(int)length ofType:(int)type;
