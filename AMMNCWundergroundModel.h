@@ -103,7 +103,7 @@ root
 - (NSString *)currentConditionsString;
 - (NSString *)currentConditionsURL;
 
-- (NSString *)dailyDayShortString:(int)forecastIndex; // TODO localize
+- (NSString *)dailyDayShortString:(int)forecastIndex;
 - (NSString *)dailyHighString:(int)forecastIndex ofType:(int)type; // should not include type specifier
 - (NSString *)dailyLowString:(int)forecastIndex ofType:(int)type; // should not include type specifier
 - (NSString *)dailyPOPString:(int)forecastIndex; // includes %

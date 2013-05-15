@@ -94,8 +94,8 @@ static int ddLogLevel = LOG_LEVEL_OFF;
             hour = 12;
         return [NSString stringWithFormat:@"%d %@",hour,[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"FCTTIME"] objectForKey:@"ampm"]];
     }
-    else {
-        return [NSString stringWithFormat:@"%d",hour];
+    else { // 24 hour time. What is this nonsense? :)
+        return [NSString stringWithFormat:@"%d:00",hour];
     }
 }
 
