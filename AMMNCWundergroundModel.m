@@ -441,7 +441,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 	    if (!resultJSON) {
             DDLogWarn(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONNECTION_FAILED"
+                /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONNECTION_FAILED"
                                                                                                                             value:@"Connection Failed"
                                                                                                                             table:nil]
                                                                 message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"FAILED_TO_CONNECT"
@@ -452,9 +452,9 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                                                                                                                             value:@"OK"
                                                                                                                             table:nil]
                                                       otherButtonTitles:nil];
-                [alert show];
+                [alert show];*/
                 [self.controller dataDownloadFailed];
-		    });
+		    });*/
             return;
 	    }
         
@@ -464,7 +464,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
             if (error) {
                 DDLogError(@"NCWunderground: JSON was malformed. Bad.");
                 dispatch_async(dispatch_get_main_queue(),^(void) {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
+                    /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
                                                                                                                                 value:@"Data Corrupted"
                                                                                                                                 table:nil]
                                                                     message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED_LONG"
@@ -475,7 +475,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                                                                                                                                 value:@"OK"
                                                                                                                                 table:nil]
                                                           otherButtonTitles:nil];
-                    [alert show];
+                    [alert show];*/
                     [self.controller dataDownloadFailed];
                 });
                 return;
@@ -486,7 +486,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                            [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"],
                            [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]);
                 dispatch_async(dispatch_get_main_queue(),^(void) {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ (%@)",[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"SERVER_ERROR"
+                    /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ (%@)",[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"SERVER_ERROR"
                                                                                                                                                                       value:@"Server Error"
                                                                                                                                                                       table:nil],
                                                                              [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"]]
@@ -499,7 +499,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                                                                                                                                 value:@"OK"
                                                                                                                                 table:nil]
                                                           otherButtonTitles:nil];
-                    [alert show];
+                    [alert show];*/
                     [self.controller dataDownloadFailed];
                 });
                 return;
@@ -530,7 +530,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
             else {
                 DDLogError(@"NCWunderground: JSON was non-dict. Bad.");
                 dispatch_async(dispatch_get_main_queue(),^(void) {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
+                    /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
                                                                                                                                 value:@"Data Corrupted"
                                                                                                                                 table:nil]
                                                                     message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED_LONG"
@@ -541,7 +541,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                                                                                                                                 value:@"OK"
                                                                                                                                 table:nil]
                                                           otherButtonTitles:nil];
-                    [alert show];
+                    [alert show];*/
                     [self.controller dataDownloadFailed];
                 });
                 return;
