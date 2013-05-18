@@ -454,7 +454,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                                                       otherButtonTitles:nil];
                 [alert show];*/
                 [self.controller dataDownloadFailed];
-		    });*/
+		    });
             return;
 	    }
         
