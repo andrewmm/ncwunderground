@@ -20,7 +20,7 @@ Description: Notification Center widget for Weather Underground.
  * Respects 12hr/24hr time settings.
  * German localization.
  * Romanian localization, thanks to dborca.
-
+ 
  Version 1.2.0:
  * Support for various units (°F/°C, MPH/KPH/Knots, mi/km)
  * Chinese (Traditional and Simplified) localization thanks to Thomas Chan. If you would like to translate this widget into your own language, get in touch with me!
