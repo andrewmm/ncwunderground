@@ -20,4 +20,4 @@
 "Verbose" = "Langatmig";
 
 /* Logs are stored at /var/mobile/Library/Caches/Logs/ */
-"Logs befinden sich in /var/mobile/Library/Caches/Logs/" = "Logs are stored at /var/mobile/Library/Caches/Logs/";
+"Logs are stored at /var/mobile/Library/Caches/Logs/" = "Logs befinden sich in /var/mobile/Library/Caches/Logs/";
