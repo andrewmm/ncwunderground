@@ -1,6 +1,7 @@
 #import "AMMNCWundergroundModel.h"
 #import "AMMNCWundergroundController.h"
 #import "AMMNCWundergroundView.h"
+#import "CocoaLumberjack/Lumberjack/DDLog.h"
 
 @implementation AMMNCWundergroundModel
 
@@ -8,6 +9,8 @@
 @synthesize backgroundQueue = i_backgroundQueue;
 @synthesize controller = i_controller;
 @synthesize ammNCWundergroundWeeAppBundle = i_ammNCWundergroundWeeAppBundle;
+
+static int ddLogLevel = LOG_LEVEL_OFF;
 
 - (id)initWithController:(AMMNCWundergroundController *)controller {
     if ((self = [super init])) {
@@ -17,6 +20,22 @@
         i_ammNCWundergroundWeeAppBundle = [NSBundle bundleForClass:[self class]];
     }
     return self;
+}
+
+- (void)setLocationPermissions:(BOOL)value {
+    NSNumber *authorizationValue = [NSNumber numberWithBool:value];
+    NSMutableDictionary *workingDict = [NSMutableDictionary dictionaryWithDictionary:self.saveData];
+    [workingDict setObject:authorizationValue forKey:@"locationPermissions"];
+    self.saveData = workingDict;
+}
+
+- (BOOL)haveLocationPermissions {
+    NSNumber *authorizationValue = [self.saveData objectForKey:@"locationPermissions"];
+    return [authorizationValue boolValue];
+}
+
+- (void)setLogLevel:(int)level {
+    ddLogLevel = level;
 }
 
 // Returns: current latitude as a double
@@ -58,15 +77,26 @@
 
 // Takes: index into hourly forecast array
 // Returns: time for that hour in 12 hour format, string
-- (NSString *)hourlyTime12HrString:(int)forecastIndex {
+- (NSString *)hourlyTimeLocalizedString:(int)forecastIndex {
+    // http://stackoverflow.com/questions/1929958/how-can-i-determine-if-iphone-is-set-for-12-hour-or-24-hour-time-display
+    NSString *formatStringForHours = [NSDateFormatter dateFormatFromTemplate:@"j" options:0 locale:[NSLocale currentLocale]];
+    NSRange containsA = [formatStringForHours rangeOfString:@"a"];
+    BOOL hasAMPM = containsA.location != NSNotFound;
+
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     int hour = [[f numberFromString:[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"FCTTIME"] objectForKey:@"hour"]] intValue];
-    if (hour > 12)
-        hour -= 12;
-    if (hour == 0)
-        hour = 12;
-    return [NSString stringWithFormat:@"%d %@",hour,[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"FCTTIME"] objectForKey:@"ampm"]];
+    
+    if (hasAMPM) {
+        if (hour > 12)
+            hour -= 12;
+        if (hour == 0)
+            hour = 12;
+        return [NSString stringWithFormat:@"%d %@",hour,[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"FCTTIME"] objectForKey:@"ampm"]];
+    }
+    else { // 24 hour time. What is this nonsense? :)
+        return [NSString stringWithFormat:@"%d:00",hour];
+    }
 }
 
 // Takes: index into hourly forecast array
@@ -129,7 +159,7 @@
 // Returns: array of temps as NSNumber's in that range
 - (NSMutableArray *)hourlyTempNumberArray:(int)startIndex length:(int)length ofType:(int)type {
     if (startIndex + length >= [[self.saveData objectForKey:@"hourly_forecast"] count]) {
-        NSLog(@"NCWunderground: hourlyTempNumberArray requested past hourly_forecast length. Bad.");
+        DDLogError(@"NCWunderground: hourlyTempNumberArray requested past hourly_forecast length. Bad.");
         return nil;
     }
     NSMutableArray *theArray = [NSMutableArray array];
@@ -156,7 +186,7 @@
 // Returns: array of feelslike as NSNumber's in that range
 - (NSMutableArray *)hourlyFeelsNumberArray:(int)startIndex length:(int)length ofType:(int)type {
     if (startIndex + length >= [[self.saveData objectForKey:@"hourly_forecast"] count]) {
-        NSLog(@"NCWunderground: hourlyTempNumberArrayF requested past hourly_forecast length. Bad.");
+        DDLogError(@"NCWunderground: hourlyTempNumberArrayF requested past hourly_forecast length. Bad.");
         return nil;
     }
     NSMutableArray *theArray = [NSMutableArray array];
@@ -340,7 +370,7 @@
         NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] initWithContentsOfFile:fullPath];
         self.saveData = tempDict;
         if ([self.saveData objectForKey:@"last_request"] == nil) {
-            NSLog(@"NCWunderground: save file exists, but appears corrupted.");
+            DDLogError(@"NCWunderground: save file exists, but appears corrupted.");
             return NO;
         }
         return YES;
@@ -357,87 +387,30 @@
                                                               attributes:nil
                                                                    error:&error];
     if (!success) {
-        NSLog(@"NCWunderground: Could not save to disk because directory could not be created. Error: %@",[error localizedDescription]);
+        DDLogError(@"NCWunderground: Could not save to disk because directory could not be created. Error: %@",[error localizedDescription]);
         return;
     }
     [self.saveData writeToFile:[saveDirectory stringByAppendingString:saveFile] atomically:YES];
 }
 
-// This should only ever run inside the backgroundQueue
 - (void) startURLRequestWithQuery:(NSString *)query {
-    // get data from website by HTTP GET request
-    NSHTTPURLResponse * response;
-    NSError * error;
-
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
-    NSString *apiKey = [defaultsDom objectForKey:@"APIKey"];
-    if (apiKey == nil) {
-        NSLog(@"NCWunderground: got null APIKey, not updating data.");
-        dispatch_async(dispatch_get_main_queue(),^(void) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_API_KEY"
-                                                                                                                        value:@"No API Key"
-                                                                                                                        table:nil]
-                                                            message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"ENTER_API_KEY"
-                                                                                                                        value:@"Please enter a Weather Underground API Key in Settings/Notifications/Weather Underground Widget."
-                                                                                                                        table:nil]
-                                                           delegate:nil
-                                                  cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
-                                                                                                                        value:@"OK"
-                                                                                                                        table:nil]
-                                                  otherButtonTitles:nil];
-            [alert show];
-            [self.controller dataDownloadFailed];
-        });
-        return;
-    }
-    NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/lang:%@/pws:%d/q",
-                                                     apiKey,[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"WU_LANG_CODE"
-                                                                                                                value:@"EN"
-                                                                                                                table:nil],
-                                                     [[defaultsDom objectForKey:@"allowPWS"] boolValue]];
-    if (query) {
-        urlString = [NSString stringWithFormat:@"%@/%@.json",urlString,query];
-    }
-    else {
-        urlString = [NSString stringWithFormat:@"%@/%@,%@.json",urlString,[self.saveData objectForKey:@"latitude"],[self.saveData objectForKey:@"longitude"]];
-    }
-    [request setURL:[NSURL URLWithString:urlString]];
-    [request setHTTPMethod:@"GET"];
-    [request setTimeoutInterval:10];
-
-    NSData *resultJSON = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    if (!resultJSON) {
-        NSLog(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
-        dispatch_async(dispatch_get_main_queue(),^(void) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONNECTION_FAILED"
-                                                                                                                        value:@"Connection Failed"
-                                                                                                                        table:nil]
-                                                            message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"FAILED_TO_CONNECT"
-                                                                                                                        value:@"Weather widget failed to connect to server."
-                                                                                                                        table:nil]
-                                                           delegate:nil
-                                                  cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
-                                                                                                                        value:@"OK"
-                                                                                                                        table:nil]
-                                                  otherButtonTitles:nil];
-            [alert show];
-            [self.controller dataDownloadFailed];
-        });
-        return;
-    }
-
-    if(NSClassFromString(@"NSJSONSerialization")) {
-        NSError *error = nil;
-        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:resultJSON options:0 error:&error];
-        if (error) {
-            NSLog(@"NCWunderground: JSON was malformed. Bad.");
+    // start a URL request in the backgroundQueue
+    dispatch_async(self.backgroundQueue,^(void) {
+	    // get data from website by HTTP GET request
+	    NSHTTPURLResponse * response;
+	    NSError * error;
+        
+	    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+	    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+	    NSString *apiKey = [defaultsDom objectForKey:@"APIKey"];
+	    if (apiKey == nil) {
+            DDLogError(@"NCWunderground: got null APIKey, not updating data.");
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
-                                                                                                                            value:@"Data Corrupted"
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"NO_API_KEY"
+                                                                                                                            value:@"No API Key"
                                                                                                                             table:nil]
-                                                                message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED_LONG"
-                                                                                                                            value:@"Weather widget received data from the server, but it was corrupted."
+                                                                message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"ENTER_API_KEY"
+                                                                                                                            value:@"Please enter a Weather Underground API Key in Settings/Notifications/Weather Underground Widget."
                                                                                                                             table:nil]
                                                                delegate:nil
                                                       cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
@@ -446,64 +419,142 @@
                                                       otherButtonTitles:nil];
                 [alert show];
                 [self.controller dataDownloadFailed];
-            });
+		    });
             return;
-        }
-
-        if ([[jsonDict objectForKey:@"response"] objectForKey:@"error"]) {
-            NSLog(@"NCWunderground: We got a well-formed JSON, but it's an error: %@ / %@",
-                    [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"],
-                    [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]);
+	    }
+	    NSString *urlString = [NSString stringWithFormat:@"http://api.wunderground.com/api/%@/conditions/hourly/forecast10day/lang:%@/pws:%d/q",
+                               apiKey,[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"WU_LANG_CODE"
+                                                                                          value:@"EN"
+                                                                                          table:nil],
+                               [[defaultsDom objectForKey:@"allowPWS"] boolValue]];
+	    if (query) {
+            urlString = [NSString stringWithFormat:@"%@/%@.json",urlString,query];
+	    }
+	    else {
+            urlString = [NSString stringWithFormat:@"%@/%@,%@.json",urlString,[self.saveData objectForKey:@"latitude"],[self.saveData objectForKey:@"longitude"]];
+	    }
+	    [request setURL:[NSURL URLWithString:urlString]];
+	    [request setHTTPMethod:@"GET"];
+	    [request setTimeoutInterval:10];
+        
+	    NSData *resultJSON = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+	    if (!resultJSON) {
+            DDLogWarn(@"NCWunderground: Unsuccessful connection attempt. Data not updated.");
             dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ (%@)",[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"SERVER_ERROR"
-                                                                                                                                                                  value:@"Server Error"
-                                                                                                                                                                  table:nil],
-                                                                                                              [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"]]
-                                                                                          message:[NSString stringWithFormat:@"%@: %@.",[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"SERVER_RETURNED_ERROR"
-                                                                                                                                                                                            value:@"The weather server returned an error"
-                                                                                                                                                                                            table:nil],
-                                                                                                                                        [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]]
-                                                                                         delegate:nil
-                                                                                cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
-                                                                                                                                                      value:@"OK"
-                                                                                                                                                      table:nil]
-                                                                                otherButtonTitles:nil];
-                [alert show];
-                [self.controller dataDownloadFailed];
-            });
-            return;
-        }
-
-        if ([jsonDict isKindOfClass:[NSDictionary class]]) {
-            dispatch_async(dispatch_get_main_queue(),^(void) { // We're changing a lot of things. Let's do it in the main thread for safety
-                NSLog(@"NCWunderground: Data download succeeded. Parsing.");
-                // update last-request time
-                NSMutableDictionary *workingDict = [NSMutableDictionary dictionaryWithDictionary:self.saveData];
-                [workingDict setObject:[NSNumber numberWithInteger:[[NSDate date] timeIntervalSince1970]]
-                                forKey:@"last_request"];
-
-                // convenience pointers
-                NSDictionary *currentObservation = [jsonDict objectForKey:@"current_observation"];
-                NSDictionary *dailyForecast = [[jsonDict objectForKey:@"forecast"] objectForKey:@"simpleforecast"];
-
-                // import current observations, daily forecast, and hourly forecast
-                [workingDict setObject:currentObservation forKey:@"current_observation"];
-                [workingDict setObject:[dailyForecast objectForKey:@"forecastday"] forKey:@"forecastday"];
-                [workingDict setObject:[jsonDict objectForKey:@"hourly_forecast"] forKey:@"hourly_forecast"];
-
-                self.saveData = workingDict;
-
-                [self.controller dataDownloaded];
-            });
-        }
-        else {
-            NSLog(@"NCWunderground: JSON was non-dict. Bad.");
-            dispatch_async(dispatch_get_main_queue(),^(void) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
-                                                                                                                            value:@"Data Corrupted"
+                /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONNECTION_FAILED"
+                                                                                                                            value:@"Connection Failed"
                                                                                                                             table:nil]
-                                                                message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED_LONG"
-                                                                                                                            value:@"Weather widget received data from the server, but it was corrupted."
+                                                                message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"FAILED_TO_CONNECT"
+                                                                                                                            value:@"Weather widget failed to connect to server."
+                                                                                                                            table:nil]
+                                                               delegate:nil
+                                                      cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                            value:@"OK"
+                                                                                                                            table:nil]
+                                                      otherButtonTitles:nil];
+                [alert show];*/
+                [self.controller dataDownloadFailed];
+		    });
+            return;
+	    }
+        
+	    if(NSClassFromString(@"NSJSONSerialization")) {
+            NSError *error = nil;
+            NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:resultJSON options:0 error:&error];
+            if (error) {
+                DDLogError(@"NCWunderground: JSON was malformed. Bad.");
+                dispatch_async(dispatch_get_main_queue(),^(void) {
+                    /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
+                                                                                                                                value:@"Data Corrupted"
+                                                                                                                                table:nil]
+                                                                    message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED_LONG"
+                                                                                                                                value:@"Weather widget received data from the server, but it was corrupted."
+                                                                                                                                table:nil]
+                                                                   delegate:nil
+                                                          cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                                value:@"OK"
+                                                                                                                                table:nil]
+                                                          otherButtonTitles:nil];
+                    [alert show];*/
+                    [self.controller dataDownloadFailed];
+                });
+                return;
+            }
+            
+            if ([[jsonDict objectForKey:@"response"] objectForKey:@"error"]) {
+                DDLogError(@"NCWunderground: We got a well-formed JSON, but it's an error: %@ / %@",
+                           [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"],
+                           [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]);
+                dispatch_async(dispatch_get_main_queue(),^(void) {
+                    /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ (%@)",[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"SERVER_ERROR"
+                                                                                                                                                                      value:@"Server Error"
+                                                                                                                                                                      table:nil],
+                                                                             [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"type"]]
+                                                                    message:[NSString stringWithFormat:@"%@: %@.",[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"SERVER_RETURNED_ERROR"
+                                                                                                                                                                      value:@"The weather server returned an error"
+                                                                                                                                                                      table:nil],
+                                                                             [[[jsonDict objectForKey:@"response"] objectForKey:@"error"] objectForKey:@"description"]]
+                                                                   delegate:nil
+                                                          cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                                value:@"OK"
+                                                                                                                                table:nil]
+                                                          otherButtonTitles:nil];
+                    [alert show];*/
+                    [self.controller dataDownloadFailed];
+                });
+                return;
+            }
+            
+            if ([jsonDict isKindOfClass:[NSDictionary class]]) {
+                dispatch_async(dispatch_get_main_queue(),^(void) { // We're changing a lot of things. Let's do it in the main thread for safety
+                    DDLogInfo(@"NCWunderground: Data download succeeded. Parsing.");
+                    // update last-request time
+                    NSMutableDictionary *workingDict = [NSMutableDictionary dictionaryWithDictionary:self.saveData];
+                    [workingDict setObject:[NSNumber numberWithInteger:[[NSDate date] timeIntervalSince1970]]
+                                    forKey:@"last_request"];
+                    
+                    // convenience pointers
+                    NSDictionary *currentObservation = [jsonDict objectForKey:@"current_observation"];
+                    NSDictionary *dailyForecast = [[jsonDict objectForKey:@"forecast"] objectForKey:@"simpleforecast"];
+                    
+                    // import current observations, daily forecast, and hourly forecast
+                    [workingDict setObject:currentObservation forKey:@"current_observation"];
+                    [workingDict setObject:[dailyForecast objectForKey:@"forecastday"] forKey:@"forecastday"];
+                    [workingDict setObject:[jsonDict objectForKey:@"hourly_forecast"] forKey:@"hourly_forecast"];
+                    
+                    self.saveData = workingDict;
+                    
+                    [self.controller dataDownloaded];
+                });
+            }
+            else {
+                DDLogError(@"NCWunderground: JSON was non-dict. Bad.");
+                dispatch_async(dispatch_get_main_queue(),^(void) {
+                    /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED"
+                                                                                                                                value:@"Data Corrupted"
+                                                                                                                                table:nil]
+                                                                    message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DATA_CORRUPTED_LONG"
+                                                                                                                                value:@"Weather widget received data from the server, but it was corrupted."
+                                                                                                                                table:nil]
+                                                                   delegate:nil
+                                                          cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
+                                                                                                                                value:@"OK"
+                                                                                                                                table:nil]
+                                                          otherButtonTitles:nil];
+                    [alert show];*/
+                    [self.controller dataDownloadFailed];
+                });
+                return;
+            }
+	    }
+	    else {
+            DDLogError(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
+            dispatch_async(dispatch_get_main_queue(),^(void) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"INVALID_IOS"
+                                                                                                                            value:@"Invalid iOS Version"
+                                                                                                                            table:nil]
+                                                                message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DOES_NOT_SUPPORT"
+                                                                                                                            value:@"Your version of iOS does not support NSJSONSerialization. Please contact the developer at <drewmm@gmail.com>."
                                                                                                                             table:nil]
                                                                delegate:nil
                                                       cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
@@ -512,35 +563,16 @@
                                                       otherButtonTitles:nil];
                 [alert show];
                 [self.controller dataDownloadFailed];
-            });
+		    });
             return;
-        }
-    }
-    else {
-        NSLog(@"NCWunderground: We don't have NSJSONSerialization. Bad.");
-        dispatch_async(dispatch_get_main_queue(),^(void) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"INVALID_IOS"
-                                                                                                                        value:@"Invalid iOS Version"
-                                                                                                                        table:nil]
-                                                            message:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"DOES_NOT_SUPPORT"
-                                                                                                                        value:@"Your version of iOS does not support NSJSONSerialization. Please contact the developer at <drewmm@gmail.com>."
-                                                                                                                        table:nil]
-                                                           delegate:nil
-                                                  cancelButtonTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"OK"
-                                                                                                                        value:@"OK"
-                                                                                                                        table:nil]
-                                                  otherButtonTitles:nil];
-            [alert show];
-            [self.controller dataDownloadFailed];
-        });
-        return;
-    }
+	    }
+	});
 }
 
 // Does: Takes in updated location and sets it.
 //       Then starts the URL request on the background queue.
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    NSLog(@"NCWunderground: didUpdateToLocation: %@", [locations lastObject]);
+    DDLogVerbose(@"NCWunderground: didUpdateToLocation: %@", [locations lastObject]);
     if ([self.controller locationUpdated] == NO) {
         if (locations != nil) {
             [self.controller setLocationUpdated:YES];
@@ -551,20 +583,16 @@
             [workingDict setObject:[NSString stringWithFormat:@"%.8f", [[locations lastObject] coordinate].longitude]
                             forKey:@"longitude"];
             self.saveData = workingDict;
-
-            // start a URL request in the backgroundQueue
-            dispatch_async(self.backgroundQueue, ^(void) {
-                [self startURLRequestWithQuery:nil];
-            });
+	    [self startURLRequestWithQuery:nil];
         }
         else {
-            NSLog(@"NCWunderground: didUpdateToLocation called but newLocation nil. Bad.");
+            DDLogError(@"NCWunderground: didUpdateToLocation called but newLocation nil. Bad.");
         }
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"NCWunderground: location manager failed with error %@",error);
+    DDLogError(@"NCWunderground: location manager failed with error %@",error);
     if (error.code == kCLErrorDenied) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"LOCATION_DENIED"
                                                                                                                     value:@"Location Denied"

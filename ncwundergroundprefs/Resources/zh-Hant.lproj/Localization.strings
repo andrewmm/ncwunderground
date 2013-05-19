@@ -1,0 +1,26 @@
+/* Localization */
+"Localization" = "定位";
+
+/* Display Options */
+"Display Options" = "顯示選項";
+
+/* Fahrenheit */
+"Fahrenheit" = "華氏";
+
+/* Celsius */
+"Celsius" = "攝氏";
+
+/* mi */
+"mi" = "英里";
+
+/* km */
+"km" = "公里";
+
+/* MPH */
+"MPH" = "英里/小時";
+
+/* KPH */
+"KPH" = "公里/小時";
+
+/* Knots */
+"Knots" = "海浬/小時";

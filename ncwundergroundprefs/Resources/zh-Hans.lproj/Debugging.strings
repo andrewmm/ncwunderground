@@ -1,0 +1,23 @@
+/* Debugging */
+"Debugging" = "除(侦)错模式中";
+
+/* Debug Log Level */
+"Debug Log Level" = "除(侦)错模式中日志级别";
+
+/* None */
+"None" = "无";
+
+/* Error */
+"Error" = "错误";
+
+/* Warn */
+"Warn" = "警告";
+
+/* Info */
+"Info" = "资讯";
+
+/* Verbose */
+"Verbose" = "详细";
+
+/* Logs are stored at /var/mobile/Library/Caches/Logs/ */
+"Logs are stored at /var/mobile/Library/Caches/Logs/" = "日志存储在 /var/mobile/Library/Caches/Logs/";

@@ -69,6 +69,11 @@ root
 
 - (id)initWithController:(AMMNCWundergroundController *)controller;
 
+- (void)setLocationPermissions:(BOOL)value;
+- (BOOL)haveLocationPermissions;
+
+- (void)setLogLevel:(int)level;
+
 // Returns: current latitude/longitude as a double
 - (double)latitudeDouble;
 - (double)longitudeDouble;
@@ -82,7 +87,7 @@ root
 
 // Take: indices into hourly forecast arrays
 // Return: formatted information from those arrays 
-- (NSString *)hourlyTime12HrString:(int)forecastIndex;
+- (NSString *)hourlyTimeLocalizedString:(int)forecastIndex;
 - (NSString *)hourlyTempString:(int)forecastIndex ofType:(int)type;
 - (NSString *)hourlyFeelsString:(int)forecastIndex ofType:(int)type;
 - (NSMutableArray *)hourlyTempNumberArray:(int)startIndex length:(int)length ofType:(int)type;
@@ -98,7 +103,7 @@ root
 - (NSString *)currentConditionsString;
 - (NSString *)currentConditionsURL;
 
-- (NSString *)dailyDayShortString:(int)forecastIndex; // TODO localize
+- (NSString *)dailyDayShortString:(int)forecastIndex;
 - (NSString *)dailyHighString:(int)forecastIndex ofType:(int)type; // should not include type specifier
 - (NSString *)dailyLowString:(int)forecastIndex ofType:(int)type; // should not include type specifier
 - (NSString *)dailyPOPString:(int)forecastIndex; // includes %

@@ -1,0 +1,23 @@
+/* Debugging */
+"Debugging" = "Debugging";
+
+/* Debug Log Level */
+"Debug Log Level" = "Nivel Debug";
+
+/* None */
+"None" = "None";
+
+/* Error */
+"Error" = "Error";
+
+/* Warn */
+"Warn" = "Warn";
+
+/* Info */
+"Info" = "Info";
+
+/* Verbose */
+"Verbose" = "Verbose";
+
+/* Logs are stored at /var/mobile/Library/Caches/Logs/ */
+"Logs are stored at /var/mobile/Library/Caches/Logs/" = "Log-urile sunt stocate în /var/mobile/Library/Caches/Logs/";

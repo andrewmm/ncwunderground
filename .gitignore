@@ -6,3 +6,5 @@ obj/
 /.gitignore~
 /_/
 .theos
+*~
+*.xcodeproj

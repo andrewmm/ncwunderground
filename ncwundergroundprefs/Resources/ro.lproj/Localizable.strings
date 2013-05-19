@@ -1,7 +1,7 @@
 /* Settings pane */
 
 /* Data Refresh Delay */
-"Data Refresh Delay" = "Data Refresh Delay";
+"Data Refresh Delay" = "Interval Actualizare";
 
 /* Instant */
 "Instant" = "Instant";
@@ -15,38 +15,41 @@
 /* 20 min */
 "20 min" = "20 min";
 
-/* Manual */
+/* Never */
 "Manual" = "Manual";
 
 /* Hourly Forecast Length */
-"Hourly Forecast Length" = "Hourly Forecast Length";
+"Hourly Forecast Length" = "Lungime Prognoză Orară";
 
 /* 3 hr */
-"3 hr" = "3 hr";
+"3 hr" = "3 ore";
 
 /* 6 hr */
-"6 hr" = "6 hr";
+"6 hr" = "6 ore";
 
 /* 12 hr */
-"12 hr" = "12 hr";
+"12 hr" = "12 ore";
 
 /* 18 hr */
-"18 hr" = "18 hr";
+"18 hr" = "18 ore";
 
 /* 36 hr */
-"36 hr" = "36 hr";
+"36 hr" = "36 ore";
 
 /* API Key */
-"API Key" = "API Key";
+"API Key" = "Cheie API";
 
 /* Localization */
-"Localization" = "Localization";
+"Localization" = "Localizare";
+
+/* Location */
+"Location" = "Locație";
 
 /* Location Settings */
-"Location Settings" = "Location Settings";
+"Location Settings" = "Setări Localizare";
 
 /* About / Support */
-"About" = "About / Support";
+"About" = "Despre / Suport";
 
 /* Debugging */
 "Debugging" = "Debugging";
