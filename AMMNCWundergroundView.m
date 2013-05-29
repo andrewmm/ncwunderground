@@ -94,7 +94,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     }
     workingArray = [[NSMutableArray alloc] init];
     for (int i = 0; i < self.pages; ++i) {
-        UIView *newSubviewContainer = [[UIView alloc] init];
+        UIView *newSubviewContainer = (i == 3) ? [[UIScrollView alloc] init] : [[UIView alloc] init];
         [workingArray addObject:newSubviewContainer];
         [newSubviewContainer setFrame:CGRectMake((self.screenWidth - self.baseWidth) / 2,0,self.baseWidth-4,self.viewHeight)];
         [[self.backgroundViews objectAtIndex:i] addSubview:newSubviewContainer];
@@ -181,6 +181,15 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 }
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page manualRefresh:(BOOL)refresh {
     return [self addSubview:subview toPage:page withTag:0 manualRefresh:refresh];
+}
+
+- (BOOL)increaseWidthOfPage:(int)page with:(float)width {
+    UIScrollView *t_subviewContainer = [self.subviewContainers objectAtIndex:page];
+    if (!t_subviewContainer || ![t_subviewContainer isKindOfClass:UIScrollView.class]) {
+        return NO;
+    }
+    [t_subviewContainer setContentSize:CGSizeMake(self.baseWidth - 4 + width, self.viewHeight)];
+    return YES;
 }
 
 // Takes: page number, tag number

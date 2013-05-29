@@ -41,6 +41,7 @@
 // Returns: YES if successful, NO otherwise
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page withTag:(int)tag manualRefresh:(BOOL)refresh;
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page manualRefresh:(BOOL)refresh;
+- (BOOL)increaseWidthOfPage:(int)page with:(float)width;
 
 // Takes: page number, tag number
 // Returns: subview

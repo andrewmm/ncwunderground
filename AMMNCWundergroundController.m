@@ -324,7 +324,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
     // -- daily forecast page -- //
 
-    float dayWidth = (self.baseWidth - 4 - colBuffer * ((float)[self numberOfDays] + 1)) / (float)[self numberOfDays];
+    float dayWidth = (self.baseWidth - 4 - colBuffer * ((float)[self numberOfIcons] + 1)) / (float)[self numberOfIcons];
     rowHeight = 13;
     float iconDims = self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2;
     if (dayWidth < iconDims)
@@ -365,6 +365,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                       withTag:(340 + (j+1))
                 manualRefresh:YES];
     }
+    [self.view increaseWidthOfPage:3 with:(([self numberOfDays] - [self numberOfIcons]) * (colBuffer + dayWidth))];
 }
 
 /* Takes: object which is responsible for calling it
@@ -720,8 +721,13 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
 }
 
-// Returns: number of days in daily forecast (4)
+// Returns: number of days in daily forecast
 - (int)numberOfDays {
+    return 7;
+}
+
+// Returns: number of icons in forecast (4)
+- (int)numberOfIcons {
     return 4;
 }
 
