@@ -15,7 +15,7 @@
 /* 20 min */
 "20 min" = "20 min";
 
-/* Never */
+/* Manual */
 "Manual" = "Manual";
 
 /* Hourly Forecast Length */
@@ -40,13 +40,10 @@
 "API Key" = "Cheie API";
 
 /* Localization */
-"Localization" = "Localizare";
-
-/* Location */
-"Location" = "Locație";
+"Localization" = "Unități";
 
 /* Location Settings */
-"Location Settings" = "Setări Localizare";
+"Location Settings" = "Setări Locație";
 
 /* About / Support */
 "About" = "Despre / Suport";
