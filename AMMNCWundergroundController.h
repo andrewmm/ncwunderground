@@ -50,6 +50,8 @@
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView;
 
+// Returns: number of hours in hourly forecast
+- (int)numberOfHours;
 // Returns: number of days in daily forecast
 - (int)numberOfDays;
 // Returns: number of icons in forecast (4)

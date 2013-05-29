@@ -94,7 +94,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     }
     workingArray = [[NSMutableArray alloc] init];
     for (int i = 0; i < self.pages; ++i) {
-        UIView *newSubviewContainer = (i == 3) ? [[UIScrollView alloc] init] : [[UIView alloc] init];
+        UIView *newSubviewContainer = (i >= 3) ? [[UIScrollView alloc] init] : [[UIView alloc] init];
         [workingArray addObject:newSubviewContainer];
         [newSubviewContainer setFrame:CGRectMake((self.screenWidth - self.baseWidth) / 2,0,self.baseWidth-4,self.viewHeight)];
         [[self.backgroundViews objectAtIndex:i] addSubview:newSubviewContainer];

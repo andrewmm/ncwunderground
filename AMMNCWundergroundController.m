@@ -125,7 +125,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     // We store it as -2 so 0 corresponds to default
 
     self.currentWidth = self.baseWidth;
-    self.view = [[AMMNCWundergroundView alloc] initWithPages:4
+    self.view = [[AMMNCWundergroundView alloc] initWithPages:5
                                                       atPage:cur_page
                                                        width:self.currentWidth
                                                       height:self.viewHeight];
@@ -366,6 +366,44 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                 manualRefresh:YES];
     }
     [self.view increaseWidthOfPage:3 with:(([self numberOfDays] - [self numberOfIcons]) * (colBuffer + dayWidth))];
+
+    // -- hourly forecast page -- //
+
+    for (int j = 0; j < [self numberOfHours]; ++j) { // columns
+        for (int i = 0; i < 2; ++i) { // rows
+            UILabel *newLabel = [[UILabel alloc] init];
+            [newLabel setBackgroundColor:[UIColor clearColor]];
+            [newLabel setTextColor:[UIColor whiteColor]];
+            if (i == 0)
+                [newLabel setFont:[UIFont systemFontOfSize:13]];
+            else
+                [newLabel setFont:[UIFont systemFontOfSize:13]];
+            newLabel.adjustsFontSizeToFitWidth = YES;
+            newLabel.minimumScaleFactor = 0.1;
+            [newLabel setTextAlignment:NSTextAlignmentCenter];
+            [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth), rowFirstBuffer + (rowBuffer + rowHeight) * i, dayWidth, rowHeight)];
+            [self.view addSubview:newLabel
+                           toPage:4
+                          withTag:(400 + (i+1)*10 + (j+1))
+                    manualRefresh:NO];
+        }
+
+        CGRect iconRect = CGRectMake(colBuffer + j * (colBuffer + dayWidth) + (dayWidth - iconDims) / 2,
+            iconY, iconDims, iconDims);
+
+        UIImageView *dayIconView = [[UIImageView alloc] init];
+        UIImageView *dayIconViewBack = [[UIImageView alloc] init];
+        [dayIconView setFrame:iconRect];
+        [self.view addSubview:dayIconViewBack
+                       toPage:4
+                      withTag:(430 + (j+1))
+                manualRefresh:YES];
+        [self.view addSubview:dayIconView
+                       toPage:4
+                      withTag:(440 + (j+1))
+                manualRefresh:YES];
+    }
+    [self.view increaseWidthOfPage:4 with:(([self numberOfHours] - [self numberOfIcons]) * (colBuffer + dayWidth))];
 }
 
 /* Takes: object which is responsible for calling it
@@ -719,6 +757,30 @@ static int ddLogLevel = LOG_LEVEL_OFF;
         [(UIImageView *)[self.view getSubviewFromPage:3 withTag:(340 + (j+1))] setImage:weatherIconFront];
     }
 
+    // -- hourly forecast page -- //
+
+    for (int j = 0; j < [self numberOfHours]; ++j) {
+        UILabel *dayLabel = (UILabel *)[self.view getSubviewFromPage:4 withTag:(410 + (j+1))];
+        UILabel *tempLabel = (UILabel *)[self.view getSubviewFromPage:4 withTag:(420 + (j+1))];
+        [dayLabel setText:[self.model hourlyTimeLocalizedString:j]];
+        [tempLabel setText:[NSString stringWithFormat:@"%@ (%@)",[self.model hourlyTempString:j ofType:self.tempType],
+                                                                 [self.model hourlyPOPString:j]]];
+
+        remoteIconName = [self.model hourlyConditionsIconName:j];
+        localIconInfo = [self.iconMap objectForKey:remoteIconName];
+        weatherIconBack = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"back"]]
+                                                                                                    ofType:@"png"]];
+        weatherIconFront = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"front"]]
+                                                                                                     ofType:@"png"]];
+        [(UIImageView *)[self.view getSubviewFromPage:4 withTag:(430 + (j+1))] setImage:weatherIconBack];
+        [(UIImageView *)[self.view getSubviewFromPage:4 withTag:(440 + (j+1))] setImage:weatherIconFront];
+    }
+
+}
+
+// Returns: number of hours in hourly forecast
+- (int)numberOfHours {
+    return 8;
 }
 
 // Returns: number of days in daily forecast
