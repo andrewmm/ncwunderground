@@ -10,7 +10,7 @@
 #import "CocoaLumberjack/Lumberjack/DDASLLogger.h"
 #import "CocoaLumberjack/Lumberjack/DDTTYLogger.h"
 
-#define MK_TAG(x, y, z) ((x) * 100 + (y) * 10 + (z))
+#define MK_TAG(x, y, z) ((x) * 1000 + (y) * 100 + (z))
 
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 static int ddLogLevel = LOG_LEVEL_OFF;
@@ -782,7 +782,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
 // Returns: number of hours in hourly forecast
 - (int)numberOfHours {
-    return 8;
+    return [self hourlyForecastLength];
 }
 
 // Returns: number of days in daily forecast
