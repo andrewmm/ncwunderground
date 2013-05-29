@@ -546,11 +546,17 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     // -- details page -- //
 
     // "Last Refreshed"
-    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[self.model lastRequestInt]];
+    int last = [self.model lastRequestInt];
+    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:last];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:@"h:mm:ss a"
-                                                                 options:0
-                                                                  locale:[NSLocale currentLocale]]];
+    [dateFormatter setDoesRelativeDateFormatting:YES];
+    if (time(NULL) > last + 24 * 60 * 60) {
+	[dateFormatter setDateStyle:NSDateFormatterShortStyle];
+	[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+    } else {
+	[dateFormatter setDateStyle:NSDateFormatterNoStyle];
+	[dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+    }
     UILabel *lastRefreshedLabel = (UILabel *)[self.view getSubviewFromPage:0
                                                                    withTag:1];
     lastRefreshedLabel.text = [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LAST_REFRESHED"
