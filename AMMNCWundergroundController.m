@@ -22,7 +22,6 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 @property (nonatomic, copy) NSString *saveDirectory;
 @property (nonatomic, copy) NSString *saveFile;
 @property (atomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, assign) float baseWidth;
 @property (nonatomic, assign) float currentWidth;
 @property (nonatomic, assign) float viewHeight;
 @property (nonatomic, copy) NSDictionary *iconMap;
@@ -43,7 +42,6 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 @synthesize saveFile=i_saveFile;
 @synthesize locationManager=i_locationManager;
 @synthesize locationUpdated=i_locationUpdated;
-@synthesize baseWidth=i_baseWidth;
 @synthesize currentWidth=i_currentWidth;
 @synthesize viewHeight=i_viewHeight;
 @synthesize iconMap=i_iconMap;
@@ -61,7 +59,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 - (id)init {
     if ((self = [super init]) != nil) {
         i_viewHeight = 71;
-        i_baseWidth = 320;
+        i_currentWidth = 320;
 
         i_model = [[AMMNCWundergroundModel alloc] initWithController:self];
 
@@ -83,10 +81,9 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    self.baseWidth = [self.view superview].frame.size.width;
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
-    [self.view setScreenWidth:[self.view superview].frame.size.width withCurrentPage:cur_page andBaseWidth:self.baseWidth];
+    [self.view setScreenWidth:[self.view superview].frame.size.width withCurrentPage:cur_page];
     self.currentWidth = [self.view superview].frame.size.width;
 }
 
@@ -127,7 +124,6 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
     // We store it as -2 so 0 corresponds to default
 
-    self.currentWidth = self.baseWidth;
     self.view = [[AMMNCWundergroundView alloc] initWithPages:5
                                                       atPage:cur_page
                                                        width:self.currentWidth
@@ -163,7 +159,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     wundergroundLogo = [wundergroundLogo resizableImageWithCapInsets:UIEdgeInsetsZero resizingMode:UIImageResizingModeStretch];
     UIImageView *wundergroundLogoView = [[UIImageView alloc] initWithImage:wundergroundLogo];
     wundergroundLogoView.contentMode = UIViewContentModeScaleAspectFit;
-    wundergroundLogoView.frame = CGRectMake((0.1875*self.baseWidth - 54) / 2, (self.viewHeight - 32.16)/2, 54, 32.16);
+    wundergroundLogoView.frame = CGRectMake((0.1875*self.currentWidth - 54) / 2, (self.viewHeight - 32.16)/2, 54, 32.16);
     [self.view addSubview:wundergroundLogoView toPage:0 withTag:MK_TAG(0, 0, 0) manualRefresh:NO];
 
     // labels
@@ -175,7 +171,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
         [newLabel setTextAlignment:NSTextAlignmentCenter];
         newLabel.adjustsFontSizeToFitWidth = YES;
         newLabel.minimumScaleFactor = 0.1;
-        [newLabel setFrame:CGRectMake(0.1875*self.baseWidth,rowFirstBuffer + (rowHeight + rowBuffer)*i,0.625*self.baseWidth,rowHeight)];
+        [newLabel setFrame:CGRectMake(0.1875*self.currentWidth,rowFirstBuffer + (rowHeight + rowBuffer)*i,0.625*self.currentWidth,rowHeight)];
         if (i == 2) {
             [newLabel setText:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONFIGURE_OPTIONS"
                                                                               value:@"Configure options in Settings."
@@ -193,16 +189,16 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     [refreshButton addTarget:self
                       action:@selector(loadData:) 
             forControlEvents:UIControlEventTouchUpInside];
-    [refreshButton setFrame:CGRectMake(0.859375*self.baseWidth, (self.viewHeight - 0.1*self.baseWidth)/2,
-                                       0.09375*self.baseWidth,0.09375*self.baseWidth)];
+    [refreshButton setFrame:CGRectMake(0.859375*self.currentWidth, (self.viewHeight - 0.1*self.currentWidth)/2,
+                                       0.09375*self.currentWidth,0.09375*self.currentWidth)];
     [self.view addSubview:refreshButton toPage:0 withTag:MK_TAG(0, 0, 4) manualRefresh:NO];
 
     // -- hourly forecast / sparklines page -- //
 
     // useful formatting constants
-    float labelWidth = 0.14 * self.baseWidth;
-    float colBuffer = 0.00625 * self.baseWidth;
-    float sparkWidth = self.baseWidth - labelWidth * 5 - colBuffer * 7;
+    float labelWidth = 0.14 * self.currentWidth;
+    float colBuffer = 0.00625 * self.currentWidth;
+    float sparkWidth = self.currentWidth - labelWidth * 5 - colBuffer * 7;
     rowFirstBuffer = 8;//0.025 * self.baseWidth;
     rowBuffer = 4;//0.0125 * self.baseWidth;
     rowHeight = (self.viewHeight - 2 * rowFirstBuffer - 2 * rowBuffer)/3;
@@ -268,11 +264,11 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     }
 
     // -- current conditions page -- //
-    float mainColBuffer = 0.025 * self.baseWidth;
+    float mainColBuffer = 0.025 * self.currentWidth;
     rowFirstBuffer = 8;//0.025 * self.baseWidth;
     rowBuffer = 3;
 
-    labelWidth = (self.baseWidth - 4 - 4 * mainColBuffer - self.viewHeight) / 2;
+    labelWidth = (self.currentWidth - 4 - 4 * mainColBuffer - self.viewHeight) / 2;
     float leftHeight = (self.viewHeight - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
     float rightHeight = leftHeight * 4 / 3;
 
@@ -327,7 +323,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
     // -- daily forecast page -- //
 
-    float dayWidth = (self.baseWidth - 4 - colBuffer * ((float)[self numberOfIcons] + 1)) / (float)[self numberOfIcons];
+    float dayWidth = (self.currentWidth - 4 - colBuffer * ((float)[self numberOfIcons] + 1)) / (float)[self numberOfIcons];
     rowHeight = 13;
     float iconDims = self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2;
     if (dayWidth < iconDims)
@@ -793,7 +789,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
 // Returns: number of icons in forecast (4)
 - (int)numberOfIcons {
-    return (self.baseWidth > 320) ? 6 : 4;
+    return (self.currentWidth > 320) ? 6 : 4;
 }
 
 // Returns: user preferences for number of hours to display

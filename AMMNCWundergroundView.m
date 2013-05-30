@@ -3,7 +3,6 @@
 
 @interface AMMNCWundergroundView ()
 
-@property (nonatomic, assign) float baseWidth;
 @property (nonatomic, copy) NSArray *backgroundViews;
 @property (nonatomic, copy) NSArray *subviewContainers;
 @property (nonatomic, copy) NSArray *spinners;
@@ -14,7 +13,6 @@
 @implementation AMMNCWundergroundView
 
 @synthesize pages=i_pages;
-@synthesize baseWidth=i_baseWidth;
 @synthesize screenWidth=i_screenWidth;
 @synthesize viewHeight=i_viewHeight;
 @synthesize backgroundViews=i_backgroundViews;
@@ -34,7 +32,6 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     CGRect frameRect = (CGRect){CGPointZero, {width, height}};
     if((self = [super initWithFrame:frameRect]) != nil) {
         i_pages = n_pages;
-        i_baseWidth = width;
         i_screenWidth = width;
         i_viewHeight = height;
 
@@ -99,7 +96,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     for (int i = 0; i < self.pages; ++i) {
         UIView *newSubviewContainer = (i >= 3) ? [[UIScrollView alloc] init] : [[UIView alloc] init];
         [workingArray addObject:newSubviewContainer];
-        [newSubviewContainer setFrame:CGRectMake((self.screenWidth - self.baseWidth) / 2,0,self.baseWidth-4,self.viewHeight)];
+        [newSubviewContainer setFrame:CGRectMake(0,0,self.screenWidth-4,self.viewHeight)];
         [[self.backgroundViews objectAtIndex:i] addSubview:newSubviewContainer];
 
         // add the subviews, if they exist
@@ -116,7 +113,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     for (int i = 0; i < self.pages; ++i) {
         UIActivityIndicatorView *newSpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
         [workingArray addObject:newSpinner];
-        [newSpinner setCenter:CGPointMake((self.baseWidth-4)/2,self.viewHeight/2)];
+        [newSpinner setCenter:CGPointMake((self.screenWidth-4)/2,self.viewHeight/2)];
         [[self.subviewContainers objectAtIndex:i] addSubview:newSpinner];
     }
     self.spinners = workingArray;
@@ -132,8 +129,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     [self setPages:self.pages];
 }
 
-- (void)setScreenWidth:(float)width withCurrentPage:(int)cur_page andBaseWidth:(float)baseWidth {
-    i_baseWidth = baseWidth;
+- (void)setScreenWidth:(float)width withCurrentPage:(int)cur_page {
     self.screenWidth = width;
     self.contentOffset = CGPointMake(cur_page * width,0);
 }
@@ -192,7 +188,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     if (!t_subviewContainer || ![t_subviewContainer isKindOfClass:UIScrollView.class]) {
         return NO;
     }
-    [t_subviewContainer setContentSize:CGSizeMake(self.baseWidth - 4 + width, self.viewHeight)];
+    [t_subviewContainer setContentSize:CGSizeMake(self.screenWidth - 4 + width, self.viewHeight)];
     return YES;
 }
 

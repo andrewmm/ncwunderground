@@ -1,7 +1,6 @@
 @interface AMMNCWundergroundView: UIScrollView
 
 @property (nonatomic, assign) int pages;
-@property (nonatomic, readonly, assign) float baseWidth;
 @property (nonatomic, assign) float screenWidth;
 @property (nonatomic, assign) float viewHeight;
 @property (nonatomic, readonly, copy) NSArray *backgroundViews;
@@ -27,7 +26,7 @@
 /* Does: sets screenWidth
 		 calls setPages */
 - (void)setScreenWidth:(float)width;
-- (void)setScreenWidth:(float)width withCurrentPage:(int)cur_page andBaseWidth:(float)baseWidth;
+- (void)setScreenWidth:(float)width withCurrentPage:(int)cur_page;
 
 // Takes: BOOL indicating whether we're loading or now
 // Does: activates or hides spinners

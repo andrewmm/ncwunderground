@@ -10,7 +10,6 @@
 @property (nonatomic, readonly, copy) NSString *saveFile;
 @property (atomic, readonly, strong) CLLocationManager *locationManager;
 @property (atomic, assign) BOOL locationUpdated;
-@property (nonatomic, readonly, assign) float baseWidth;
 @property (nonatomic, readonly, assign) float currentWidth;
 @property (nonatomic, readonly, assign) float viewHeight;
 @property (nonatomic, readonly, copy) NSDictionary *iconMap;
