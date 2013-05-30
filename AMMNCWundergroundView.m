@@ -69,6 +69,9 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
     // images for background views
     UIImage *bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"];
+    if (!bgImg) {
+        bgImg = [UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/SocialWeeApp.bundle/Background.png"];
+    }
     UIImage *stretchableBgImg = [bgImg stretchableImageWithLeftCapWidth:floorf(bgImg.size.width / 2)
                                                            topCapHeight:floorf(bgImg.size.height / 2)];
 
