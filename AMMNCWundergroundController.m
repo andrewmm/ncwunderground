@@ -83,9 +83,10 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    self.baseWidth = [self.view superview].frame.size.width;
     NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
-    [self.view setScreenWidth:[self.view superview].frame.size.width withCurrentPage:cur_page];
+    [self.view setScreenWidth:[self.view superview].frame.size.width withCurrentPage:cur_page andBaseWidth:self.baseWidth];
     self.currentWidth = [self.view superview].frame.size.width;
 }
 
@@ -153,8 +154,8 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 - (void)addSubviewsToView {
     // -- details page -- //
 
-    float rowFirstBuffer = 0.025 * self.baseWidth;
-    float rowBuffer = 0.0125 * self.baseWidth;
+    float rowFirstBuffer = 8;//0.025 * self.baseWidth;
+    float rowBuffer = 4;//0.0125 * self.baseWidth;
     float rowHeight = (self.viewHeight - 2 * rowFirstBuffer - 2 * rowBuffer)/3;
 
     UIImage *wundergroundLogo = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"wundergroundLogo_white"
@@ -202,8 +203,8 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     float labelWidth = 0.14 * self.baseWidth;
     float colBuffer = 0.00625 * self.baseWidth;
     float sparkWidth = self.baseWidth - labelWidth * 5 - colBuffer * 7;
-    rowFirstBuffer = 0.025 * self.baseWidth;
-    rowBuffer = 0.0125 * self.baseWidth;
+    rowFirstBuffer = 8;//0.025 * self.baseWidth;
+    rowBuffer = 4;//0.0125 * self.baseWidth;
     rowHeight = (self.viewHeight - 2 * rowFirstBuffer - 2 * rowBuffer)/3;
 
     for (int i=0; i < 3; ++i) { // rows
@@ -268,7 +269,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
     // -- current conditions page -- //
     float mainColBuffer = 0.025 * self.baseWidth;
-    rowFirstBuffer = 0.025 * self.baseWidth;
+    rowFirstBuffer = 8;//0.025 * self.baseWidth;
     rowBuffer = 3;
 
     labelWidth = (self.baseWidth - 4 - 4 * mainColBuffer - self.viewHeight) / 2;
@@ -792,7 +793,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
 // Returns: number of icons in forecast (4)
 - (int)numberOfIcons {
-    return 4;
+    return (self.baseWidth > 320) ? 6 : 4;
 }
 
 // Returns: user preferences for number of hours to display

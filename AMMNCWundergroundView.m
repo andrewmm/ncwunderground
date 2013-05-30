@@ -132,7 +132,8 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     [self setPages:self.pages];
 }
 
-- (void)setScreenWidth:(float)width withCurrentPage:(int)cur_page {
+- (void)setScreenWidth:(float)width withCurrentPage:(int)cur_page andBaseWidth:(float)baseWidth {
+    i_baseWidth = baseWidth;
     self.screenWidth = width;
     self.contentOffset = CGPointMake(cur_page * width,0);
 }
