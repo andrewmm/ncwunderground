@@ -49,11 +49,11 @@
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView;
 
-// Returns: number of hours in hourly forecast
+// Returns: number of icons in hourly forecast
 - (int)numberOfHours;
-// Returns: number of days in daily forecast
+// Returns: number of icons in daily forecast
 - (int)numberOfDays;
-// Returns: number of icons in forecast (4)
+// Returns: number of icons that can be displayed with current width
 - (int)numberOfIcons;
 
 // Returns: user preferences for number of hours to display

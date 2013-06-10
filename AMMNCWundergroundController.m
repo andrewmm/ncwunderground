@@ -323,14 +323,15 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
     // -- daily forecast page -- //
 
-    float dayWidth = (self.currentWidth - 4 - colBuffer * ((float)[self numberOfIcons] + 1)) / (float)[self numberOfIcons];
+    int numberOfIcons = [self numberOfDays];
+    float dayWidth = (self.currentWidth - 4 - colBuffer * ((float)numberOfIcons + 1)) / (float)numberOfIcons;
     rowHeight = 13;
     float iconDims = self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2;
     if (dayWidth < iconDims)
         iconDims = dayWidth;
     float iconY = rowHeight * 2 + rowBuffer * 2 + rowFirstBuffer + (self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2 - iconDims) / 2;
 
-    for (int j = 0; j < [self numberOfDays]; ++j) { // columns
+    for (int j = 0; j < [self dailyForecastLength]; ++j) { // columns
         for (int i = 0; i < 2; ++i) { // rows
             UILabel *newLabel = [[UILabel alloc] init];
             [newLabel setBackgroundColor:[UIColor clearColor]];
@@ -364,11 +365,18 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                       withTag:MK_TAG(3, 4, j+1)
                 manualRefresh:YES];
     }
-    [self.view increaseWidthOfPage:3 with:(([self numberOfDays] - [self numberOfIcons]) * (colBuffer + dayWidth))];
+    [self.view increaseWidthOfPage:3 with:(([self dailyForecastLength] - [self numberOfIcons]) * (colBuffer + dayWidth))];
 
     // -- hourly forecast page -- //
 
-    for (int j = 0; j < [self numberOfHours]; ++j) { // columns
+    numberOfIcons = [self numberOfHours];
+    dayWidth = (self.currentWidth - 4 - colBuffer * ((float)numberOfIcons + 1)) / (float)numberOfIcons;
+    iconDims = self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2;
+    if (dayWidth < iconDims)
+        iconDims = dayWidth;
+    iconY = rowHeight * 2 + rowBuffer * 2 + rowFirstBuffer + (self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2 - iconDims) / 2;
+
+    for (int j = 0; j < [self hourlyForecastLength]; ++j) { // columns
         for (int i = 0; i < 2; ++i) { // rows
             UILabel *newLabel = [[UILabel alloc] init];
             [newLabel setBackgroundColor:[UIColor clearColor]];
@@ -402,7 +410,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                       withTag:MK_TAG(4, 4, j+1)
                 manualRefresh:YES];
     }
-    [self.view increaseWidthOfPage:4 with:(([self numberOfHours] - [self numberOfIcons]) * (colBuffer + dayWidth))];
+    [self.view increaseWidthOfPage:4 with:(([self hourlyForecastLength] - [self numberOfIcons]) * (colBuffer + dayWidth))];
 }
 
 /* Takes: object which is responsible for calling it
@@ -738,7 +746,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
     // -- daily forecast page -- //
 
-    for (int j = 0; j < [self numberOfDays]; ++j) {
+    for (int j = 0; j < [self dailyForecastLength]; ++j) {
         UILabel *dayLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:MK_TAG(3, 1, j+1)];
         UILabel *tempLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:MK_TAG(3, 2, j+1)];
         [dayLabel setText:[self.model dailyDayShortString:j]];
@@ -758,7 +766,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
     // -- hourly forecast page -- //
 
-    for (int j = 0; j < [self numberOfHours]; ++j) {
+    for (int j = 0; j < [self hourlyForecastLength]; ++j) {
         UILabel *dayLabel = (UILabel *)[self.view getSubviewFromPage:4 withTag:MK_TAG(4, 1, j+1)];
         UILabel *tempLabel = (UILabel *)[self.view getSubviewFromPage:4 withTag:MK_TAG(4, 2, j+1)];
         [dayLabel setText:[self.model hourlyTimeLocalizedString:j]];
@@ -777,17 +785,27 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
 }
 
-// Returns: number of hours in hourly forecast
+// Returns: number of icons in hourly forecast
 - (int)numberOfHours {
-    return [self hourlyForecastLength];
+    int n = [self hourlyForecastLength];
+    int i = [self numberOfIcons];
+    if (n > i) {
+        return i;
+    }
+    return n;
 }
 
-// Returns: number of days in daily forecast
+// Returns: number of icons in daily forecast
 - (int)numberOfDays {
-    return [self dailyForecastLength];
+    int n = [self dailyForecastLength];
+    int i = [self numberOfIcons];
+    if (n > i) {
+        return i;
+    }
+    return n;
 }
 
-// Returns: number of icons in forecast (4)
+// Returns: number of icons that can be displayed with current width
 - (int)numberOfIcons {
     return (self.currentWidth > 320) ? 6 : 4;
 }
