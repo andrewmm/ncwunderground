@@ -36,6 +36,21 @@
 /* 36 hr */
 "36 hr" = "36 ore";
 
+/* Daily Forecast Length */
+"Daily Forecast Length" = "Lungime Prognoză Zilnică";
+
+/* 4 days */
+"4 days" = "4 zile";
+
+/* 6 days */
+"6 days" = "6 zile";
+
+/* 7 days */
+"7 days" = "7 zile";
+
+/* 10 days */
+"10 days" = "10 zile";
+
 /* API Key */
 "API Key" = "Cheie API";
 

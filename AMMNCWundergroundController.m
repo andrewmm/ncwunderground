@@ -784,7 +784,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
 // Returns: number of days in daily forecast
 - (int)numberOfDays {
-    return 7;
+    return [self dailyForecastLength];
 }
 
 // Returns: number of icons in forecast (4)
@@ -802,6 +802,19 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     else {
         DDLogWarn(@"NCWunderground: user defaults contain no hourly forecast length field. Defaulting to 12 hours.");
         return 12;
+    }
+}
+
+// Returns: user preferences for number of days to display
+- (int)dailyForecastLength {
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    NSNumber *dailyLength = [defaultsDom objectForKey:@"dailyLength"];
+    if (dailyLength) {
+        return [dailyLength integerValue];
+    }
+    else {
+        DDLogWarn(@"NCWunderground: user defaults contain no daily forecast length field. Defaulting to 4 days.");
+        return 4;
     }
 }
 

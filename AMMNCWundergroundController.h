@@ -58,6 +58,8 @@
 
 // Returns: user preferences for number of hours to display
 - (int)hourlyForecastLength;
+// Returns: user preferences for number of days to display
+- (int)dailyForecastLength;
 
 - (void)openForecastURL;
 
