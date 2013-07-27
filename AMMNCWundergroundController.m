@@ -548,9 +548,8 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     // "Last Refreshed"
     NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[self.model lastRequestInt]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:@"h:mm:ss a"
-                                                                 options:0
-                                                                  locale:[NSLocale currentLocale]]];
+    [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
     UILabel *lastRefreshedLabel = (UILabel *)[self.view getSubviewFromPage:0
                                                                    withTag:1];
     lastRefreshedLabel.text = [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LAST_REFRESHED"
