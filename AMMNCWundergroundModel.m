@@ -155,6 +155,18 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     return [NSString stringWithFormat:@"%@ %@",tempString,typeString];
 }
 
+// Takes: index into hourly forecast array
+// Returns: percentage of perciptation for that hour, including %
+- (NSString *)hourlyPOPString:(int)forecastIndex {
+    return [NSString stringWithFormat:@"%@%%",[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"pop"]];
+}
+
+// Takes: index into hourly forecast array
+// Returns: name of icon for weather for that hour
+- (NSString *)hourlyConditionsIconName:(int)forecastIndex {
+    return [[[[[self.saveData objectForKey:@"hourly_forecast"] objectAtIndex:forecastIndex] objectForKey:@"icon_url"] lastPathComponent] stringByDeletingPathExtension];
+}
+
 // Takes: start index and length in hourly forecast array
 // Returns: array of temps as NSNumber's in that range
 - (NSMutableArray *)hourlyTempNumberArray:(int)startIndex length:(int)length ofType:(int)type {

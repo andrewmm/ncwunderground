@@ -10,6 +10,8 @@
 #import "CocoaLumberjack/Lumberjack/DDASLLogger.h"
 #import "CocoaLumberjack/Lumberjack/DDTTYLogger.h"
 
+#define MK_TAG(x, y, z) ((x) * 1000 + (y) * 100 + (z))
+
 static NSBundle *_ammNCWundergroundWeeAppBundle = nil;
 static int ddLogLevel = LOG_LEVEL_OFF;
 
@@ -20,7 +22,6 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 @property (nonatomic, copy) NSString *saveDirectory;
 @property (nonatomic, copy) NSString *saveFile;
 @property (atomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, assign) float baseWidth;
 @property (nonatomic, assign) float currentWidth;
 @property (nonatomic, assign) float viewHeight;
 @property (nonatomic, copy) NSDictionary *iconMap;
@@ -41,7 +42,6 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 @synthesize saveFile=i_saveFile;
 @synthesize locationManager=i_locationManager;
 @synthesize locationUpdated=i_locationUpdated;
-@synthesize baseWidth=i_baseWidth;
 @synthesize currentWidth=i_currentWidth;
 @synthesize viewHeight=i_viewHeight;
 @synthesize iconMap=i_iconMap;
@@ -59,7 +59,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 - (id)init {
     if ((self = [super init]) != nil) {
         i_viewHeight = 71;
-        i_baseWidth = 320;
+        i_currentWidth = 320;
 
         i_model = [[AMMNCWundergroundModel alloc] initWithController:self];
 
@@ -124,8 +124,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     int cur_page = [(NSNumber *)[defaultsDom objectForKey:@"cur_page"] intValue] + 2;
     // We store it as -2 so 0 corresponds to default
 
-    self.currentWidth = self.baseWidth;
-    self.view = [[AMMNCWundergroundView alloc] initWithPages:4
+    self.view = [[AMMNCWundergroundView alloc] initWithPages:5
                                                       atPage:cur_page
                                                        width:self.currentWidth
                                                       height:self.viewHeight];
@@ -151,8 +150,8 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 - (void)addSubviewsToView {
     // -- details page -- //
 
-    float rowFirstBuffer = 0.025 * self.baseWidth;
-    float rowBuffer = 0.0125 * self.baseWidth;
+    float rowFirstBuffer = 8;//0.025 * self.baseWidth;
+    float rowBuffer = 4;//0.0125 * self.baseWidth;
     float rowHeight = (self.viewHeight - 2 * rowFirstBuffer - 2 * rowBuffer)/3;
 
     UIImage *wundergroundLogo = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:@"wundergroundLogo_white"
@@ -160,8 +159,8 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     wundergroundLogo = [wundergroundLogo resizableImageWithCapInsets:UIEdgeInsetsZero resizingMode:UIImageResizingModeStretch];
     UIImageView *wundergroundLogoView = [[UIImageView alloc] initWithImage:wundergroundLogo];
     wundergroundLogoView.contentMode = UIViewContentModeScaleAspectFit;
-    wundergroundLogoView.frame = CGRectMake((0.1875*self.baseWidth - 54) / 2, (self.viewHeight - 32.16)/2, 54, 32.16);
-    [self.view addSubview:wundergroundLogoView toPage:0 withTag:0 manualRefresh:NO];
+    wundergroundLogoView.frame = CGRectMake((0.1875*self.currentWidth - 54) / 2, (self.viewHeight - 32.16)/2, 54, 32.16);
+    [self.view addSubview:wundergroundLogoView toPage:0 withTag:MK_TAG(0, 0, 0) manualRefresh:NO];
 
     // labels
     for (int i=0; i < 3; ++i) {
@@ -172,13 +171,13 @@ static int ddLogLevel = LOG_LEVEL_OFF;
         [newLabel setTextAlignment:NSTextAlignmentCenter];
         newLabel.adjustsFontSizeToFitWidth = YES;
         newLabel.minimumScaleFactor = 0.1;
-        [newLabel setFrame:CGRectMake(0.1875*self.baseWidth,rowFirstBuffer + (rowHeight + rowBuffer)*i,0.625*self.baseWidth,rowHeight)];
+        [newLabel setFrame:CGRectMake(0.1875*self.currentWidth,rowFirstBuffer + (rowHeight + rowBuffer)*i,0.625*self.currentWidth,rowHeight)];
         if (i == 2) {
             [newLabel setText:[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"CONFIGURE_OPTIONS"
                                                                               value:@"Configure options in Settings."
                                                                               table:nil]];
         }
-        [self.view addSubview:newLabel toPage:0 withTag:(i+1) manualRefresh:NO];
+        [self.view addSubview:newLabel toPage:0 withTag:MK_TAG(0, 0, i+1) manualRefresh:NO];
     }
 
     // refresh button
@@ -190,25 +189,25 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     [refreshButton addTarget:self
                       action:@selector(loadData:) 
             forControlEvents:UIControlEventTouchUpInside];
-    [refreshButton setFrame:CGRectMake(0.859375*self.baseWidth, (self.viewHeight - 0.1*self.baseWidth)/2,
-                                       0.09375*self.baseWidth,0.09375*self.baseWidth)];
-    [self.view addSubview:refreshButton toPage:0 withTag:4 manualRefresh:NO];
+    [refreshButton setFrame:CGRectMake(0.859375*self.currentWidth, (self.viewHeight - 0.1*self.currentWidth)/2,
+                                       0.09375*self.currentWidth,0.09375*self.currentWidth)];
+    [self.view addSubview:refreshButton toPage:0 withTag:MK_TAG(0, 0, 4) manualRefresh:NO];
 
     // -- hourly forecast / sparklines page -- //
 
     // useful formatting constants
-    float labelWidth = 0.14 * self.baseWidth;
-    float colBuffer = 0.00625 * self.baseWidth;
-    float sparkWidth = self.baseWidth - labelWidth * 5 - colBuffer * 7;
-    rowFirstBuffer = 0.025 * self.baseWidth;
-    rowBuffer = 0.0125 * self.baseWidth;
+    float labelWidth = 0.14 * self.currentWidth;
+    float colBuffer = 0.00625 * self.currentWidth;
+    float sparkWidth = self.currentWidth - labelWidth * 5 - colBuffer * 7;
+    rowFirstBuffer = 8;//0.025 * self.baseWidth;
+    rowBuffer = 4;//0.0125 * self.baseWidth;
     rowHeight = (self.viewHeight - 2 * rowFirstBuffer - 2 * rowBuffer)/3;
 
     for (int i=0; i < 3; ++i) { // rows
         float y = rowFirstBuffer + i * (rowHeight + rowBuffer);
         for (int j=0; j < 5; ++j) { // columns
             // create tag of form 1(i+1)(j+1)
-            int tag = 100 + (i+1)*10 + (j+1);
+            int tag = MK_TAG(1, i+1, j+1);
 
             UILabel *newLabel = [[UILabel alloc] init];
             [newLabel setBackgroundColor:[UIColor clearColor]];
@@ -258,18 +257,18 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
             [self.view addSubview:sparkView
                            toPage:1
-                          withTag:(100 + (i+1)*10)
+                          withTag:MK_TAG(1, i+1, 0)
                     manualRefresh:YES];
         }
         
     }
 
     // -- current conditions page -- //
-    float mainColBuffer = 0.025 * self.baseWidth;
-    rowFirstBuffer = 0.025 * self.baseWidth;
+    float mainColBuffer = 0.025 * self.currentWidth;
+    rowFirstBuffer = 8;//0.025 * self.baseWidth;
     rowBuffer = 3;
 
-    labelWidth = (self.baseWidth - 4 - 4 * mainColBuffer - self.viewHeight) / 2;
+    labelWidth = (self.currentWidth - 4 - 4 * mainColBuffer - self.viewHeight) / 2;
     float leftHeight = (self.viewHeight - rowFirstBuffer * 2 - rowBuffer * 2) / 4;
     float rightHeight = leftHeight * 4 / 3;
 
@@ -298,7 +297,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
             [self.view addSubview:newLabel
                         toPage:2
-                       withTag:(200 + (i+1)*10 + (j+1))
+                       withTag:MK_TAG(2, i+1, j+1)
                  manualRefresh:NO];
         }
     }
@@ -308,11 +307,11 @@ static int ddLogLevel = LOG_LEVEL_OFF;
 
     UIImageView *iconBackView = [[UIImageView alloc] init];
     [iconBackView setFrame:iconRect];
-    [self.view addSubview:iconBackView toPage:2 withTag:200 manualRefresh:YES];
+    [self.view addSubview:iconBackView toPage:2 withTag:MK_TAG(2, 0, 0) manualRefresh:YES];
 
     UIImageView *iconFrontView = [[UIImageView alloc] init];
     [iconFrontView setFrame:iconRect];
-    [self.view addSubview:iconFrontView toPage:2 withTag:201 manualRefresh:YES];
+    [self.view addSubview:iconFrontView toPage:2 withTag:MK_TAG(2, 0, 1) manualRefresh:YES];
 
     // put a transparent button on top of the icon to open the url
     UIButton *urlButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -320,18 +319,19 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                   action:@selector(openForecastURL)
         forControlEvents:UIControlEventTouchUpInside];
     [urlButton setFrame:iconRect];
-    [self.view addSubview:urlButton toPage:2 withTag:202 manualRefresh:NO];
+    [self.view addSubview:urlButton toPage:2 withTag:MK_TAG(2, 0, 2) manualRefresh:NO];
 
     // -- daily forecast page -- //
 
-    float dayWidth = (self.baseWidth - 4 - colBuffer * ((float)[self numberOfDays] + 1)) / (float)[self numberOfDays];
+    int numberOfIcons = [self numberOfDays];
+    float dayWidth = (self.currentWidth - 4 - colBuffer * ((float)numberOfIcons + 1)) / (float)numberOfIcons;
     rowHeight = 13;
     float iconDims = self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2;
     if (dayWidth < iconDims)
         iconDims = dayWidth;
     float iconY = rowHeight * 2 + rowBuffer * 2 + rowFirstBuffer + (self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2 - iconDims) / 2;
 
-    for (int j = 0; j < [self numberOfDays]; ++j) { // columns
+    for (int j = 0; j < [self dailyForecastLength]; ++j) { // columns
         for (int i = 0; i < 2; ++i) { // rows
             UILabel *newLabel = [[UILabel alloc] init];
             [newLabel setBackgroundColor:[UIColor clearColor]];
@@ -346,7 +346,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
             [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth), rowFirstBuffer + (rowBuffer + rowHeight) * i, dayWidth, rowHeight)];
             [self.view addSubview:newLabel
                            toPage:3
-                          withTag:(300 + (i+1)*10 + (j+1))
+                          withTag:MK_TAG(3, i+1, j+1)
                     manualRefresh:NO];
         }
 
@@ -358,13 +358,59 @@ static int ddLogLevel = LOG_LEVEL_OFF;
         [dayIconView setFrame:iconRect];
         [self.view addSubview:dayIconViewBack
                        toPage:3
-                      withTag:(330 + (j+1))
+                      withTag:MK_TAG(3, 3, j+1)
                 manualRefresh:YES];
         [self.view addSubview:dayIconView
                        toPage:3
-                      withTag:(340 + (j+1))
+                      withTag:MK_TAG(3, 4, j+1)
                 manualRefresh:YES];
     }
+    [self.view increaseWidthOfPage:3 with:(([self dailyForecastLength] - [self numberOfIcons]) * (colBuffer + dayWidth))];
+
+    // -- hourly forecast page -- //
+
+    numberOfIcons = [self numberOfHours];
+    dayWidth = (self.currentWidth - 4 - colBuffer * ((float)numberOfIcons + 1)) / (float)numberOfIcons;
+    iconDims = self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2;
+    if (dayWidth < iconDims)
+        iconDims = dayWidth;
+    iconY = rowHeight * 2 + rowBuffer * 2 + rowFirstBuffer + (self.viewHeight - rowHeight * 2 - rowBuffer * 2 - rowFirstBuffer * 2 - iconDims) / 2;
+
+    for (int j = 0; j < [self hourlyForecastLength]; ++j) { // columns
+        for (int i = 0; i < 2; ++i) { // rows
+            UILabel *newLabel = [[UILabel alloc] init];
+            [newLabel setBackgroundColor:[UIColor clearColor]];
+            [newLabel setTextColor:[UIColor whiteColor]];
+            if (i == 0)
+                [newLabel setFont:[UIFont systemFontOfSize:13]];
+            else
+                [newLabel setFont:[UIFont systemFontOfSize:13]];
+            newLabel.adjustsFontSizeToFitWidth = YES;
+            newLabel.minimumScaleFactor = 0.1;
+            [newLabel setTextAlignment:NSTextAlignmentCenter];
+            [newLabel setFrame:CGRectMake(colBuffer + j * (colBuffer + dayWidth), rowFirstBuffer + (rowBuffer + rowHeight) * i, dayWidth, rowHeight)];
+            [self.view addSubview:newLabel
+                           toPage:4
+                          withTag:MK_TAG(4, i+1, j+1)
+                    manualRefresh:NO];
+        }
+
+        CGRect iconRect = CGRectMake(colBuffer + j * (colBuffer + dayWidth) + (dayWidth - iconDims) / 2,
+            iconY, iconDims, iconDims);
+
+        UIImageView *dayIconView = [[UIImageView alloc] init];
+        UIImageView *dayIconViewBack = [[UIImageView alloc] init];
+        [dayIconView setFrame:iconRect];
+        [self.view addSubview:dayIconViewBack
+                       toPage:4
+                      withTag:MK_TAG(4, 3, j+1)
+                manualRefresh:YES];
+        [self.view addSubview:dayIconView
+                       toPage:4
+                      withTag:MK_TAG(4, 4, j+1)
+                manualRefresh:YES];
+    }
+    [self.view increaseWidthOfPage:4 with:(([self hourlyForecastLength] - [self numberOfIcons]) * (colBuffer + dayWidth))];
 }
 
 /* Takes: object which is responsible for calling it
@@ -546,19 +592,26 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     // -- details page -- //
 
     // "Last Refreshed"
-    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:[self.model lastRequestInt]];
+    int last = [self.model lastRequestInt];
+    NSDate *lastRefreshedDate = [NSDate dateWithTimeIntervalSince1970:last];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateStyle:NSDateFormatterShortStyle];
-    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+    [dateFormatter setDoesRelativeDateFormatting:YES];
+    if (time(NULL) > last + 24 * 60 * 60) {
+	[dateFormatter setDateStyle:NSDateFormatterShortStyle];
+	[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+    } else {
+	[dateFormatter setDateStyle:NSDateFormatterNoStyle];
+	[dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+    }
     UILabel *lastRefreshedLabel = (UILabel *)[self.view getSubviewFromPage:0
-                                                                   withTag:1];
+                                                                   withTag:MK_TAG(0, 0, 1)];
     lastRefreshedLabel.text = [NSString stringWithFormat:@"%@: %@",[_ammNCWundergroundWeeAppBundle localizedStringForKey:@"LAST_REFRESHED"
                                                                                                                    value:@"Last Refreshed"
                                                                                                                    table:nil],
                                                                    [dateFormatter stringFromDate:lastRefreshedDate]];
 
     // "Distance From Station"
-    UILabel *distanceLabel = (UILabel *)[self.view getSubviewFromPage:0 withTag:2];
+    UILabel *distanceLabel = (UILabel *)[self.view getSubviewFromPage:0 withTag:MK_TAG(0, 0, 2)];
     if (!self.useCustomLocation) {
         CLLocation *userLocation = [[CLLocation alloc] initWithLatitude:[self.model latitudeDouble]
                                                               longitude:[self.model longitudeDouble]];
@@ -605,8 +658,8 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                                                                      length:intervalLength
                                                                      ofType:self.tempType];
 
-    ASBSparkLineView *realTempSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:120];
-    ASBSparkLineView *feelsLikeSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:130];
+    ASBSparkLineView *realTempSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:MK_TAG(1, 2, 0)];
+    ASBSparkLineView *feelsLikeSparkView = (ASBSparkLineView *)[self.view getSubviewFromPage:1 withTag:MK_TAG(1, 3, 0)];
 
     [realTempSparkView setDataValues:realTempSparkData];
     [feelsLikeSparkView setDataValues:feelsLikeSparkData];
@@ -652,7 +705,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 5; ++j) {
             UILabel *label = (UILabel *)[self.view getSubviewFromPage:1
-                                                              withTag:(100 + 10 * (i+1) + (j+1))];
+                                                              withTag:MK_TAG(1, i+1, j+1)];
             [label setText:[page1TextArray objectAtIndex:(i * 5 + j)]];
         }
     }
@@ -673,7 +726,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 2; ++j) {
             UILabel *label = (UILabel *)[self.view getSubviewFromPage:2
-                                                              withTag:(200 + 10 * (i+1) + (j+1))];
+                                                              withTag:MK_TAG(2, i+1, j+1)];
             [label setText:[page2TextArray objectAtIndex:(i*2+j)]];
 
         }
@@ -688,14 +741,14 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                                                                                                 ofType:@"png"]];
     weatherIconFront = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"front"]]
                                                                                                  ofType:@"png"]];
-    [(UIImageView *)[self.view getSubviewFromPage:2 withTag:200] setImage:weatherIconBack];
-    [(UIImageView *)[self.view getSubviewFromPage:2 withTag:201] setImage:weatherIconFront];
+    [(UIImageView *)[self.view getSubviewFromPage:2 withTag:MK_TAG(2, 0, 0)] setImage:weatherIconBack];
+    [(UIImageView *)[self.view getSubviewFromPage:2 withTag:MK_TAG(2, 0, 1)] setImage:weatherIconFront];
 
     // -- daily forecast page -- //
 
-    for (int j = 0; j < [self numberOfDays]; ++j) {
-        UILabel *dayLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:(310 + (j+1))];
-        UILabel *tempLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:(320 + (j+1))];
+    for (int j = 0; j < [self dailyForecastLength]; ++j) {
+        UILabel *dayLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:MK_TAG(3, 1, j+1)];
+        UILabel *tempLabel = (UILabel *)[self.view getSubviewFromPage:3 withTag:MK_TAG(3, 2, j+1)];
         [dayLabel setText:[self.model dailyDayShortString:j]];
         [tempLabel setText:[NSString stringWithFormat:@"%@/%@ (%@)",[self.model dailyHighString:j ofType:self.tempType],
                                                                     [self.model dailyLowString:j ofType:self.tempType],
@@ -707,15 +760,54 @@ static int ddLogLevel = LOG_LEVEL_OFF;
                                                                                                     ofType:@"png"]];
         weatherIconFront = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"front"]]
                                                                                                      ofType:@"png"]];
-        [(UIImageView *)[self.view getSubviewFromPage:3 withTag:(330 + (j+1))] setImage:weatherIconBack];
-        [(UIImageView *)[self.view getSubviewFromPage:3 withTag:(340 + (j+1))] setImage:weatherIconFront];
+        [(UIImageView *)[self.view getSubviewFromPage:3 withTag:MK_TAG(3, 3, j+1)] setImage:weatherIconBack];
+        [(UIImageView *)[self.view getSubviewFromPage:3 withTag:MK_TAG(3, 4, j+1)] setImage:weatherIconFront];
+    }
+
+    // -- hourly forecast page -- //
+
+    for (int j = 0; j < [self hourlyForecastLength]; ++j) {
+        UILabel *dayLabel = (UILabel *)[self.view getSubviewFromPage:4 withTag:MK_TAG(4, 1, j+1)];
+        UILabel *tempLabel = (UILabel *)[self.view getSubviewFromPage:4 withTag:MK_TAG(4, 2, j+1)];
+        [dayLabel setText:[self.model hourlyTimeLocalizedString:j]];
+        [tempLabel setText:[NSString stringWithFormat:@"%@ (%@)",[self.model hourlyTempString:j ofType:self.tempType],
+                                                                 [self.model hourlyPOPString:j]]];
+
+        remoteIconName = [self.model hourlyConditionsIconName:j];
+        localIconInfo = [self.iconMap objectForKey:remoteIconName];
+        weatherIconBack = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"back"]]
+                                                                                                    ofType:@"png"]];
+        weatherIconFront = [UIImage imageWithContentsOfFile:[_ammNCWundergroundWeeAppBundle pathForResource:[NSString stringWithFormat:@"icons/%@",[localIconInfo objectForKey:@"front"]]
+                                                                                                     ofType:@"png"]];
+        [(UIImageView *)[self.view getSubviewFromPage:4 withTag:MK_TAG(4, 3, j+1)] setImage:weatherIconBack];
+        [(UIImageView *)[self.view getSubviewFromPage:4 withTag:MK_TAG(4, 4, j+1)] setImage:weatherIconFront];
     }
 
 }
 
-// Returns: number of days in daily forecast (4)
+// Returns: number of icons in hourly forecast
+- (int)numberOfHours {
+    int n = [self hourlyForecastLength];
+    int i = [self numberOfIcons];
+    if (n > i) {
+        return i;
+    }
+    return n;
+}
+
+// Returns: number of icons in daily forecast
 - (int)numberOfDays {
-    return 4;
+    int n = [self dailyForecastLength];
+    int i = [self numberOfIcons];
+    if (n > i) {
+        return i;
+    }
+    return n;
+}
+
+// Returns: number of icons that can be displayed with current width
+- (int)numberOfIcons {
+    return (self.currentWidth > 320) ? 6 : 4;
 }
 
 // Returns: user preferences for number of hours to display
@@ -728,6 +820,19 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     else {
         DDLogWarn(@"NCWunderground: user defaults contain no hourly forecast length field. Defaulting to 12 hours.");
         return 12;
+    }
+}
+
+// Returns: user preferences for number of days to display
+- (int)dailyForecastLength {
+    NSDictionary *defaultsDom = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.amm.ncwunderground"];
+    NSNumber *dailyLength = [defaultsDom objectForKey:@"dailyLength"];
+    if (dailyLength) {
+        return [dailyLength integerValue];
+    }
+    else {
+        DDLogWarn(@"NCWunderground: user defaults contain no daily forecast length field. Defaulting to 4 days.");
+        return 4;
     }
 }
 

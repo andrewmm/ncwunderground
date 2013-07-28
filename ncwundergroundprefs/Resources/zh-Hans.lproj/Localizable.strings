@@ -36,6 +36,21 @@
 /* 36 hr */
 "36 hr" = "36 小时";
 
+/* Daily Forecast Length */
+"Daily Forecast Length" = "Daily Forecast Length";
+
+/* 4 days */
+"4 days" = "4 days";
+
+/* 6 days */
+"6 days" = "6 days";
+
+/* 7 days */
+"7 days" = "7 days";
+
+/* 10 days */
+"10 days" = "10 days";
+
 /* API Key */
 "API Key" = "API 密钥";
 

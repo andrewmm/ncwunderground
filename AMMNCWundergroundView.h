@@ -1,7 +1,6 @@
 @interface AMMNCWundergroundView: UIScrollView
 
 @property (nonatomic, assign) int pages;
-@property (nonatomic, readonly, assign) float baseWidth;
 @property (nonatomic, assign) float screenWidth;
 @property (nonatomic, assign) float viewHeight;
 @property (nonatomic, readonly, copy) NSArray *backgroundViews;
@@ -41,6 +40,7 @@
 // Returns: YES if successful, NO otherwise
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page withTag:(int)tag manualRefresh:(BOOL)refresh;
 - (BOOL)addSubview:(UIView *)subview toPage:(int)page manualRefresh:(BOOL)refresh;
+- (BOOL)increaseWidthOfPage:(int)page with:(float)width;
 
 // Takes: page number, tag number
 // Returns: subview

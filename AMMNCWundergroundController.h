@@ -10,7 +10,6 @@
 @property (nonatomic, readonly, copy) NSString *saveFile;
 @property (atomic, readonly, strong) CLLocationManager *locationManager;
 @property (atomic, assign) BOOL locationUpdated;
-@property (nonatomic, readonly, assign) float baseWidth;
 @property (nonatomic, readonly, assign) float currentWidth;
 @property (nonatomic, readonly, assign) float viewHeight;
 @property (nonatomic, readonly, copy) NSDictionary *iconMap;
@@ -50,11 +49,17 @@
 // Does: after data model has been updated, loads data into views
 - (void)associateModelToView;
 
-// Returns: number of days in daily forecast (4)
+// Returns: number of icons in hourly forecast
+- (int)numberOfHours;
+// Returns: number of icons in daily forecast
 - (int)numberOfDays;
+// Returns: number of icons that can be displayed with current width
+- (int)numberOfIcons;
 
 // Returns: user preferences for number of hours to display
 - (int)hourlyForecastLength;
+// Returns: user preferences for number of days to display
+- (int)dailyForecastLength;
 
 - (void)openForecastURL;
 

@@ -90,6 +90,8 @@ root
 - (NSString *)hourlyTimeLocalizedString:(int)forecastIndex;
 - (NSString *)hourlyTempString:(int)forecastIndex ofType:(int)type;
 - (NSString *)hourlyFeelsString:(int)forecastIndex ofType:(int)type;
+- (NSString *)hourlyPOPString:(int)forecastIndex; // includes %
+- (NSString *)hourlyConditionsIconName:(int)forecastIndex;
 - (NSMutableArray *)hourlyTempNumberArray:(int)startIndex length:(int)length ofType:(int)type;
 - (NSMutableArray *)hourlyFeelsNumberArray:(int)startIndex length:(int)length ofType:(int)type;
 
