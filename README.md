@@ -104,6 +104,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
+#### Contributions
+
+Other contributions are copyrighted by their respective authors, but still licensed under the MIT License. In particular:
+
+ - Chinese Localization: Thomas Chan
+ - German Localization: Anonymous
+ - Romanian Localization: [Daniel Borca](https://github.com/dborca)
+
+Code commits by others, as indicated in the git history, are copyrighted by their authors and licensed under the MIT License.
+
 ### Icon Set
 
 The icon set distributed with this widget is available at http://weathericonsets.com/2011/05/28/droplets/. That site has the following to say about licensing:
