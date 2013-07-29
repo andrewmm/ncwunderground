@@ -1,7 +1,7 @@
 Package: com.amm.ncwunderground
 Name: WeatherUnderground for Notification Center
 Depends: firmware (>= 6.1), com.saurik.substrate.safemode, com.chpwn.weeloader, com.arichardson.weepreferenceloader, mobilesubstrate
-Version: 1.2.0
+Version: 1.3.0
 Architecture: iphoneos-arm
 Description: Notification Center widget for Weather Underground.
  
@@ -13,6 +13,14 @@ Description: Notification Center widget for Weather Underground.
  
  NCWunderground is open source. You can find the GitHub repo (including more detailed installation instructions and the ability to submit bug reports) at https://github.com/andrewmm/ncwunderground.
  
+ Version 1.3.0:
+ * The widget no longer asks for permission to access your location after every respring.
+ * Settings menu is more organized, with sub-panes.
+ * Added an option to only update data manually.
+ * Respects 12hr/24hr time settings.
+ * German localization.
+ * Romanian localization, thanks to dborca.
+ 
  Version 1.2.0:
  * Support for various units (°F/°C, MPH/KPH/Knots, mi/km)
  * Chinese (Traditional and Simplified) localization thanks to Thomas Chan. If you would like to translate this widget into your own language, get in touch with me!
@@ -20,19 +28,6 @@ Description: Notification Center widget for Weather Underground.
  * Added option to control whether Personal Weather Stations are included.
  * Tapping the main icon now opens the mobile Weather Underground website rather than the full site.
  * Should resolve bug where widget would occasionally get stuck loading.
- 
- Version 1.1.3:
- * Support for iPad (does not assume Notification Center will be full screen).
- * Fixed bug where save data would not be removed upon tweak uninstall.
- 
- Version 1.1.2:
- * Truncate current temperature string to a single decimal place.
- 
- Version 1.1.1:
- * Fixed bug with page to open to.
- 
- Version 1.1.0:
- * Public release version.
 Maintainer: Andrew MacKie-Mason <drewmm@gmail.com>
 Author: Andrew MacKie-Mason <drewmm@gmail.com>
 Section: Addons (NotificationCenter)
