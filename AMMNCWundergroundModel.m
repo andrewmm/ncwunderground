@@ -278,19 +278,32 @@ static int ddLogLevel = LOG_LEVEL_OFF;
             typeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"MPH"
                                                                              value:@"MPH"
                                                                              table:nil];
-            speedString = [[curObs objectForKey:@"wind_mph"] stringValue];
+            if([[curObs objectForKey:@"wind_mph"] isKindOfClass:[NSNumber class]])
+                speedString = [[curObs objectForKey:@"wind_mph"] stringValue];
+            else
+                speedString = [curObs objectForKey:@"wind_mph"];
             break;
         case AMMWindTypeK:
             typeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"KPH"
                                                                              value:@"KPH"
                                                                              table:nil];
-            speedString = [[curObs objectForKey:@"wind_kph"] stringValue];
+            if([[curObs objectForKey:@"wind_kph"] isKindOfClass:[NSNumber class]])
+                speedString = [[curObs objectForKey:@"wind_kph"] stringValue];
+            else
+                speedString = [curObs objectForKey:@"wind_kph"];
             break;
         case AMMWindTypeKt:
             typeString = [self.ammNCWundergroundWeeAppBundle localizedStringForKey:@"kt"
                                                                              value:@"kt"
                                                                              table:nil];
-            speedString = [NSString stringWithFormat:@"%.1f",([[curObs objectForKey:@"wind_kph"] floatValue] * 0.539957)];
+            if([[curObs objectForKey:@"wind_kph"] isKindOfClass:[NSNumber class]])
+                speedString = [NSString stringWithFormat:@"%.1f",([[curObs objectForKey:@"wind_kph"] floatValue] * 0.539957)];
+            else {
+                NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
+                [f setNumberStyle:NSNumberFormatterDecimalStyle];
+                NSNumber *kphNumber = [f numberFromString:[curObs objectForKey:@"wind_kph"]];
+                speedString = [NSString stringWithFormat:@"%.1f",([kphNumber floatValue] * 0.539957)];
+            }
             break;
     }
     return [NSString stringWithFormat:@"%@ %@",speedString,typeString];
