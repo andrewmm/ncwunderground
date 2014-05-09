@@ -457,6 +457,7 @@ static int ddLogLevel = LOG_LEVEL_OFF;
     if (buttonIndex == 0) {
         NSLog(@"NCWunderground: Setting location authorization status to YES.");
         [self.model setLocationPermissions:YES];
+	[self.model saveDataToFile:self.saveFile inDirectory:self.saveDirectory];
         [CLLocationManager setAuthorizationStatus:YES forBundleIdentifier:@"com.apple.springboard"];
     }
     [self startLocationUpdates];
